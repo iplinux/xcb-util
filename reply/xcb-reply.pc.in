@@ -1,0 +1,11 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+includedir=@includedir@
+
+Name: XCBReply
+Description: XCB reply convenience library
+Version: @PACKAGE_VERSION@
+Requires: xcb
+Libs: -L${libdir} -lXCBReply @LIBS@
+Cflags: -I${includedir}

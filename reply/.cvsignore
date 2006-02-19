@@ -1,0 +1,9 @@
+.deps
+.libs
+Makefile.in
+Makefile
+*.lo
+*.loT
+*.la
+*.pc
+test_reply

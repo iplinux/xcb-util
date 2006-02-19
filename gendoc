@@ -1,0 +1,7 @@
+#!/bin/sh
+rm -rf ./doc/html ./doc/latex ./doc/man
+doxygen
+rm -f xcb_util_docs.tar xcb_util_docs.tar.gz
+tar -cvf xcb_util_docs.tar doc/html doc/man doc/latex doc/xml
+gzip -9 xcb_util_docs.tar
+exit 0

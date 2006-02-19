@@ -1,0 +1,21 @@
+/** 
+@file
+@brief XCB Utility functions
+ 
+These routines are used to facilitate the use of XCB in programs
+*/
+
+/**
+
+@mainpage XCB Utility Documentation
+@version @PACKAGE_VERSION@
+@author Jamey Sharp <jamey@minilop.net>
+@author Vincent Torri <torri@iecn.u-nancy.fr>
+@date 2005
+
+
+@section intro What is available ?
+
+@todo Add more functions in XCBAux
+
+*/
