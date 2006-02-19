@@ -12,3 +12,4 @@ install-sh
 libtool
 ltmain.sh
 missing
+xcb_util_intro
