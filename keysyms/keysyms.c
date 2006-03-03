@@ -1,4 +1,4 @@
-#include <malloc.h>
+#include <stdlib.h>
 
 #include <X11/XCB/xcb.h>
 #define XK_MISCELLANY
