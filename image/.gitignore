@@ -1,10 +1,2 @@
-.deps
-.libs
-Makefile.in
-Makefile
-*.lo
-*.loT
-*.la
 test_xcb_image
 test_xcb_image_shm
-*.pc

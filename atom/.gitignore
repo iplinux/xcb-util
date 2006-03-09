@@ -1,11 +1,3 @@
-.deps
-.libs
-Makefile
-Makefile.in
-*.lo
-*.loT
-*.la
-*.pc
 atoms.c
 atoms.gperf
 xcb_atom.h
