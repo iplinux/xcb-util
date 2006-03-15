@@ -16,7 +16,7 @@ void manageWindow(PropertyHandlers *prophs, XCBConnection *c, XCBWINDOW window, 
 		attr = XCBGetWindowAttributesReply(c, wa.u.cookie, 0);
 		if(!attr)
 			return;
-		if(attr->map_state != IsViewable)
+		if(attr->map_state != XCBMapStateViewable)
 		{
 			printf("Window 0x%08lx is not mapped. Ignoring.\n", window.xid);
 			free(attr);
@@ -48,7 +48,7 @@ void manageWindow(PropertyHandlers *prophs, XCBConnection *c, XCBWINDOW window, 
 	if(attr && geom)
 	{
 		reparentWindow(c, window, attr->visual, geom->root, geom->depth, geom->x, geom->y, geom->width, geom->height);
-		PropertyChanged(prophs, PropertyNewValue, window, WM_NAME);
+		PropertyChanged(prophs, XCBPropertyNewValue, window, WM_NAME);
 	}
 	free(attr);
 	free(geom);

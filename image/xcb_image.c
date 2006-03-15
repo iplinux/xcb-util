@@ -84,6 +84,15 @@ xcb_scanline_pad_get (XCBConnection *conn,
 /*   return XCBGetSetup (conn)->bitmap_format_scanline_pad; */
 }
 
+static int format_invalid(CARD8 depth, CARD8 format, CARD8 xpad)
+{
+  return (depth == 0 || depth > 32 ||
+      (format != XCBImageFormatXYBitmap &&
+       format != XCBImageFormatXYPixmap &&
+       format != XCBImageFormatZPixmap) ||
+      (format == XCBImageFormatXYBitmap && depth != 1) ||
+      (xpad != 8 && xpad != 16 && xpad != 32));
+}
 
 XCBImage *
 XCBImageCreate (XCBConnection *conn,
@@ -100,10 +109,7 @@ XCBImageCreate (XCBConnection *conn,
   XCBConnSetupSuccessRep *rep;
   CARD8                   bpp = 1; /* bits per pixel */
 
-  if (depth == 0 || depth > 32 ||
-      (format != XYBitmap && format != XYPixmap && format != ZPixmap) ||
-      (format == XYBitmap && depth != 1) ||
-      (xpad != 8 && xpad != 16 && xpad != 32))
+  if (format_invalid(depth, format, xpad))
     return (XCBImage *) NULL;
 
   image = (XCBImage *)malloc (sizeof (XCBImage));
@@ -120,7 +126,7 @@ XCBImageCreate (XCBConnection *conn,
   image->bitmap_format_bit_order = rep->bitmap_format_bit_order;
   image->bitmap_format_scanline_pad = xpad;
   
-  if (format == ZPixmap) 
+  if (format == XCBImageFormatZPixmap) 
     {
       bpp = xcb_bits_per_pixel (conn, depth);
     }
@@ -134,7 +140,7 @@ XCBImageCreate (XCBConnection *conn,
    */
   if (bytes_per_line == 0)
     {
-      if (format == ZPixmap)
+      if (format == XCBImageFormatZPixmap)
 	image->bytes_per_line = 
 	  xcb_bytes_per_line (image->bitmap_format_scanline_pad,
 			      width, bpp);
@@ -154,14 +160,7 @@ XCBImageCreate (XCBConnection *conn,
 int
 XCBImageInit (XCBImage *image)
 {
-  if ((image->depth == 0 || image->depth > 32) ||
-      (image->format != XYBitmap &&
-       image->format != XYPixmap &&
-       image->format != ZPixmap) ||
-      (image->format == XYBitmap && image->depth != 1) ||
-      (image->bitmap_format_scanline_pad != 8 &&
-       image->bitmap_format_scanline_pad != 16 &&
-       image->bitmap_format_scanline_pad != 32))
+  if (format_invalid(image->depth, image->format, image->bitmap_format_scanline_pad))
     return 0;
   
   /*
@@ -169,7 +168,7 @@ XCBImageInit (XCBImage *image)
    */
   if (image->bytes_per_line == 0)
     {
-      if (image->format == ZPixmap)
+      if (image->format == XCBImageFormatZPixmap)
 	image->bytes_per_line = 
 	  xcb_bytes_per_line (image->bitmap_format_scanline_pad,
 			      image->width,
@@ -224,7 +223,7 @@ XCBImageGet (XCBConnection *conn,
     return NULL;
   memcpy(data, XCBGetImageData (rep), XCBGetImageDataLength (rep));
 
-  if (format == XYPixmap)
+  if (format == XCBImageFormatXYPixmap)
     {
       image = XCBImageCreate (conn,
 				Ones (plane_mask & _lomask(rep->depth)),
@@ -235,11 +234,11 @@ XCBImageGet (XCBConnection *conn,
 				xcb_scanline_pad_get (conn, rep->depth),
 				0);
     }
-  else /* format == ZPixmap */
+  else /* format == XCBImageFormatZPixmap */
     {
       image = XCBImageCreate (conn,
 				rep->depth,
-				ZPixmap,
+				XCBImageFormatZPixmap,
 				0,
 				data,
 				width, height,
@@ -296,7 +295,7 @@ XCBImagePut (XCBConnection *conn,
   if ((w <= 0) || (h <= 0))
     return 0;
 
-  if ((image->bits_per_pixel == 1) || (image->format != ZPixmap))
+  if ((image->bits_per_pixel == 1) || (image->format != XCBImageFormatZPixmap))
     {
       dest_bits_per_pixel = 1;
       dest_scanline_pad = XCBGetSetup (conn)->bitmap_format_scanline_pad;
@@ -327,7 +326,7 @@ XCBImagePut (XCBConnection *conn,
 	img.width = width;
 	img.height = height;
 	img.xoffset = 0;
-	img.format = ZPixmap;
+	img.format = XCBImageFormatZPixmap;
 	img.image_byte_order = rep->image_byte_order;
 	img.bitmap_format_scanline_unit = rep->bitmap_format_scanline_unit;
 	img.bitmap_format_bit_order = rep->bitmap_format_bit_order;
@@ -404,7 +403,7 @@ XCBImageSHMCreate (XCBConnection *conn,
   image->bitmap_format_bit_order = rep->bitmap_format_bit_order;
   image->bitmap_format_scanline_pad = xcb_scanline_pad_get (conn, depth);
 
-  if (format == ZPixmap)
+  if (format == XCBImageFormatZPixmap)
     image->bits_per_pixel = xcb_bits_per_pixel (conn, depth);
   else
     image->bits_per_pixel = 1;
@@ -487,13 +486,13 @@ XCBImageSHMGet (XCBConnection *conn,
 
 static inline int XYINDEX (int x, XCBImage *img, int *bitp)
 {
-  int mask = img->bitmap_format_scanline_unit - 1;
+ int mask = img->bitmap_format_scanline_unit - 1;
   int unit = (x + img->xoffset) & ~mask;
   int byte = (x + img->xoffset) & mask;
-  if (img->bitmap_format_bit_order == MSBFirst)
+  if (img->bitmap_format_bit_order == XCBImageOrderMSBFirst)
     byte = img->bitmap_format_scanline_unit - byte;
   *bitp = byte & 7;
-  if (img->image_byte_order == MSBFirst)
+  if (img->image_byte_order == XCBImageOrderMSBFirst)
     byte = img->bitmap_format_scanline_unit - byte;
   return (unit + byte) >> 3;
 }
@@ -516,7 +515,7 @@ XCBImagePutPixel (XCBImage *image, int x, int y, CARD32 pixel)
 {
   register BYTE *src = image->data + (y * image->bytes_per_line);
 
-  if (image->format == XYPixmap || (image->bits_per_pixel | image->depth) == 1)
+  if (image->format == XCBImageFormatXYPixmap || (image->bits_per_pixel | image->depth) == 1)
     {
       int plane, bit;
       /* do least signif plane 1st */
@@ -528,7 +527,7 @@ XCBImagePutPixel (XCBImage *image, int x, int y, CARD32 pixel)
 	}
     }
   else
-    if (image->format == ZPixmap)
+    if (image->format == XCBImageFormatZPixmap)
       {
 	src += ZINDEX(x, image);
 	if (image->bits_per_pixel == 4)
@@ -538,7 +537,7 @@ XCBImagePutPixel (XCBImage *image, int x, int y, CARD32 pixel)
 	  /* if x is odd and byte order is LSB, or
 	   * if x is even and byte order is MSB, then
 	   * want high nibble; else want low nibble. */
-	  if ((x & 1) == (image->image_byte_order == LSBFirst))
+	  if ((x & 1) == (image->image_byte_order == XCBImageOrderLSBFirst))
 	  {
 	    mask = ~mask;
 	    pixel <<= 4;
@@ -548,7 +547,7 @@ XCBImagePutPixel (XCBImage *image, int x, int y, CARD32 pixel)
 	else
 	{
 	  int nbytes = image->bits_per_pixel >> 3;
-	  int rev = image->image_byte_order == MSBFirst;
+	  int rev = image->image_byte_order == XCBImageOrderMSBFirst;
 	  if(rev)
 	    src += nbytes - 1;
 	  while (--nbytes >= 0)
@@ -575,7 +574,7 @@ XCBImageGetPixel (XCBImage *image, int x, int y)
   CARD32         pixel = 0;
   register BYTE *src = image->data + (y * image->bytes_per_line);
   
-  if (image->format == XYPixmap || (image->bits_per_pixel | image->depth) == 1)
+  if (image->format == XCBImageFormatXYPixmap || (image->bits_per_pixel | image->depth) == 1)
     {
       int plane, bit;
       src += XYINDEX(x, image, &bit);
@@ -587,7 +586,7 @@ XCBImageGetPixel (XCBImage *image, int x, int y)
 	}
     }
   else
-    if (image->format == ZPixmap)
+    if (image->format == XCBImageFormatZPixmap)
       {
 	src += ZINDEX(x, image);
 	if (image->bits_per_pixel == 4)
@@ -596,13 +595,13 @@ XCBImageGetPixel (XCBImage *image, int x, int y)
 	  /* if x is odd and byte order is LSB, or
 	   * if x is even and byte order is MSB, then
 	   * want high nibble; else want low nibble. */
-	  if ((x & 1) == (image->image_byte_order == LSBFirst))
+	  if ((x & 1) == (image->image_byte_order == XCBImageOrderLSBFirst))
 	    pixel >>= 4;
 	}
 	else
 	{
 	  int nbytes = image->bits_per_pixel >> 3;
-	  int rev = image->image_byte_order == MSBFirst;
+	  int rev = image->image_byte_order == XCBImageOrderMSBFirst;
 	  if(rev)
 	    src += nbytes - 1;
 	  while (--nbytes >= 0)

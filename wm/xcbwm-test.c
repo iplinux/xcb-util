@@ -50,7 +50,7 @@ static int handleButtonReleaseEvent(void *data, XCBConnection *c, XCBButtonRelea
 	}
 	values[0] = /* x */ e->root_x;
 	values[1] = /* y */ e->root_y;
-	XCBConfigureWindow(c, e->event, CWX | CWY, values);
+	XCBConfigureWindow(c, e->event, XCBConfigWindowX | XCBConfigWindowY, values);
 	XCBFlush(c);
 	move_from_x = -1;
 	move_from_y = -1;
@@ -93,19 +93,19 @@ void reparentWindow(XCBConnection *c, XCBWINDOW child,
 	values[1] = 1;
 
 	mask |= XCBCWEventMask;
-	values[2] = ButtonPressMask | ButtonReleaseMask
-		| ExposureMask /* | EnterWindowMask | LeaveWindowMask */;
+	values[2] = XCBEventMaskButtonPress | XCBEventMaskButtonRelease
+		| XCBEventMaskExposure /* | XCBEventMaskEnterWindow | XCBEventMaskLeaveWindow */;
 
 	printf("Reparenting 0x%08lx under 0x%08lx.\n", child.xid, w.xid);
 	XCBCreateWindow(c, d, w, r, x, y,
 			width + LEFT + RIGHT, height + TOP + BOTTOM,
-			/* border_width */ 0, InputOutput, v, mask, values);
-	XCBChangeSaveSet(c, SetModeInsert, child);
+			/* border_width */ 0, XCBWindowClassInputOutput, v, mask, values);
+	XCBChangeSaveSet(c, XCBSetModeInsert, child);
 	XCBMapWindow(c, w);
 
 	titlegc = XCBGCONTEXTNew(c);
 
-	mask = GCForeground | GCBackground;
+	mask = XCBGCForeground | XCBGCBackground;
 	values[0] = root->black_pixel;
 	values[1] = root->white_pixel;
 	drawable.window = w;
@@ -115,7 +115,7 @@ void reparentWindow(XCBConnection *c, XCBWINDOW child,
 	XCBReparentWindow(c, child, w, LEFT - 1, TOP - 1);
 
 	mask = XCBCWEventMask;
-	values[0] = PropertyChangeMask | StructureNotifyMask;
+	values[0] = XCBEventMaskPropertyChange | XCBEventMaskStructureNotify;
 	XCBChangeWindowAttributes(c, child, mask, values);
 
 	XCBFlush(c);
@@ -212,7 +212,7 @@ int main(int argc, char **argv)
 
 	{
 		CARD32 mask = XCBCWEventMask;
-		CARD32 values[] = { SubstructureNotifyMask | PropertyChangeMask };
+		CARD32 values[] = { XCBEventMaskSubstructureNotify | XCBEventMaskPropertyChange };
 		XCBChangeWindowAttributes(c, root, mask, values);
 	}
 	XCBFlush(c);

@@ -12,7 +12,7 @@ SetWMName (XCBConnection *c,
 	   CARD32         name_len,
 	   const char    *name)
 {
-	XCBChangeProperty(c, PropModeReplace, window, WM_NAME, encoding, 8, name_len, name);
+	XCBChangeProperty(c, XCBPropModeReplace, window, WM_NAME, encoding, 8, name_len, name);
 }
 
 int
@@ -63,7 +63,7 @@ SetWMIconName (XCBConnection *c,
 	       CARD32         name_len,
 	       const char    *name)
 {
-	XCBChangeProperty(c, PropModeReplace, window, WM_ICON_NAME, encoding, 8, name_len, name);
+	XCBChangeProperty(c, XCBPropModeReplace, window, WM_ICON_NAME, encoding, 8, name_len, name);
 }
 
 void
@@ -416,7 +416,7 @@ SetWMSizeHints (XCBConnection *c,
 		XCBATOM         property,
 		SizeHints      *hints)
 {
-	XCBChangeProperty(c, PropModeReplace, window, property, WM_SIZE_HINTS, 32, sizeof(*hints) / 4, hints);
+	XCBChangeProperty(c, XCBPropModeReplace, window, property, WM_SIZE_HINTS, 32, sizeof(*hints) / 4, hints);
 }
 
 int
@@ -752,7 +752,7 @@ SetWMProtocols (XCBConnection *c,
 	proto = InternAtomFast(c, 0, sizeof("WM_PROTOCOLS") - 1, "WM_PROTOCOLS");
 	WM_PROTOCOLS = InternAtomFastReply(c, proto, 0);
 
-	XCBChangeProperty(c, PropModeReplace, window, WM_PROTOCOLS, ATOM, 32, list_len, list);
+	XCBChangeProperty(c, XCBPropModeReplace, window, WM_PROTOCOLS, ATOM, 32, list_len, list);
 }
 
 int

@@ -24,7 +24,7 @@ struct PropertyHandlers {
 
 XCBGetPropertyCookie GetAnyProperty(XCBConnection *c, BOOL del, XCBWINDOW window, XCBATOM name, CARD32 long_len)
 {
-	static const XCBATOM type = { AnyPropertyType };
+	static const XCBATOM type = { XCBGetPropertyTypeAny };
 	return XCBGetProperty(c, del, window, name, type, 0, long_len);
 }
 
@@ -32,7 +32,7 @@ static int callHandler(XCBConnection *c, BYTE state, XCBWINDOW window, XCBATOM a
 {
 	XCBGetPropertyRep *propr = 0;
 	int ret;
-	if(state != PropertyDelete)
+	if(state != XCBPropertyDelete)
 	{
 		XCBGetPropertyCookie cookie = GetAnyProperty(c, 0, window, atom, h->long_len);
 		propr = XCBGetPropertyReply(c, cookie, 0);
@@ -129,5 +129,5 @@ int rootOfScreen(XCBConnection *c, int screen, XCBWINDOW *root)
 
 XCBVoidCookie sendToWindow(XCBConnection *c, XCBWINDOW root, const XCBClientMessageEvent *ev)
 {
-	return XCBSendEvent(c, /* propagate */ 0, root, SubstructureNotifyMask | SubstructureRedirectMask, (const char *) ev);
+	return XCBSendEvent(c, /* propagate */ 0, root, XCBEventMaskSubstructureNotify | XCBEventMaskSubstructureRedirect, (const char *) ev);
 }

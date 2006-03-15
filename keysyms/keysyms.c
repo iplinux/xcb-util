@@ -177,7 +177,7 @@ int
 XCBRefreshKeyboardMapping (XCBKeySymbols         *syms,
 			   XCBMappingNotifyEvent *event)
 {
-  if (event->request == MappingKeyboard && syms) {
+  if (event->request == XCBMappingKeyboard && syms) {
     if (syms->tag == TAG_VALUE) {
       XCBKEYCODE     min_keycode;
       XCBKEYCODE     max_keycode;
