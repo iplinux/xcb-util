@@ -107,6 +107,8 @@ int XCBImageInit (XCBImage *image);
  */
 int XCBImageDestroy (XCBImage *image);
 
+#define XCBAllPlanes ((unsigned long)~0L)
+
 /**
  * Return a pointer to a XCBImage.
  * @param conn The connection to the X server.
@@ -117,7 +119,7 @@ int XCBImageDestroy (XCBImage *image);
  * drawable and define the upper-left corner of the rectangle.
  * @param width The width of the subimage, in pixels.
  * @param height The height of the subimage, in pixels.
- * @param plane_mask The plane mask.
+ * @param plane_mask The plane mask (can be XCBAllPlanes).
  * @param format The format of the image. You can pass XYBitmap,
  * XYPixmap, or ZPixmap.
  * @return The subimage of @p draw defined by @p x, @p y, @p w, @p h.

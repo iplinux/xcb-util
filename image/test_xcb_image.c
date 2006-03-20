@@ -5,7 +5,6 @@
 
 #include <X11/XCB/xcb.h>
 #include <X11/XCB/shm.h>
-#include <X11/Xlib.h>
 
 #include "xcb_aux.h"
 #include "xcb_image.h"
@@ -36,7 +35,7 @@ reflect_window (XCBConnection *c,
   printf ("get_image %d %d\n", width, height);
   image = XCBImageGet (c, win,
 			 0, 0, width, height,
-			 AllPlanes,
+			 XCBAllPlanes,
 			 format);
 
   printf ("Create image summary:\n");
@@ -92,7 +91,7 @@ reflect_window (XCBConnection *c,
 		 0, 0, 0, 0, width, height);
   image = XCBImageGet (c, new_win,
 			 0, 0, width, height,
-			 AllPlanes,
+			 XCBAllPlanes,
 			 format);
   printf ("New : \n");
   for (j = 0 ; j < image->height ; j++)

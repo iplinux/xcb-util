@@ -6,7 +6,6 @@
 
 #include <X11/XCB/xcb.h>
 #include <X11/XCB/shm.h>
-#include <X11/Xlib.h>
 
 #include "xcb_aux.h"
 #include "xcb_image.h"
