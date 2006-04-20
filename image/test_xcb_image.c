@@ -45,17 +45,17 @@ reflect_window (XCBConnection *c,
   printf (" * bitmap order....: %d\n", image->bitmap_format_bit_order);
   printf (" * bitmap pad......: %d\n", image->bitmap_format_scanline_pad);
   printf (" * depth...........: %d\n", image->depth);
-  printf (" * bytes/line......: %ld\n", image->bytes_per_line);
+  printf (" * bytes/line......: %d\n", image->bytes_per_line);
   printf (" * bits/pixel......: %d\n", image->bits_per_pixel);
 
-  printf ("bpl %ld %d\n", image->bytes_per_line, image->height);
+  printf ("bpl %d %d\n", image->bytes_per_line, image->height);
 
   for (j = 0 ; j < image->height ; j++)
     {
       for (i = 0 ; i < image->width ; i++)
 	{
 	  pixel1 = XCBImageGetPixel (image, i, j);
-	  printf ("%6ld ", pixel1);
+	  printf ("%6d ", pixel1);
 	}
       printf ("\n");
     }
@@ -83,7 +83,7 @@ reflect_window (XCBConnection *c,
       for (i = 0 ; i < image->width ; i++)
 	{
 	  pixel1 = XCBImageGetPixel (image, i, j);
-	  printf ("%6ld ", pixel1);
+	  printf ("%6d ", pixel1);
 	}
       printf ("\n");
     }
@@ -99,7 +99,7 @@ reflect_window (XCBConnection *c,
       for (i = 0 ; i < image->width ; i++)
 	{
 	  pixel1 = XCBImageGetPixel (image, i, j);
-	  printf ("%6ld ", pixel1);
+	  printf ("%6d ", pixel1);
 	}
       printf ("\n");
     }

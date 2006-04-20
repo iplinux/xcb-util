@@ -442,13 +442,13 @@ GetWMSizeHints (XCBConnection *c,
 	     (rep->format == 32)) &&
 	    (rep->value_len >= 15)) /* OldNumPropSizeElements = 15 (pre-ICCCM) */
 	{
-	        long length;
-		unsigned char *prop;
+                char *prop;
+	        long  length;
 		
 		length = XCBGetPropertyValueLength (rep);
 		/* FIXME: in GetProp.c of xcl, one move the memory.
 		 * Should we do that too ? */
-		prop = (unsigned char *)malloc(sizeof(unsigned char)*length);
+		prop = (char *)malloc(sizeof(char)*length);
 		memcpy(prop, XCBGetPropertyValue (rep), length);
 		prop[length] = '\0';
 		hints = (SizeHints *)strdup (prop);
@@ -704,8 +704,8 @@ GetWMHints (XCBConnection *c,
 	XCBGetPropertyCookie cookie;
 	XCBGetPropertyRep   *rep;
 	WMHints             *hints;
+        char                *prop;
 	long                 length;
-	unsigned char       *prop;
 
 	cookie = XCBGetProperty (c, 0, window,
 			WM_HINTS, WM_HINTS,
@@ -729,7 +729,7 @@ GetWMHints (XCBConnection *c,
 	}
 
 	length = XCBGetPropertyValueLength (rep);
-	prop = (unsigned char *) XCBGetPropertyValue (rep);
+	prop = (char *) XCBGetPropertyValue (rep);
 	prop[length] = '\0';
 	hints = (WMHints *)strdup (prop);
 	if (rep->value_len < NumWMHintsElements)
