@@ -5,6 +5,13 @@
 
 typedef struct _XCBKeySymbols XCBKeySymbols;
 
+/* enumeration for col parameter? */
+enum {
+	XCBLookupNone   = 1,
+	XCBLookupChars  = 2,
+	XCBLookupKeySym = 3,
+	XCBLookupBoth   = 4
+} XCBLookup;
 
 XCBKeySymbols *XCBKeySymbolsAlloc        (XCBConnection         *c);
 
@@ -28,6 +35,7 @@ XCBKEYSYM      XCBKeyReleaseLookupKeysym (XCBKeySymbols         *syms,
 int            XCBRefreshKeyboardMapping (XCBKeySymbols         *syms,
 					  XCBMappingNotifyEvent *event);
 
+/* TODO:  need XLookupString equivalent */
 
 /* Tests for classes of symbols */
 
