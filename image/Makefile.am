@@ -15,10 +15,13 @@ pkgconfig_DATA = xcb-image.pc
 
 EXTRA_DIST=xcb-image.pc.in
 
-noinst_PROGRAMS = test_xcb_image test_xcb_image_shm
+noinst_PROGRAMS = test_xcb_image test_xcb_image_shm test_formats
 
 test_xcb_image_LDADD = $(LDADD) -L. -lXCBImage
 test_xcb_image_SOURCES = test_xcb_image.c
 
 test_xcb_image_shm_LDADD = $(LDADD) -L. -lXCBImage
 test_xcb_image_shm_SOURCES = test_xcb_image_shm.c
+
+test_formats_LDADD = $(LDADD) -L. -lXCBImage
+test_formats_SOURCES = test_formats.c
