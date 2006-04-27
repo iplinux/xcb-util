@@ -76,7 +76,7 @@ xcb_scanline_pad_get (XCBConnection *conn,
 /*   XCBFORMATIter iter; */
 /*   int           cur; */
 
-/*   iter =  XCBConnSetupSuccessRepPixmapFormatsIter (conn->setup); */
+/*   iter =  XCBSetupPixmapFormatsIter (conn->setup); */
 /*   for (cur = 0 ; cur < iter.rem ; cur++, XCBFORMATNext (&iter)) */
 /*     if (iter.data->depth == depth) */
 /*       return iter.data->scanline_pad; */
