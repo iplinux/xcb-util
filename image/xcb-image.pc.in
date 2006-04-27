@@ -6,6 +6,6 @@ includedir=@includedir@
 Name: XCBImage
 Description: XCB image convenience library
 Version: @PACKAGE_VERSION@
-Requires: xcb
+Requires: xcb xcb-shm
 Libs: -L${libdir} -lXCBImage @LIBS@
 Cflags: -I${includedir}

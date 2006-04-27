@@ -6,11 +6,10 @@ lib_LTLIBRARIES = libXCBReply.la
 xcbinclude_HEADERS = xcb_reply.h
 
 AM_CFLAGS = -Wall
-INCLUDES = $(XCB_CFLAGS)
-LDADD = $(XCB_LIBS)
 
-libXCBReply_la_LIBADD = -lpthread
 libXCBReply_la_SOURCES = reply.c
+libXCBReply_la_CFLAGS = $(XCB_CFLAGS)
+libXCBReply_la_LIBADD = $(XCB_LIBS) -lpthread
 
 pkgconfig_DATA = xcb-reply.pc
 

@@ -3,8 +3,8 @@ exec_prefix=@exec_prefix@
 libdir=@libdir@
 includedir=@includedir@
 
-Name: XCBImage
-Description: XCB image convenience library
+Name: XCBProperty
+Description: XCB property convenience library
 Version: @PACKAGE_VERSION@
 Requires: xcb xcb-event
 Libs: -L${libdir} -lXCBProperty @LIBS@

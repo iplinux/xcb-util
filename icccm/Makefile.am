@@ -6,13 +6,13 @@ lib_LTLIBRARIES = libXCBICCCM.la
 xcbinclude_HEADERS = xcb_icccm.h
 
 AM_CFLAGS = -Wall
-INCLUDES = $(XCB_CFLAGS) -I../atom -I../event -I../property
-LDADD = $(XCB_LIBS) \
+
+libXCBICCCM_la_SOURCES = icccm.c
+libXCBICCCM_la_CFLAGS = $(XCB_CFLAGS) -I../atom -I../event -I../property
+libXCBICCCM_la_LIBADD = $(XCB_LIBS) \
 	-L../atom -lXCBAtom \
 	-L../event -lXCBEvent \
 	-L../property -lXCBProperty
-
-libXCBICCCM_la_SOURCES = icccm.c
 
 pkgconfig_DATA = xcb-icccm.pc
 

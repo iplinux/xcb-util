@@ -18,6 +18,7 @@ pkgconfigdir='${libdir}/pkgconfig'
 AC_SUBST(pkgconfigdir)
 
 PKG_CHECK_MODULES(XCB, xcb)
+PKG_CHECK_MODULES(XCB_SHM, xcb-shm)
 
 AC_OUTPUT([Makefile
 	convenient/Makefile convenient/xcb-aux.pc

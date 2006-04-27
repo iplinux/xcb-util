@@ -1,4 +1,4 @@
 
 MAINTAINERCLEANFILES = Makefile.in
 
-SUBDIRS = atom convenient event icccm image keysyms property reply wm
+SUBDIRS = atom convenient event property icccm image keysyms reply wm

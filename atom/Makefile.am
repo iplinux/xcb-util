@@ -6,10 +6,10 @@ lib_LTLIBRARIES = libXCBAtom.la
 xcbinclude_HEADERS = xcb_atom.h
 
 AM_CFLAGS = -Wall
-INCLUDES = $(XCB_CFLAGS)
-LDADD = $(XCB_LIBS)
 
 libXCBAtom_la_SOURCES = atoms.c
+libXCBAtom_la_CFLAGS = $(XCB_CFLAGS)
+libXCBAtom_la_LIBADD = $(XCB_LIBS)
 
 pkgconfig_DATA = xcb-atom.pc
 
