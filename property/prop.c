@@ -118,7 +118,7 @@ int SetDefaultPropertyHandler(PropertyHandlers *prophs, CARD32 long_len, Generic
 
 int rootOfScreen(XCBConnection *c, int screen, XCBWINDOW *root)
 {
-	XCBSCREENIter i = XCBConnSetupSuccessRepRootsIter(XCBGetSetup(c));
+	XCBSCREENIter i = XCBSetupRootsIter(XCBGetSetup(c));
 	if(screen >= i.rem)
 		return 0;
 	for(; screen && i.rem; --screen, XCBSCREENNext(&i))

@@ -74,7 +74,7 @@ int handleUnmapNotifyEvent(void *data, XCBConnection *c, XCBUnmapNotifyEvent *e)
 		return 0;
 	}
 
-	root = XCBConnSetupSuccessRepRootsIter(XCBGetSetup(c)).data->root;
+	root = XCBSetupRootsIter(XCBGetSetup(c)).data->root;
 	printf("child of 0x%08lx.\n", client->parent.xid);
 	XCBReparentWindow(c, client->child, root, 0, 0);
 	XCBDestroyWindow(c, client->parent);

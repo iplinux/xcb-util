@@ -81,7 +81,7 @@ void reparentWindow(XCBConnection *c, XCBWINDOW child,
 	XCBDRAWABLE drawable;
 	CARD32 mask = 0;
 	CARD32 values[3];
-	XCBSCREEN *root = XCBConnSetupSuccessRepRootsIter(XCBGetSetup(c)).data;
+	XCBSCREEN *root = XCBSetupRootsIter(XCBGetSetup(c)).data;
 	XCBGCONTEXT titlegc;
 
 	w = XCBWINDOWNew(c);

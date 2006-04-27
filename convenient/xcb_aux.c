@@ -32,7 +32,7 @@ XCBSCREEN *
 XCBAuxGetScreen (XCBConnection *c,
 		 int            screen)
 {
-  XCBSCREENIter i = XCBConnSetupSuccessRepRootsIter((XCBConnSetupSuccessRep *)XCBGetSetup(c));
+  XCBSCREENIter i = XCBSetupRootsIter(XCBGetSetup(c));
   for (; i.rem; --screen, XCBSCREENNext(&i))
     if (screen == 0)
       return i.data;

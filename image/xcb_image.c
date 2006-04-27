@@ -36,8 +36,8 @@ static unsigned int Ones(                /* HACKMEM 169 */
 static CARD8
 xcb_bits_per_pixel (XCBConnection *c, CARD8 depth)
 { 
-  XCBFORMAT *fmt = XCBConnSetupSuccessRepPixmapFormats(XCBGetSetup(c));
-  XCBFORMAT *fmtend = fmt + XCBConnSetupSuccessRepPixmapFormatsLength(XCBGetSetup(c));
+  XCBFORMAT *fmt = XCBSetupPixmapFormats(XCBGetSetup(c));
+  XCBFORMAT *fmtend = fmt + XCBSetupPixmapFormatsLength(XCBGetSetup(c));
   
   for(; fmt != fmtend; ++fmt)
     if(fmt->depth == depth)
@@ -62,8 +62,8 @@ static CARD8
 xcb_scanline_pad_get (XCBConnection *conn,
 		      CARD8          depth)
 {
-  XCBFORMAT *fmt = XCBConnSetupSuccessRepPixmapFormats(XCBGetSetup(conn));
-  XCBFORMAT *fmtend = fmt + XCBConnSetupSuccessRepPixmapFormatsLength(XCBGetSetup(conn));
+  XCBFORMAT *fmt = XCBSetupPixmapFormats(XCBGetSetup(conn));
+  XCBFORMAT *fmtend = fmt + XCBSetupPixmapFormatsLength(XCBGetSetup(conn));
   
   for(; fmt != fmtend; ++fmt)
     if(fmt->depth == depth)
@@ -105,9 +105,9 @@ XCBImageCreate (XCBConnection *conn,
 		CARD8          xpad,
 		CARD32         bytes_per_line)
 {
-  XCBImage               *image;
-  XCBConnSetupSuccessRep *rep;
-  CARD8                   bpp = 1; /* bits per pixel */
+  XCBImage       *image;
+  const XCBSetup *rep;
+  CARD8          bpp = 1; /* bits per pixel */
 
   if (format_invalid(depth, format, xpad))
     return (XCBImage *) NULL;
@@ -308,7 +308,7 @@ XCBImagePut (XCBConnection *conn,
       dest_bits_per_pixel = image->bits_per_pixel;
       dest_scanline_pad = image->bitmap_format_scanline_pad;
       left_pad = 0;
-      iter =  XCBConnSetupSuccessRepPixmapFormatsIter (XCBGetSetup (conn));
+      iter = XCBSetupPixmapFormatsIter (XCBGetSetup (conn));
       for (; iter.rem ; XCBFORMATNext (&iter))
 	if (iter.data->depth == image->depth)
 	  {
@@ -319,7 +319,7 @@ XCBImagePut (XCBConnection *conn,
       if (dest_bits_per_pixel != image->bits_per_pixel) {
 	XCBImage       img;
 	register INT32 i, j;
-	XCBConnSetupSuccessRep *rep;
+	const XCBSetup *rep;
 	
 	/* XXX slow, but works */
 	rep = XCBGetSetup (conn);
@@ -382,8 +382,8 @@ XCBImageSHMCreate (XCBConnection *conn,
 		   CARD16         width,
 		   CARD16         height)
 {
-  XCBImage               *image;
-  XCBConnSetupSuccessRep *rep;
+  XCBImage       *image;
+  const XCBSetup *rep;
 
   image = (XCBImage *)malloc (sizeof (XCBImage));
   if (!image)
