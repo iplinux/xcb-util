@@ -17,5 +17,6 @@ EXTRA_DIST=xcb-reply.pc.in
 
 noinst_PROGRAMS = test_reply
 
-test_reply_LDADD = $(LDADD) -L. -lXCBReply
+test_reply_CFLAGS = $(XCB_CFLAGS)
+test_reply_LDADD = $(XCB_LIBS) -lXCBReply
 test_reply_SOURCES = test_reply.c

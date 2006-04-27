@@ -1,3 +1,4 @@
+#include <X11/XCB/xcb.h>
 #include "xcb_reply.h"
 
 #include <string.h>
