@@ -13,7 +13,7 @@ libXCBAtom_la_LIBADD = $(XCB_LIBS)
 
 pkgconfig_DATA = xcb-atom.pc
 
-EXTRA_DIST = xcb-atom.pc.in
+EXTRA_DIST = xcb-atom.pc.in atomlist.m4 atoms.gperf.m4 xcb_atom.h.m4
 
 BUILT_SOURCES = atoms.c atoms.gperf xcb_atom.h
 
