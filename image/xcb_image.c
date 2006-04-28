@@ -20,7 +20,7 @@ static inline CARD32 _lomask(int n)
   return (1 << n) - 1;
 }
 
-static unsigned int Ones(                /* HACKMEM 169 */
+static unsigned int Ones(                /* HAKMEM 169 */
     CARD32 mask)
 {
     register CARD32 y;
