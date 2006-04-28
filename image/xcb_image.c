@@ -479,7 +479,12 @@ XCBImageSHMGet (XCBConnection *conn,
   /* but i don't use it */
   /* So, should we remove it ? */
   
-  return 1;
+  if (!rep)
+    return 0;
+  else {
+    free (rep);
+    return 1;
+  }
 }
 
 /* GetPixel/PutPixel */
