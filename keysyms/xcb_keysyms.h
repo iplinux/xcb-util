@@ -1,6 +1,6 @@
 #ifndef __XCB_KEYSYMS_H__
 #define __XCB_KEYSYMS_H__
-
+#include <X11/XCB/xcb.h>
 
 
 typedef struct _XCBKeySymbols XCBKeySymbols;
