@@ -96,7 +96,7 @@ void reparentWindow(XCBConnection *c, XCBWINDOW child,
 	values[2] = XCBEventMaskButtonPress | XCBEventMaskButtonRelease
 		| XCBEventMaskExposure /* | XCBEventMaskEnterWindow | XCBEventMaskLeaveWindow */;
 
-	printf("Reparenting 0x%08lx under 0x%08lx.\n", child.xid, w.xid);
+	printf("Reparenting 0x%08x under 0x%08x.\n", child.xid, w.xid);
 	XCBCreateWindow(c, d, w, r, x, y,
 			width + LEFT + RIGHT, height + TOP + BOTTOM,
 			/* border_width */ 0, XCBWindowClassInputOutput, v, mask, values);
@@ -144,7 +144,7 @@ static int handleExposeEvent(void *data, XCBConnection *c, XCBExposeEvent *e)
 static int handleWMNameChange(void *data, XCBConnection *c, BYTE state, XCBWINDOW window, XCBATOM atom, XCBGetPropertyRep *prop)
 {
 	ClientWindow *client = TableGet(byChild, window.xid);
-	printf("WM_NAME change: Window 0x%08lx ", window.xid);
+	printf("WM_NAME change: Window 0x%08x ", window.xid);
 	if(!client)
 	{
 		printf("is not being managed.\n");

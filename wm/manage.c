@@ -18,7 +18,7 @@ void manageWindow(PropertyHandlers *prophs, XCBConnection *c, XCBWINDOW window, 
 			return;
 		if(attr->map_state != XCBMapStateViewable)
 		{
-			printf("Window 0x%08lx is not mapped. Ignoring.\n", window.xid);
+			printf("Window 0x%08x is not mapped. Ignoring.\n", window.xid);
 			free(attr);
 			return;
 		}
@@ -27,13 +27,13 @@ void manageWindow(PropertyHandlers *prophs, XCBConnection *c, XCBWINDOW window, 
 	}
 	if(!wa.u.override_redirect && TableGet(byChild, window.xid))
 	{
-		printf("Window 0x%08lx already managed. Ignoring.\n", window.xid);
+		printf("Window 0x%08x already managed. Ignoring.\n", window.xid);
 		free(attr);
 		return;
 	}
 	if(wa.u.override_redirect)
 	{
-		printf("Window 0x%08lx has override-redirect set. Ignoring.\n", window.xid);
+		printf("Window 0x%08x has override-redirect set. Ignoring.\n", window.xid);
 		free(attr);
 		return;
 	}
@@ -58,7 +58,7 @@ int handleMapNotifyEvent(void *prophs, XCBConnection *c, XCBMapNotifyEvent *e)
 {
 	WindowAttributes wa = { TAG_VALUE };
 	wa.u.override_redirect = e->override_redirect;
-	printf("MapNotify for 0x%08lx.\n", e->window.xid);
+	printf("MapNotify for 0x%08x.\n", e->window.xid);
 	manageWindow(prophs, c, e->window, wa);
 	return 1;
 }
@@ -67,7 +67,7 @@ int handleUnmapNotifyEvent(void *data, XCBConnection *c, XCBUnmapNotifyEvent *e)
 {
 	ClientWindow *client = TableRemove(byChild, e->event.xid);
 	XCBWINDOW root;
-	printf("UnmapNotify for 0x%08lx (received from 0x%08lx): ", e->window.xid, e->event.xid);
+	printf("UnmapNotify for 0x%08x (received from 0x%08x): ", e->window.xid, e->event.xid);
 	if(!client)
 	{
 		printf("not a managed window. Ignoring.\n");
@@ -75,7 +75,7 @@ int handleUnmapNotifyEvent(void *data, XCBConnection *c, XCBUnmapNotifyEvent *e)
 	}
 
 	root = XCBSetupRootsIter(XCBGetSetup(c)).data->root;
-	printf("child of 0x%08lx.\n", client->parent.xid);
+	printf("child of 0x%08x.\n", client->parent.xid);
 	XCBReparentWindow(c, client->child, root, 0, 0);
 	XCBDestroyWindow(c, client->parent);
 	XCBFlush(c);
