@@ -35,6 +35,7 @@ xcbwm_test_CFLAGS = $(XCB_CFLAGS) \
 	-I../property \
 	-I../icccm
 xcbwm_test_LDADD = $(XCB_LIBS) \
+	-L../atom -lXCBAtom \
 	-L../convenient -lXCBAux \
 	-L../event -lXCBEvent \
 	-L../property -lXCBProperty \
