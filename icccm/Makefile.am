@@ -11,7 +11,6 @@ libXCBICCCM_la_SOURCES = icccm.c
 libXCBICCCM_la_CFLAGS = $(XCB_CFLAGS) -I../atom -I../event -I../property
 libXCBICCCM_la_LIBADD = $(XCB_LIBS) \
 	-L../atom -lXCBAtom \
-	-L../event -lXCBEvent \
 	-L../property -lXCBProperty
 
 pkgconfig_DATA = xcb-icccm.pc
