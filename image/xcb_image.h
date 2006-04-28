@@ -1,7 +1,8 @@
 
 #ifndef __XCB_IMAGE_H__
 #define __XCB_IMAGE_H__
-
+#include <X11/XCB/xcb.h>
+#include <X11/XCB/shm.h>
 
 /**
  * @defgroup XCB_Image XCB Image Functions
