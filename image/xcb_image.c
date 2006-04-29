@@ -463,6 +463,7 @@ XCBImageSHMGet (XCBConnection *conn,
 {
   XCBShmGetImageRep *rep;
   XCBShmGetImageCookie cookie;
+  XCBGenericError *err = NULL;
 
   if (!shminfo.shmaddr)
     return 0;
@@ -474,10 +475,15 @@ XCBImageSHMGet (XCBConnection *conn,
 			  image->format,
 			  shminfo.shmseg,
 			  image->data - shminfo.shmaddr);
-  rep = XCBShmGetImageReply(conn, cookie, NULL);
+  rep = XCBShmGetImageReply(conn, cookie, &err);
   /* rep would be useful to get the visual id */
   /* but i don't use it */
   /* So, should we remove it ? */
+  
+  if (err) {
+    fprintf(stderr, "ShmGetImageReply error %d\n", (int)err->error_code);
+    free(err);
+  }
   
   if (!rep)
     return 0;
