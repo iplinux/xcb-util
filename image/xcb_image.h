@@ -5,9 +5,6 @@
 #include <X11/XCB/shm.h>
 
 
-#define XCBImageAllPlanes ((CARD32)~0L)
-
-
 /**
  * @defgroup XCB_Image XCB Image Functions
  *
@@ -112,7 +109,7 @@ int XCBImageInit (XCBImage *image);
  */
 int XCBImageDestroy (XCBImage *image);
 
-#define XCBAllPlanes ((unsigned long)~0L)
+#define XCBAllPlanes ((CARD32)~0L)
 
 /**
  * Return a pointer to a XCBImage.
