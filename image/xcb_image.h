@@ -4,6 +4,10 @@
 #include <X11/XCB/xcb.h>
 #include <X11/XCB/shm.h>
 
+
+#define XCBImageAllPlanes ((CARD32)~0L)
+
+
 /**
  * @defgroup XCB_Image XCB Image Functions
  *
