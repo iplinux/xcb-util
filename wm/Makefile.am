@@ -7,19 +7,21 @@ xcbinclude_HEADERS = xcb_wm.h
 
 AM_CFLAGS = -Wall
 
+XCB_XCBWM_LIBS = libXCBWM.la
+
 libXCBWM_la_SOURCES = manage.c table.c
 libXCBWM_la_CFLAGS = $(XCB_CFLAGS) \
-	-I../convenient \
-	-I../atom \
-	-I../event \
-	-I../property \
-	-I../icccm
+	$(XCB_AUX_CFLAGS) \
+	$(XCB_ATOM_CFLAGS) \
+	$(XCB_EVENT_CFLAGS) \
+	$(XCB_PROPERTY_CFLAGS) \
+	$(XCB_ICCCM_CFLAGS)
 libXCBWM_la_LIBADD = $(XCB_LIBS) \
-	-L../convenient -lXCBAux \
-	-L../atom -lXCBAtom \
-	-L../event -lXCBEvent \
-	-L../property -lXCBProperty \
-	-L../icccm -lXCBICCCM
+	$(XCB_AUX_LIBS) \
+	$(XCB_ATOM_LIBS) \
+	$(XCB_EVENT_LIBS) \
+	$(XCB_PROPERTY_LIBS) \
+	$(XCB_ICCCM_LIBS)
 
 pkgconfig_DATA = xcb-wm.pc
 
@@ -29,14 +31,16 @@ noinst_PROGRAMS = xcbwm-test
 
 xcbwm_test_SOURCES = xcbwm-test.c reply_formats.c reply_formats.h
 xcbwm_test_CFLAGS = $(XCB_CFLAGS) \
-	-I../convenient \
-	-I../atom \
-	-I../event \
-	-I../property \
-	-I../icccm
+	$(XCB_AUX_CFLAGS) \
+	$(XCB_ATOM_CFLAGS) \
+	$(XCB_EVENT_CFLAGS) \
+	$(XCB_PROPERTY_CFLAGS) \
+	$(XCB_ICCCM_CFLAGS)
 xcbwm_test_LDADD = $(XCB_LIBS) \
-	-L../convenient -lXCBAux \
-	-L../event -lXCBEvent \
-	-L../property -lXCBProperty \
-	-L../icccm -lXCBICCCM \
-	-lXCBWM -lpthread
+	$(XCB_AUX_LIBS) \
+	$(XCB_ATOM_LIBS) \
+	$(XCB_EVENT_LIBS) \
+	$(XCB_PROPERTY_LIBS) \
+	$(XCB_ICCCM_LIBS) \
+	$(XCB_XCBWM_LIBS) \
+	-lpthread

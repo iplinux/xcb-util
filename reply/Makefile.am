@@ -7,6 +7,8 @@ xcbinclude_HEADERS = xcb_reply.h
 
 AM_CFLAGS = -Wall
 
+XCB_REPLY_LIBS = libXCBReply.la
+
 libXCBReply_la_SOURCES = reply.c
 libXCBReply_la_CFLAGS = $(XCB_CFLAGS)
 libXCBReply_la_LIBADD = $(XCB_LIBS) -lpthread
@@ -18,5 +20,5 @@ EXTRA_DIST=xcb-reply.pc.in
 noinst_PROGRAMS = test_reply
 
 test_reply_CFLAGS = $(XCB_CFLAGS)
-test_reply_LDADD = $(XCB_LIBS) -lXCBReply
+test_reply_LDADD = $(XCB_LIBS) $(XCB_REPLY_LIBS)
 test_reply_SOURCES = test_reply.c
