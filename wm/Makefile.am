@@ -38,7 +38,6 @@ xcbwm_test_CFLAGS = $(XCB_CFLAGS) \
 	$(XCB_ICCCM_CFLAGS)
 xcbwm_test_LDADD = $(XCB_LIBS) \
 	$(XCB_AUX_LIBS) \
-	$(XCB_ATOM_LIBS) \
 	$(XCB_EVENT_LIBS) \
 	$(XCB_PROPERTY_LIBS) \
 	$(XCB_ICCCM_LIBS) \
