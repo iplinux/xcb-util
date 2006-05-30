@@ -12,6 +12,7 @@ XCBVISUALTYPE *XCBAuxGetVisualtype (XCBConnection *c,
 				    int            screen,
 				    XCBVISUALID    vid);
 
+void           XCBAuxSync          (XCBConnection *c);
 
 /* less error prone to use structs instead of value lists */
 

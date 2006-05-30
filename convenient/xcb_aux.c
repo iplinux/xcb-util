@@ -63,6 +63,12 @@ XCBAuxGetVisualtype (XCBConnection *c,
    return NULL;
 }
 
+void
+XCBAuxSync (XCBConnection *c)
+{
+    free(XCBGetInputFocusReply(c, XCBGetInputFocus(c), NULL));
+}
+
 /* structs instead of value lists */
 /* TODO: generate the struct types and functions from protocol masks and descriptions */
 
