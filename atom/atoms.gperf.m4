@@ -84,7 +84,7 @@ int get_atom_name(xcb_connection_t *c, xcb_atom_t atom, const char **namep, int 
 {
 	static char buf[100];
 	const char *name = get_atom_name_predefined(atom);
-	int len;
+	int namelen;
 	xcb_get_atom_name_cookie_t atomc;
 	xcb_get_atom_name_reply_t *atomr;
 	if(name)
@@ -97,11 +97,11 @@ int get_atom_name(xcb_connection_t *c, xcb_atom_t atom, const char **namep, int 
 	atomr = xcb_get_atom_name_reply(c, atomc, 0);
 	if(!atomr)
 		return 0;
-	len = xcb_get_atom_name_name_length(atomr);
-	if(len > sizeof(buf))
-		len = sizeof(buf);
-	*lengthp = len;
-	memcpy(buf, xcb_get_atom_name_name(atomr), len);
+	namelen = xcb_get_atom_name_name_length(atomr);
+	if(namelen > sizeof(buf))
+		namelen = sizeof(buf);
+	*lengthp = namelen;
+	memcpy(buf, xcb_get_atom_name_name(atomr), namelen);
 	*namep = buf;
 	free(atomr);
 	return 1;
