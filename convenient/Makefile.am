@@ -5,7 +5,7 @@ lib_LTLIBRARIES = libXCBAux.la
 
 xcbinclude_HEADERS = xcb_aux.h
 
-AM_CFLAGS = -Wall
+AM_CFLAGS = $(CWARNFLAGS)
 
 libXCBAux_la_SOURCES = xcb_aux.c
 libXCBAux_la_CFLAGS = $(XCB_CFLAGS)

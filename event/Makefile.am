@@ -5,7 +5,7 @@ lib_LTLIBRARIES = libXCBEvent.la
 
 xcbinclude_HEADERS = xcb_event.h
 
-AM_CFLAGS = -Wall
+AM_CFLAGS = $(CWARNFLAGS)
 
 libXCBEvent_la_SOURCES = events.c
 libXCBEvent_la_CFLAGS = $(XCB_CFLAGS)

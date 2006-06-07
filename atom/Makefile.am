@@ -5,7 +5,7 @@ lib_LTLIBRARIES = libXCBAtom.la
 
 xcbinclude_HEADERS = xcb_atom.h
 
-AM_CFLAGS = -Wall
+AM_CFLAGS = $(CWARNFLAGS)
 
 libXCBAtom_la_SOURCES = atoms.c atomlist.m4 atoms.gperf.m4 xcb_atom.h.m4
 libXCBAtom_la_CFLAGS = $(XCB_CFLAGS)

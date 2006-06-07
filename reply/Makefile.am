@@ -5,7 +5,7 @@ lib_LTLIBRARIES = libXCBReply.la
 
 xcbinclude_HEADERS = xcb_reply.h
 
-AM_CFLAGS = -Wall
+AM_CFLAGS = $(CWARNFLAGS)
 
 XCB_REPLY_LIBS = libXCBReply.la
 

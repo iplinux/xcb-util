@@ -5,7 +5,7 @@ lib_LTLIBRARIES = libXCBICCCM.la
 
 xcbinclude_HEADERS = xcb_icccm.h
 
-AM_CFLAGS = -Wall
+AM_CFLAGS = $(CWARNFLAGS)
 
 libXCBICCCM_la_SOURCES = icccm.c
 libXCBICCCM_la_CFLAGS = $(XCB_CFLAGS) $(XCB_ATOM_CFLAGS) $(XCB_EVENT_CFLAGS) \

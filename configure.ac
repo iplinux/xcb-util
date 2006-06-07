@@ -11,6 +11,16 @@ fi
 AC_PROG_CC
 AC_PROG_LIBTOOL
 
+if  test "x$GCC" = xyes ; then
+    CWARNFLAGS="-Wall"
+else
+    AC_CHECK_DECL([__SUNPRO_C], [SUNCC="yes"], [SUNCC="no"])
+    if test "x$SUNCC" = "xyes"; then
+	CWARNFLAGS="-v"
+    fi
+fi
+AC_SUBST(CWARNFLAGS)
+
 xcbincludedir='${includedir}/xcb'
 AC_SUBST(xcbincludedir)
 

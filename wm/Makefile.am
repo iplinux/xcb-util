@@ -5,7 +5,7 @@ lib_LTLIBRARIES = libXCBWM.la
 
 xcbinclude_HEADERS = xcb_wm.h
 
-AM_CFLAGS = -Wall
+AM_CFLAGS = $(CWARNFLAGS)
 
 XCB_XCBWM_LIBS = libXCBWM.la
 

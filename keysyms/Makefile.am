@@ -5,7 +5,7 @@ lib_LTLIBRARIES = libXCBKeysyms.la
 
 xcbinclude_HEADERS = xcb_keysyms.h
 
-AM_CFLAGS = -Wall
+AM_CFLAGS = $(CWARNFLAGS)
 
 libXCBKeysyms_la_SOURCES = keysyms.c
 libXCBKeysyms_la_CFLAGS = $(XCB_CFLAGS)
