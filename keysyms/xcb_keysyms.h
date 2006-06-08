@@ -1,6 +1,12 @@
 #ifndef __XCB_KEYSYMS_H__
 #define __XCB_KEYSYMS_H__
+
 #include <X11/XCB/xcb.h>
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 
 typedef struct _XCBKeySymbols XCBKeySymbols;
@@ -52,6 +58,11 @@ int XCBIsFunctionKey      (XCBKEYSYM keysym);
 int XCBIsMiscFunctionKey  (XCBKEYSYM keysym);
 
 int XCBIsModifierKey      (XCBKEYSYM keysym);
+
+
+#ifdef __cplusplus
+}
+#endif
 
 
 #endif /* __XCB_KEYSYMS_H__ */

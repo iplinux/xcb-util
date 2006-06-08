@@ -2,6 +2,11 @@
 #define __XCB_AUX_H__
 
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+
 CARD8          XCBAuxGetDepth      (XCBConnection *c,
 				    XCBSCREEN     *screen);
 
@@ -126,4 +131,10 @@ XCBAuxChangeKeyboardControl (XCBConnection *c,
                           CARD32         mask,
                           const XCBParamsKeyboard *params);
 
-#endif /* __XCB_CONVENIENT_H__ */
+
+#ifdef __cplusplus
+}
+#endif
+
+
+#endif /* __XCB_AUX_H__ */

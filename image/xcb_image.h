@@ -1,8 +1,13 @@
-
 #ifndef __XCB_IMAGE_H__
 #define __XCB_IMAGE_H__
+
 #include <X11/XCB/xcb.h>
 #include <X11/XCB/shm.h>
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 
 /**
@@ -63,7 +68,7 @@ struct XCBShmSegmentInfo_
  * @param height The height of the image, in pixels.
  * @param xpad The quantum of a scanline (8, 16, or 32).
  * @param bytes_per_line The number of bytes in the client image
- * between the start of one scanline and the start of the next. 
+ * between the start of one scanline and the start of the next.
  * @return The new image.
  *
  * This function allocates the memory needed for an XCBImage structure
@@ -228,7 +233,7 @@ int XCBImagePutPixel (XCBImage *image,
  * This function returns the specified pixel from the named image. The
  * pixel value is returned in normalized format (that is, the
  * least-significant byte of the long is the least-significant byte of
- * the pixel). The image must contain the @p x and @p y coordinates. 
+ * the pixel). The image must contain the @p x and @p y coordinates.
  * @ingroup XCB_Image
  */
 CARD32 XCBImageGetPixel (XCBImage *image,
@@ -361,5 +366,11 @@ int XCBImageSHMGet (XCBConnection    *conn,
 /**
  * @}
  */
+
+
+#ifdef __cplusplus
+}
+#endif
+
 
 #endif /* __XCB_IMAGE_H__ */

@@ -1,9 +1,15 @@
-#ifndef XCB_WM
-#define XCB_WM
+#ifndef __XCB_WM_H__
+#define __XCB_WM_H__
 
 #include <X11/XCB/xcb.h>
 #include "xcb_atom.h"
 #include "xcb_property.h"
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 
 void reparentWindow(XCBConnection *c, XCBWINDOW child,
 		XCBVISUALID v, XCBWINDOW r, CARD8 d,
@@ -42,4 +48,10 @@ void *TableRemove(Table *table, CARD32 key);
 extern Table *byChild;
 extern Table *byParent;
 
-#endif /* XCB_WM */
+
+#ifdef __cplusplus
+}
+#endif
+
+
+#endif /* __XCB_WM_H__ */

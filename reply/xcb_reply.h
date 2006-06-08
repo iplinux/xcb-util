@@ -1,8 +1,14 @@
-#ifndef REPLY_H
-#define REPLY_H
+#ifndef __XCB_REPLY_H__
+#define __XCB_REPLY_H__
 
 #include <X11/XCB/xcb.h>
 #include <pthread.h>
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 
 typedef struct ReplyHandlers ReplyHandlers;
 ReplyHandlers *allocReplyHandlers(XCBConnection *c);
@@ -17,4 +23,10 @@ typedef void (*GenericReplyHandler)(void *data, XCBConnection *c, XCBGenericRep 
 
 void AddReplyHandler(ReplyHandlers *h, unsigned int request, GenericReplyHandler handler, void *data);
 
-#endif /* REPLY_H */
+
+#ifdef __cplusplus
+}
+#endif
+
+
+#endif /* __XCB_REPLY_H__ */

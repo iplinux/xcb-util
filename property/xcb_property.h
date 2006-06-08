@@ -1,7 +1,13 @@
-#ifndef PROP_H
-#define PROP_H
+#ifndef __XCB_PROP_H__
+#define __XCB_PROP_H__
 
 #include "xcb_event.h"
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 
 XCBGetPropertyCookie GetAnyProperty(XCBConnection *c, BOOL del, XCBWINDOW window, XCBATOM name, CARD32 long_len);
 
@@ -18,4 +24,10 @@ int SetDefaultPropertyHandler(PropertyHandlers *prophs, CARD32 long_len, Generic
 
 int PropertyChanged(PropertyHandlers *prophs, BYTE state, XCBWINDOW window, XCBATOM atom);
 
-#endif /* PROP_H */
+
+#ifdef __cplusplus
+}
+#endif
+
+
+#endif /* __XCB_PROP_H__ */

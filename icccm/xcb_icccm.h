@@ -1,8 +1,14 @@
-#ifndef ICCCM_H
-#define ICCCM_H
+#ifndef __XCB_ICCCM_H__
+#define __XCB_ICCCM_H__
 
 #include <X11/XCB/xcb.h>
 #include "xcb_property.h"
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 
 /* WM_NAME */
 
@@ -61,10 +67,10 @@ void       SizeHintsGetIncrease  (SizeHints *hints,
 				  INT32     *width_inc,
 				  INT32     *height_inc);
 void       SizeHintsGetMinAspect (SizeHints *hints,
-				  INT32     *min_aspect_num, 
+				  INT32     *min_aspect_num,
 				  INT32     *min_aspect_den);
 void       SizeHintsGetMaxAspect (SizeHints *hints,
-				  INT32     *max_aspect_num, 
+				  INT32     *max_aspect_num,
 				  INT32     *max_aspect_den);
 void       SizeHintsGetBaseSize  (SizeHints *hints,
 				  INT32     *base_width,
@@ -213,4 +219,10 @@ char *DiscriminatedAtomNameByResource (const char *base, CARD32 resource);
 char *DiscriminatedAtomNameUnique     (const char *base, CARD32 id);
 #endif
 
-#endif /* ICCCM_H */
+
+#ifdef __cplusplus
+}
+#endif
+
+
+#endif /* __XCB_ICCCM_H__ */

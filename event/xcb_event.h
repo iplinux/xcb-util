@@ -1,7 +1,13 @@
-#ifndef EVENTS_H
-#define EVENTS_H
+#ifndef __XCB_EVENTS_H__
+#define __XCB_EVENTS_H__
 
 #include <X11/XCB/xcb.h>
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 
 typedef struct EventHandlers EventHandlers;
 EventHandlers *allocEventHandlers(XCBConnection *c);
@@ -56,4 +62,10 @@ MAKE_HANDLER(Event, ColormapNotify)
 MAKE_HANDLER(Event, ClientMessage)
 MAKE_HANDLER(Event, MappingNotify)
 
-#endif /* EVENTS_H */
+
+#ifdef __cplusplus
+}
+#endif
+
+
+#endif /* __XCB_EVENTS_H__ */
