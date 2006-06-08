@@ -367,7 +367,7 @@ XCBImagePut (XCBConnection *conn,
 	      image->depth, image->bytes_per_line * height,
 	      image->data);
 
-  return 0;
+  return 1;
 }
 
 /*
