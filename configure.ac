@@ -19,6 +19,7 @@ AC_SUBST(pkgconfigdir)
 
 PKG_CHECK_MODULES(XCB, xcb)
 PKG_CHECK_MODULES(XCB_SHM, xcb-shm)
+PKG_CHECK_MODULES(XCB_RENDER, xcb-render)
 
 XCB_AUX_CFLAGS='-I$(top_builddir)/convenient'
 XCB_AUX_LIBS='$(top_builddir)/convenient/libXCBAux.la'
@@ -51,5 +52,6 @@ AC_OUTPUT([Makefile
 	property/Makefile property/xcb-property.pc
 	icccm/Makefile icccm/xcb-icccm.pc
 	wm/Makefile wm/xcb-wm.pc
+	renderutil/Makefile renderutil/xcb-renderutil.pc
 	xcb_util_intro
 	])
