@@ -29,7 +29,7 @@ reflect_window (XCBConnection *c,
   int i, j;
   int format;
 
-  format = ZPixmap;
+  format = XCBImageFormatZPixmap;
 
   printf ("get_image %d %d\n", width, height);
   image = XCBImageGet (c, win,
@@ -132,13 +132,13 @@ main (int argc, char *argv[])
   win.window = screen->root;
 
   fgcolor = XCBGCONTEXTNew(c);
-  mask = GCForeground | GCGraphicsExposures;
+  mask = XCBGCForeground | XCBGCGraphicsExposures;
   valgc[0] = screen->black_pixel;
   valgc[1] = 0; /* no graphics exposures */
   XCBCreateGC(c, fgcolor, win, mask, valgc);
 
   bgcolor = XCBGCONTEXTNew(c);
-  mask = GCForeground | GCGraphicsExposures;
+  mask = XCBGCForeground | XCBGCGraphicsExposures;
   valgc[0] = screen->white_pixel;
   valgc[1] = 0; /* no graphics exposures */
   XCBCreateGC(c, bgcolor, win, mask, valgc);
@@ -149,8 +149,8 @@ main (int argc, char *argv[])
   /* Create the window */
   mask = XCBCWBackPixel | XCBCWEventMask | XCBCWDontPropagate;
   valwin[0] = screen->white_pixel;
-  valwin[1] = KeyPressMask | ButtonReleaseMask | ExposureMask;
-  valwin[2] = ButtonPressMask;
+  valwin[1] = XCBEventMaskKeyPress | XCBEventMaskButtonRelease | XCBEventMaskExposure;
+  valwin[2] = XCBEventMaskButtonPress;
   XCBCreateWindow (c,                        /* Connection          */
  		   0,                        /* depth               */
 		   win.window,               /* window Id           */
@@ -158,7 +158,7 @@ main (int argc, char *argv[])
 		   0, 0,                     /* x, y                */
 		   W_W, W_H,                 /* width, height       */
 		   10,                       /* border_width        */
-		   InputOutput,              /* class               */
+		   XCBWindowClassInputOutput,/* class               */
 		   screen->root_visual,      /* visual              */
 		   mask, valwin);                 /* masks, not used yet */
 
@@ -173,7 +173,7 @@ main (int argc, char *argv[])
   points[0].y = 0;
   points[1].x = 1;
   points[1].y = 1;
-  XCBPolyLine(c, CoordModeOrigin, rect, fgcolor, 2, points);
+  XCBPolyLine(c, XCBCoordModeOrigin, rect, fgcolor, 2, points);
 /*   points[0].x = 10; */
 /*   points[0].y = 10; */
 /*   points[1].x = 10; */
@@ -186,8 +186,8 @@ main (int argc, char *argv[])
   /* Create the window */
   mask = XCBCWBackPixel | XCBCWEventMask | XCBCWDontPropagate;
   valwin[0] = screen->white_pixel;
-  valwin[1] = KeyPressMask | ButtonReleaseMask | ExposureMask;
-  valwin[2] = ButtonPressMask;
+  valwin[1] = XCBEventMaskKeyPress | XCBEventMaskButtonRelease | XCBEventMaskExposure;
+  valwin[2] = XCBEventMaskButtonPress;
   XCBCreateWindow (c,                        /* Connection          */
  		   0,                        /* depth               */
 		   new_win.window,               /* window Id           */
@@ -195,7 +195,7 @@ main (int argc, char *argv[])
 		   0, 0,                     /* x, y                */
 		   W_W, W_H,                 /* width, height       */
 		   10,                       /* border_width        */
-		   InputOutput,              /* class               */
+		   XCBWindowClassInputOutput,/* class               */
 		   screen->root_visual,      /* visual              */
 		   mask, valwin);                 /* masks, not used yet */
 
@@ -205,7 +205,7 @@ main (int argc, char *argv[])
   XCBMapWindow (c, new_win.window);
 
 
-  XCBSync (c, 0); 
+  XCBFlush (c); 
 
   while ((e = XCBWaitForEvent(c)))
     {
@@ -218,7 +218,7 @@ main (int argc, char *argv[])
 	    reflect_window (c, win, new_win,
 			    fgcolor,
 			    W_W, W_H);
-	    XCBSync (c, 0);
+	    XCBFlush (c);
 	    break;
 	  }
 	}

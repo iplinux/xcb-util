@@ -34,7 +34,7 @@ static XCBImage *create_image(XCBConnection *c, int depth, int format)
 		printf("ImageCreate failed.\n");
 		return 0;
 	}
-	im->data = malloc(im->bytes_per_line * HEIGHT * (format == ZPixmap ? 1 : depth));
+	im->data = malloc(im->bytes_per_line * HEIGHT * (format == XCBImageFormatZPixmap ? 1 : depth));
 	if(!im->data)
 	{
 		XCBImageDestroy(im);
@@ -53,10 +53,10 @@ static XCBImage *create_image(XCBConnection *c, int depth, int format)
 static XCBWINDOW create_window(XCBConnection *c, XCBSCREEN *root)
 {
 	static const CARD32 mask = XCBCWEventMask;
-	static const CARD32 values[] = { ExposureMask };
+	static const CARD32 values[] = { XCBEventMaskExposure };
 	unsigned int seq;
 	XCBWINDOW w = XCBWINDOWNew(c);
-	seq = XCBCreateWindow(c, root->root_depth, w, root->root, 30, 30, WIDTH, HEIGHT, 0, InputOutput, root->root_visual, mask, values).sequence;
+	seq = XCBCreateWindow(c, root->root_depth, w, root->root, 30, 30, WIDTH, HEIGHT, 0, XCBWindowClassInputOutput, root->root_visual, mask, values).sequence;
 	printf("CreateWindow sequence %d, depth %d\n", seq, root->root_depth);
 	seq = XCBMapWindow(c, w).sequence;
 	printf("MapWindow sequence %d\n", seq);
@@ -74,7 +74,7 @@ static XCBPIXMAP create_pixmap(XCBConnection *c, XCBDRAWABLE d, CARD8 depth)
 
 static XCBGCONTEXT create_gcontext(XCBConnection *c, XCBSCREEN *root)
 {
-	static const CARD32 mask = GCForeground | GCBackground;
+	static const CARD32 mask = XCBGCForeground | XCBGCBackground;
 	const CARD32 values[] = { root->black_pixel, root->white_pixel };
 	const XCBDRAWABLE d = { root->root };
 	unsigned int seq;
@@ -86,7 +86,7 @@ static XCBGCONTEXT create_gcontext(XCBConnection *c, XCBSCREEN *root)
 
 int main(int argc, char **argv)
 {
-	int screen, depth, format = ZPixmap;
+	int screen, depth, format = XCBImageFormatZPixmap;
 	XCBSCREEN *root;
 	XCBImage *im;
 	XCBDRAWABLE d, w = { { 0 } };
@@ -101,7 +101,7 @@ int main(int argc, char **argv)
 	root = XCBAuxGetScreen(c, screen);
 	if(argc > 1)
 		format = atoi(argv[1]);
-	if(format == XYBitmap || argc > 2)
+	if(format == XCBImageFormatXYBitmap || argc > 2)
 		depth = 1;
 	else
 		depth = root->root_depth;
