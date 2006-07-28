@@ -29,7 +29,7 @@ include(atomlist.m4)`'dnl
 XCBATOM InternAtomPredefined(CARD16 name_len, const char *name)
 {
 	const struct atom_map *value = in_word_set(name, name_len);
-	XCBATOM ret = { None };
+	XCBATOM ret = { XCBNone };
 	if(value)
 		ret = value->value;
 	return ret;
@@ -39,7 +39,7 @@ InternAtomFastCookie InternAtomFast(XCBConnection *c, BOOL only_if_exists, CARD1
 {
 	InternAtomFastCookie cookie;
 
-	if((cookie.u.atom = InternAtomPredefined(name_len, name)).xid != None)
+	if((cookie.u.atom = InternAtomPredefined(name_len, name)).xid != XCBNone)
 	{
 		cookie.tag = TAG_VALUE;
 		return cookie;
