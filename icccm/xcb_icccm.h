@@ -168,6 +168,8 @@ typedef enum {
     XCBWMIconicState    = 3
 } XCBWMState;
 
+WMHints *AllocWMHints();
+
 BOOL      WMHintsGetInput       (WMHints *hints);
 XCBPIXMAP WMHintsGetIconPixmap  (WMHints *hints);
 XCBPIXMAP WMHintsGetIconMask    (WMHints *hints);
@@ -197,6 +199,10 @@ void WMHintsSetIconPixmap  (WMHints *hints, XCBPIXMAP icon_pixmap);
 void WMHintsSetIconMask    (WMHints *hints, XCBPIXMAP icon_mask);
 void WMHintsSetIconWindow  (WMHints *hints, XCBWINDOW icon_window);
 void WMHintsSetWindowGroup (WMHints *hints, XCBWINDOW window_group);
+
+void SetWMHints (XCBConnection *c,
+                 XCBWINDOW      window,
+                 WMHints       *hints);
 
 WMHints *GetWMHints (XCBConnection *c,
 		     XCBWINDOW      window);

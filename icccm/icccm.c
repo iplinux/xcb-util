@@ -161,7 +161,7 @@ SizeHintsGetIncrease (SizeHints *hints,
 
 void
 SizeHintsGetMinAspect (SizeHints *hints,
-		       INT32     *min_aspect_num, 
+		       INT32     *min_aspect_num,
 		       INT32     *min_aspect_den)
 {
         *min_aspect_num = hints->min_aspect_num;
@@ -170,7 +170,7 @@ SizeHintsGetMinAspect (SizeHints *hints,
 
 void
 SizeHintsGetMaxAspect (SizeHints *hints,
-		       INT32     *max_aspect_num, 
+		       INT32     *max_aspect_num,
 		       INT32     *max_aspect_den)
 {
         *max_aspect_num = hints->max_aspect_num;
@@ -412,9 +412,9 @@ SizeHintsSetWinGravity (SizeHints *hints,
 
 void
 SetWMSizeHints (XCBConnection *c,
-		XCBWINDOW       window,
-		XCBATOM         property,
-		SizeHints      *hints)
+		XCBWINDOW      window,
+		XCBATOM        property,
+		SizeHints     *hints)
 {
 	XCBChangeProperty(c, XCBPropModeReplace, window, property, WM_SIZE_HINTS, 32, sizeof(*hints) / 4, hints);
 }
@@ -428,14 +428,14 @@ GetWMSizeHints (XCBConnection *c,
 {
         XCBGetPropertyCookie cookie;
 	XCBGetPropertyRep   *rep;
-	
+
 	cookie = XCBGetProperty (c, 0, window,
 				 property, WM_SIZE_HINTS,
 				 0L, 18); /* NumPropSizeElements = 18 (ICCCM version 1) */
 	rep = XCBGetPropertyReply (c, cookie, 0);
 	if (!rep)
 	        return 0;
-	
+
 	if ((rep->type.xid == WM_SIZE_HINTS.xid) &&
 	    ((rep->format == 8)  ||
 	     (rep->format == 16) ||
@@ -444,7 +444,7 @@ GetWMSizeHints (XCBConnection *c,
 	{
                 char *prop;
 	        long  length;
-		
+
 		length = XCBGetPropertyValueLength (rep);
 		/* FIXME: in GetProp.c of xcl, one move the memory.
 		 * Should we do that too ? */
@@ -452,8 +452,8 @@ GetWMSizeHints (XCBConnection *c,
 		memcpy(prop, XCBGetPropertyValue (rep), length);
 		prop[length] = '\0';
 		hints = (SizeHints *)strdup (prop);
-		
-		*supplied = (USPosition | USSize   | 
+
+		*supplied = (USPosition | USSize   |
 			     PPosition  | PSize    |
 			     PMinSize   | PMaxSize |
 			     PResizeInc | PAspect);
@@ -466,15 +466,15 @@ GetWMSizeHints (XCBConnection *c,
 			hints->win_gravity = 0;
 		}
 		hints->flags &= (*supplied);	/* get rid of unwanted bits */
-		
+
 		free (rep);
-		
+
 		return 1;
 	}
-	
+
 	hints = NULL;
 	free (rep);
-	
+
 	return 0;
 }
 
@@ -527,6 +527,12 @@ typedef enum {
 #define XCBWMAllHints (InputHint     | StateHint        | IconPixmapHint | \
                        IconWindowHint| IconPositionHint | IconMaskHint   | \
                        WindowGroupHint)
+
+WMHints *
+AllocWMHints()
+{
+	return calloc(1, sizeof(WMHints));
+}
 
 BOOL
 WMHintsGetInput(WMHints *hints)
@@ -693,9 +699,13 @@ WMHintsSetWindowGroup(WMHints *hints, XCBWINDOW window_group)
         hints->flags |= XCBWMWindowGroupHint;
 }
 
-
-
-
+void
+SetWMHints (XCBConnection *c,
+            XCBWINDOW      window,
+            WMHints       *hints)
+{
+	XCBChangeProperty(c, XCBPropModeReplace, window, WM_HINTS, WM_HINTS, 32, sizeof(*hints) / 4, hints);
+}
 
 WMHints *
 GetWMHints (XCBConnection *c,
@@ -780,7 +790,7 @@ GetWMProtocols (XCBConnection *c,
 	    (rep->format == 32))
 	{
 	        int length;
-		
+
 		length = XCBGetPropertyValueLength(rep);
 		*list_len = length;
 		*list = (XCBATOM *)malloc(sizeof(XCBATOM) * length);
