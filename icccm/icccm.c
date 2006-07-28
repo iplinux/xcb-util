@@ -3,6 +3,39 @@
 #include "xcb_icccm.h"
 #include "xcb_atom.h"
 
+
+static int
+GetTextProperty(XCBConnection *c,
+                XCBWINDOW      window,
+                XCBATOM        property;
+                CARD8         *format,
+                XCBATOM       *encoding,
+                CARD32        *name_len,
+                char         **name)
+{
+	XCBGetPropertyCookie cookie;
+	XCBGetPropertyRep *reply;
+
+	cookie = GetAnyProperty(c, 0, window, property, 128);
+	reply = XCBGetPropertyReply(c, cookie, 0);
+	if(!reply)
+		return 0;
+	*format = reply->format;
+	*encoding = reply->type;
+	*name_len = XCBGetPropertyValueLength(reply) * *format / 8;
+	if(reply->bytes_after)
+	{
+		cookie = XCBGetProperty(c, 0, window, property, reply->type, 0, *name_len);
+		free(reply);
+		reply = XCBGetPropertyReply(c, cookie, 0);
+		if(!reply)
+			return 0;
+	}
+	memmove(reply, XCBGetPropertyValue(reply), *name_len);
+	*name = (char *) reply;
+	return 1;
+}
+
 /* WM_NAME */
 
 void
@@ -23,26 +56,7 @@ GetWMName (XCBConnection *c,
 	   CARD32        *name_len,
 	   char         **name)
 {
-	XCBGetPropertyCookie cookie;
-	XCBGetPropertyRep *reply;
-	cookie = GetAnyProperty(c, 0, window, WM_NAME, 128);
-	reply = XCBGetPropertyReply(c, cookie, 0);
-	if(!reply)
-		return 0;
-	*format = reply->format;
-	*encoding = reply->type;
-	*name_len = XCBGetPropertyValueLength(reply) * *format / 8;
-	if(reply->bytes_after)
-	{
-		cookie = XCBGetProperty(c, 0, window, WM_NAME, reply->type, 0, *name_len);
-		free(reply);
-		reply = XCBGetPropertyReply(c, cookie, 0);
-		if(!reply)
-			return 0;
-	}
-	memmove(reply, XCBGetPropertyValue(reply), *name_len);
-	*name = (char *) reply;
-	return 1;
+	return GetTextProperty(c, window, WM_NAME, format, encoding, name_len, name);
 }
 
 void
@@ -66,6 +80,17 @@ SetWMIconName (XCBConnection *c,
 	XCBChangeProperty(c, XCBPropModeReplace, window, WM_ICON_NAME, encoding, 8, name_len, name);
 }
 
+int
+GetWMIconName (XCBConnection *c,
+               XCBWINDOW      window,
+               CARD8         *format,
+               XCBATOM       *encoding,
+               CARD32        *name_len,
+               char         **name)
+{
+	return GetTextProperty(c, window, WM_ICON_NAME, format, encoding, name_len, name);
+}
+
 void
 WatchWMIconName (PropertyHandlers      *prophs,
 		 CARD32                 long_len,
@@ -73,6 +98,38 @@ WatchWMIconName (PropertyHandlers      *prophs,
 		 void                  *data)
 {
 	SetPropertyHandler(prophs, WM_ICON_NAME, long_len, handler, data);
+}
+
+/* WM_CLIENT_MACHINE */
+
+void
+SetWMClientMachine (XCBConnection *c,
+                    XCBWINDOW      window,
+                    XCBATOM        encoding,
+                    CARD32         name_len,
+                    const char    *name)
+{
+	XCBChangeProperty(c, XCBPropModeReplace, window, WM_CLIENT_MACHINE, encoding, 8, name_len, name);
+}
+
+int
+GetWMClientMachine (XCBConnection *c,
+                    XCBWINDOW      window,
+                    CARD8         *format,
+                    XCBATOM       *encoding,
+                    CARD32        *name_len,
+                    char         **name)
+{
+	return GetTextProperty(c, window, WM_CLIENT_MACHINE, format, encoding, name_len, name);
+}
+
+void
+WatchWMClientMachine (PropertyHandlers      *prophs,
+                      CARD32                 long_len,
+                      GenericPropertyHandler handler,
+                      void                  *data)
+{
+	SetPropertyHandler(prophs, WM_CLIENT_MACHINE, long_len, handler, data);
 }
 
 /* WM_SIZE_HINTS */
