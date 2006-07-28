@@ -7,7 +7,7 @@
 static int
 GetTextProperty(XCBConnection *c,
                 XCBWINDOW      window,
-                XCBATOM        property;
+                XCBATOM        property,
                 CARD8         *format,
                 XCBATOM       *encoding,
                 CARD32        *name_len,
