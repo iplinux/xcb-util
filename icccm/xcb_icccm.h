@@ -38,10 +38,37 @@ void SetWMIconName   (XCBConnection *c,
 		      CARD32         name_len,
 		      const char    *name);
 
+int  GetWMIconName (XCBConnection *c,
+                    XCBWINDOW      window,
+                    CARD8         *format,
+                    XCBATOM       *encoding,
+                    CARD32        *name_len,
+                    char         **name);
+
 void WatchWMIconName (PropertyHandlers      *prophs,
 		      CARD32                 long_len,
 		      GenericPropertyHandler handler,
 		      void                  *data);
+
+/* WM_CLIENT_MACHINE */
+
+void SetWMClientMachine (XCBConnection *c,
+                         XCBWINDOW      window,
+                         XCBATOM        encoding,
+                         CARD32         name_len,
+                         const char    *name);
+
+int  GetWMClientMachine (XCBConnection *c,
+                         XCBWINDOW      window,
+                         CARD8         *format,
+                         XCBATOM       *encoding,
+                         CARD32        *name_len,
+                         char         **name);
+
+void WatchWMClientMachine (PropertyHandlers      *prophs,
+                           CARD32                 long_len,
+                           GenericPropertyHandler handler,
+                           void                  *data);
 
 /* WM_SIZE_HINTS */
 
