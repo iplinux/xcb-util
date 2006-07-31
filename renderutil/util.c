@@ -22,7 +22,8 @@
 #include "xcb_renderutil.h"
 
 XCBRenderPICTVISUAL *
-XCBRenderUtilFindVisualFormat (XCBRenderQueryPictFormatsRep *formats, const XCBVISUALID visual)
+XCBRenderUtilFindVisualFormat (const XCBRenderQueryPictFormatsRep *formats,
+			       const XCBVISUALID visual)
 {
     XCBRenderPICTSCREENIter screens;
     XCBRenderPICTDEPTHIter depths;

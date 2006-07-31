@@ -51,7 +51,8 @@ enum {
 };
 
 XCBRenderPICTVISUAL *
-XCBRenderUtilFindVisualFormat (XCBRenderQueryPictFormatsRep *formats, const XCBVISUALID visual);
+XCBRenderUtilFindVisualFormat (const XCBRenderQueryPictFormatsRep *formats,
+			       const XCBVISUALID visual);
 
 XCBRenderPICTFORMINFO *
 XCBRenderUtilFindFormat (const XCBRenderQueryPictFormatsRep	*formats,
