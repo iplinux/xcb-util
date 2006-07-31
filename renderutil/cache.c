@@ -60,11 +60,6 @@ static struct {
 			 DEPTH_MASK(24) | \
 			 DEPTH_MASK(32))
 
-/* FIXME: XCB's "Plan 7" needs to be implemented before this code will work. */
-extern XCBVoidCookie XCBCreatePixmapChecked(XCBConnection *, int, XCBPIXMAP, XCBDRAWABLE, int, int);
-extern XCBVoidCookie XCBFreePixmapChecked(XCBConnection *, XCBPIXMAP);
-extern XCBGenericError *XCBRequestCheck(XCBConnection *, XCBVoidCookie);
-
 /* Test each depth not explicitly advertised to see if pixmap creation
  * succeeds: if it does, that depth is usable. */
 static int
