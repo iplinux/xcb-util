@@ -5,18 +5,18 @@
 Table *byChild = 0;
 Table *byParent = 0;
 
-void manageWindow(PropertyHandlers *prophs, XCBConnection *c, XCBWINDOW window, WindowAttributes wa)
+void manageWindow(property_handlers_t *prophs, xcb_connection_t *c, xcb_window_t window, WindowAttributes wa)
 {
-	XCBDRAWABLE d = { window };
-	XCBGetGeometryCookie geomc;
-	XCBGetGeometryRep *geom;
-	XCBGetWindowAttributesRep *attr = 0;
+	xcb_drawable_t d = { window };
+	xcb_get_geometry_cookie_t geomc;
+	xcb_get_geometry_reply_t *geom;
+	xcb_get_window_attributes_reply_t *attr = 0;
 	if(wa.tag == TAG_COOKIE)
 	{
-		attr = XCBGetWindowAttributesReply(c, wa.u.cookie, 0);
+		attr = xcb_get_window_attributes_reply(c, wa.u.cookie, 0);
 		if(!attr)
 			return;
-		if(attr->map_state != XCBMapStateViewable)
+		if(attr->map_state != XCB_MAP_STATE_VIEWABLE)
 		{
 			printf("Window 0x%08x is not mapped. Ignoring.\n", window.xid);
 			free(attr);
@@ -37,24 +37,24 @@ void manageWindow(PropertyHandlers *prophs, XCBConnection *c, XCBWINDOW window, 
 		free(attr);
 		return;
 	}
-	geomc = XCBGetGeometry(c, d);
+	geomc = xcb_get_geometry(c, d);
 	if(!attr)
 	{
 		wa.tag = TAG_COOKIE;
-		wa.u.cookie = XCBGetWindowAttributes(c, window);
-		attr = XCBGetWindowAttributesReply(c, wa.u.cookie, 0);
+		wa.u.cookie = xcb_get_window_attributes(c, window);
+		attr = xcb_get_window_attributes_reply(c, wa.u.cookie, 0);
 	}
-	geom = XCBGetGeometryReply(c, geomc, 0);
+	geom = xcb_get_geometry_reply(c, geomc, 0);
 	if(attr && geom)
 	{
 		reparentWindow(c, window, attr->visual, geom->root, geom->depth, geom->x, geom->y, geom->width, geom->height);
-		PropertyChanged(prophs, XCBPropertyNewValue, window, WM_NAME);
+		PropertyChanged(prophs, XCB_PROPERTY_NEW_VALUE, window, WM_NAME);
 	}
 	free(attr);
 	free(geom);
 }
 
-int handleMapNotifyEvent(void *prophs, XCBConnection *c, XCBMapNotifyEvent *e)
+int handleMapNotifyEvent(void *prophs, xcb_connection_t *c, xcb_map_notify_event_t *e)
 {
 	WindowAttributes wa = { TAG_VALUE };
 	wa.u.override_redirect = e->override_redirect;
@@ -63,10 +63,10 @@ int handleMapNotifyEvent(void *prophs, XCBConnection *c, XCBMapNotifyEvent *e)
 	return 1;
 }
 
-int handleUnmapNotifyEvent(void *data, XCBConnection *c, XCBUnmapNotifyEvent *e)
+int handleUnmapNotifyEvent(void *data, xcb_connection_t *c, xcb_unmap_notify_event_t *e)
 {
 	ClientWindow *client = TableRemove(byChild, e->event.xid);
-	XCBWINDOW root;
+	xcb_window_t root;
 	printf("UnmapNotify for 0x%08x (received from 0x%08x): ", e->window.xid, e->event.xid);
 	if(!client)
 	{
@@ -74,38 +74,38 @@ int handleUnmapNotifyEvent(void *data, XCBConnection *c, XCBUnmapNotifyEvent *e)
 		return 0;
 	}
 
-	root = XCBSetupRootsIter(XCBGetSetup(c)).data->root;
+	root = xcb_setup_roots_iterator(xcb_get_setup(c)).data->root;
 	printf("child of 0x%08x.\n", client->parent.xid);
-	XCBReparentWindow(c, client->child, root, 0, 0);
-	XCBDestroyWindow(c, client->parent);
-	XCBFlush(c);
+	xcb_reparent_window(c, client->child, root, 0, 0);
+	xcb_destroy_window(c, client->parent);
+	xcb_flush(c);
 	TableRemove(byParent, client->parent.xid);
 	free(client);
 	return 1;
 }
 
-void manageExistingWindows(XCBConnection *c, PropertyHandlers *prophs, XCBWINDOW root)
+void manageExistingWindows(xcb_connection_t *c, property_handlers_t *prophs, xcb_window_t root)
 {
-	XCBQueryTreeCookie wintree;
-	XCBQueryTreeRep *rep;
+	xcb_query_tree_cookie_t wintree;
+	xcb_query_tree_reply_t *rep;
 	int i, len;
-	XCBWINDOW *children;
-	XCBGetWindowAttributesCookie *cookies;
+	xcb_window_t *children;
+	xcb_get_window_attributes_cookie_t *cookies;
 
-	wintree = XCBQueryTree(c, root);
-	rep = XCBQueryTreeReply(c, wintree, 0);
+	wintree = xcb_query_tree(c, root);
+	rep = xcb_query_tree_reply(c, wintree, 0);
 	if(!rep)
 		return;
-	len = XCBQueryTreeChildrenLength(rep);
+	len = xcb_query_tree_children_length(rep);
 	cookies = malloc(len * sizeof(*cookies));
 	if(!cookies)
 	{
 		free(rep);
 		return;
 	}
-	children = XCBQueryTreeChildren(rep);
+	children = xcb_query_tree_children(rep);
 	for(i = 0; i < len; ++i)
-		cookies[i] = XCBGetWindowAttributes(c, children[i]);
+		cookies[i] = xcb_get_window_attributes(c, children[i]);
 	for(i = 0; i < len; ++i)
 	{
 		WindowAttributes wa = { TAG_COOKIE, { cookies[i] } };

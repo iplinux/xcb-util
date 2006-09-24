@@ -7,129 +7,129 @@ extern "C" {
 #endif
 
 
-CARD8          XCBAuxGetDepth      (XCBConnection *c,
-				    XCBSCREEN     *screen);
+uint8_t          xcb_aux_get_depth       (xcb_connection_t *c,
+                                          xcb_screen_t     *screen);
 
-XCBSCREEN     *XCBAuxGetScreen     (XCBConnection *c,
-				    int            screen);
+xcb_screen_t     *xcb_aux_get_screen     (xcb_connection_t *c,
+                                          int               screen);
 
-XCBVISUALTYPE *XCBAuxGetVisualtype (XCBConnection *c,
-				    int            screen,
-				    XCBVISUALID    vid);
+xcb_visualtype_t *xcb_aux_get_visualtype (xcb_connection_t *c,
+                                          int               screen,
+                                          xcb_visualid_t    vid);
 
-void           XCBAuxSync          (XCBConnection *c);
+void           xcb_aux_sync              (xcb_connection_t *c);
 
 /* less error prone to use structs instead of value lists */
 
 typedef struct {
-    CARD32 back_pixmap;
-    CARD32 back_pixel;
-    CARD32 border_pixmap;
-    CARD32 border_pixel;
-    CARD32 bit_gravity;
-    CARD32 win_gravity;
-    CARD32 backing_store;
-    CARD32 backing_planes;
-    CARD32 backing_pixel;
-    CARD32 override_redirect;
-    CARD32 save_under;
-    CARD32 event_mask;
-    CARD32 dont_propagate;
-    CARD32 colormap;
-    CARD32 cursor;
-} XCBParamsCW;
+    uint32_t back_pixmap;
+    uint32_t back_pixel;
+    uint32_t border_pixmap;
+    uint32_t border_pixel;
+    uint32_t bit_gravity;
+    uint32_t win_gravity;
+    uint32_t backing_store;
+    uint32_t backing_planes;
+    uint32_t backing_pixel;
+    uint32_t override_redirect;
+    uint32_t save_under;
+    uint32_t event_mask;
+    uint32_t dont_propagate;
+    uint32_t colormap;
+    uint32_t cursor;
+} xcb_params_cw_t;
 
-XCBVoidCookie
-XCBAuxCreateWindow (XCBConnection *c,
-                 CARD8          depth,
-                 XCBWINDOW      wid,
-                 XCBWINDOW      parent,
-                 INT16          x,
-                 INT16          y,
-                 CARD16         width,
-                 CARD16         height,
-                 CARD16         border_width,
-                 CARD16         _class,
-                 XCBVISUALID    visual,
-                 CARD32         mask,
-                 const XCBParamsCW *params);
+xcb_void_cookie_t
+xcb_aux_create_window (xcb_connection_t      *c,
+                       uint8_t                depth,
+                       xcb_window_t           wid,
+                       xcb_window_t           parent,
+                       int16_t                x,
+                       int16_t                y,
+                       uint16_t               width,
+                       uint16_t               height,
+                       uint16_t               border_width,
+                       uint16_t               _class,
+                       xcb_visualid_t         visual,
+                       uint32_t               mask,
+                       const xcb_params_cw_t *params);
 
-XCBVoidCookie
-XCBAuxChangeWindowAttributes (XCBConnection *c,
-                           XCBWINDOW      window,
-                           CARD32         mask,
-                           const XCBParamsCW *params);
-
-typedef struct {
-    INT32  x;
-    INT32  y;
-    CARD32 width;
-    CARD32 height;
-    CARD32 border_width;
-    CARD32 sibling;
-    CARD32 stack_mode;
-} XCBParamsConfigureWindow;
-
-XCBVoidCookie
-XCBAuxConfigureWindow (XCBConnection *c,
-                    XCBWINDOW      window,
-                    CARD16         mask,
-                    const XCBParamsConfigureWindow *params);
+xcb_void_cookie_t
+xcb_aux_change_window_attributes (xcb_connection_t      *c,
+                                  xcb_window_t           window,
+                                  uint32_t               mask,
+                                  const xcb_params_cw_t *params);
 
 typedef struct {
-    CARD32 function;
-    CARD32 plane_mask;
-    CARD32 foreground;
-    CARD32 background;
-    CARD32 line_width;
-    CARD32 line_style;
-    CARD32 cap_style;
-    CARD32 join_style;
-    CARD32 fill_style;
-    CARD32 fill_rule;
-    CARD32 tile;
-    CARD32 stipple;
-    CARD32 tile_stipple_originX;
-    CARD32 tile_stipple_originY;
-    CARD32 font;
-    CARD32 subwindow_mode;
-    CARD32 graphics_exposures;
-    CARD32 clip_originX;
-    CARD32 clip_originY;
-    CARD32 mask;
-    CARD32 dash_offset;
-    CARD32 dash_list;
-    CARD32 arc_mode;
-} XCBParamsGC;
+    int32_t  x;
+    int32_t  y;
+    uint32_t width;
+    uint32_t height;
+    uint32_t border_width;
+    uint32_t sibling;
+    uint32_t stack_mode;
+} xcb_params_configure_window_t;
 
-XCBVoidCookie
-XCBAuxCreateGC (XCBConnection *c,
-             XCBGCONTEXT    cid,
-             XCBDRAWABLE    drawable,
-             CARD32         mask,
-             const XCBParamsGC *params);
-
-XCBVoidCookie
-XCBAuxChangeGC (XCBConnection *c,
-             XCBGCONTEXT    gc,
-             CARD32         mask,
-             const XCBParamsGC *params);
+xcb_void_cookie_t
+xcb_aux_configure_window (xcb_connection_t                    *c,
+                          xcb_window_t                         window,
+                          uint16_t                             mask,
+                          const xcb_params_configure_window_t *params);
 
 typedef struct {
-    CARD32 key_click_percent;
-    CARD32 bell_percent;
-    CARD32 bell_pitch;
-    CARD32 bell_duration;
-    CARD32 led;
-    CARD32 led_mode;
-    CARD32 key;
-    CARD32 auto_repeat_mode;
-} XCBParamsKeyboard;
+    uint32_t function;
+    uint32_t plane_mask;
+    uint32_t foreground;
+    uint32_t background;
+    uint32_t line_width;
+    uint32_t line_style;
+    uint32_t cap_style;
+    uint32_t join_style;
+    uint32_t fill_style;
+    uint32_t fill_rule;
+    uint32_t tile;
+    uint32_t stipple;
+    uint32_t tile_stipple_originX;
+    uint32_t tile_stipple_originY;
+    uint32_t font;
+    uint32_t subwindow_mode;
+    uint32_t graphics_exposures;
+    uint32_t clip_originX;
+    uint32_t clip_originY;
+    uint32_t mask;
+    uint32_t dash_offset;
+    uint32_t dash_list;
+    uint32_t arc_mode;
+} xcb_params_gc_t;
 
-XCBVoidCookie
-XCBAuxChangeKeyboardControl (XCBConnection *c,
-                          CARD32         mask,
-                          const XCBParamsKeyboard *params);
+xcb_void_cookie_t
+xcb_aux_create_gc (xcb_connection_t      *c,
+                   xcb_gcontext_t         cid,
+                   xcb_drawable_t         drawable,
+                   uint32_t               mask,
+                   const xcb_params_gc_t *params);
+
+xcb_void_cookie_t
+xcb_aux_change_gc (xcb_connection_t      *c,
+                   xcb_gcontext_t         gc,
+                   uint32_t               mask,
+                   const xcb_params_gc_t *params);
+
+typedef struct {
+    uint32_t key_click_percent;
+    uint32_t bell_percent;
+    uint32_t bell_pitch;
+    uint32_t bell_duration;
+    uint32_t led;
+    uint32_t led_mode;
+    uint32_t key;
+    uint32_t auto_repeat_mode;
+} xcb_params_keyboard_t;
+
+xcb_void_cookie_t
+xcb_aux_change_keyboard_control (xcb_connection_t            *c,
+                                 uint32_t                     mask,
+                                 const xcb_params_keyboard_t *params);
 
 
 #ifdef __cplusplus

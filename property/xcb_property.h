@@ -9,20 +9,20 @@ extern "C" {
 #endif
 
 
-XCBGetPropertyCookie GetAnyProperty(XCBConnection *c, BOOL del, XCBWINDOW window, XCBATOM name, CARD32 long_len);
+xcb_get_property_cookie_t get_any_property(xcb_connection_t *c, uint8_t del, xcb_window_t window, xcb_atom_t name, uint32_t long_len);
 
-typedef struct PropertyHandlers PropertyHandlers;
+typedef struct property_handlers property_handlers_t;
 
-PropertyHandlers *AllocPropertyHandlers(EventHandlers *evenths);
-void FreePropertyHandlers(PropertyHandlers *prophs);
-EventHandlers *GetPropertyEventHandlers(PropertyHandlers *prophs);
+property_handlers_t *alloc_property_handlers(event_handlers_t *evenths);
+void free_property_handlers(property_handlers_t *prophs);
+event_handlers_t *get_property_event_handlers(property_handlers_t *prophs);
 
-typedef int (*GenericPropertyHandler)(void *data, XCBConnection *c, BYTE state, XCBWINDOW window, XCBATOM atom, XCBGetPropertyRep *property);
+typedef int (*generic_property_handler)(void *data, xcb_connection_t *c, uint8_t state, xcb_window_t window, xcb_atom_t atom, xcb_get_property_reply_t *property);
 
-int SetPropertyHandler(PropertyHandlers *prophs, XCBATOM name, CARD32 long_len, GenericPropertyHandler handler, void *data);
-int SetDefaultPropertyHandler(PropertyHandlers *prophs, CARD32 long_len, GenericPropertyHandler handler, void *data);
+int set_property_handler(property_handlers_t *prophs, xcb_atom_t name, uint32_t long_len, generic_property_handler handler, void *data);
+int set_default_property_handler(property_handlers_t *prophs, uint32_t long_len, generic_property_handler handler, void *data);
 
-int PropertyChanged(PropertyHandlers *prophs, BYTE state, XCBWINDOW window, XCBATOM atom);
+int property_changed(property_handlers_t *prophs, uint8_t state, xcb_window_t window, xcb_atom_t atom);
 
 
 #ifdef __cplusplus

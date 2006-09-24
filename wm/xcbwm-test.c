@@ -20,15 +20,15 @@ static const int RIGHT = 5;
 static const int TEST_THREADS = 1;
 static const int TEST_WATCH_ROOT = 1;
 
-static INT16 move_from_x = -1;
-static INT16 move_from_y = -1;
+static int16_t move_from_x = -1;
+static int16_t move_from_y = -1;
 
-static int handleEvent(void *ignored, XCBConnection *c, XCBGenericEvent *e)
+static int handleEvent(void *ignored, xcb_connection_t *c, xcb_generic_event_t *e)
 {
 	return formatEvent(e);
 }
 
-static int handleButtonPressEvent(void *data, XCBConnection *c, XCBButtonPressEvent *e)
+static int handleButtonPressEvent(void *data, xcb_connection_t *c, xcb_button_press_event_t *e)
 {
 	if(move_from_x != -1 && move_from_y != -1)
 	{
@@ -40,9 +40,9 @@ static int handleButtonPressEvent(void *data, XCBConnection *c, XCBButtonPressEv
 	return 1;
 }
 
-static int handleButtonReleaseEvent(void *data, XCBConnection *c, XCBButtonReleaseEvent *e)
+static int handleButtonReleaseEvent(void *data, xcb_connection_t *c, xcb_button_release_event_t *e)
 {
-	CARD32 values[2];
+	uint32_t values[2];
 	if(move_from_x == -1 && move_from_y == -1)
 	{
 		printf("Weird. Got ButtonRelease without ButtonPress.\n");
@@ -50,14 +50,14 @@ static int handleButtonReleaseEvent(void *data, XCBConnection *c, XCBButtonRelea
 	}
 	values[0] = /* x */ e->root_x;
 	values[1] = /* y */ e->root_y;
-	XCBConfigureWindow(c, e->event, XCBConfigWindowX | XCBConfigWindowY, values);
-	XCBFlush(c);
+	xcb_configure_window(c, e->event, XCB_CONFIG_WINDOW_X | XCB_CONFIG_WINDOW_Y, values);
+	xcb_flush(c);
 	move_from_x = -1;
 	move_from_y = -1;
 	return 1;
 }
 
-static int addClientWindow(XCBWINDOW child, XCBWINDOW parent, XCBGCONTEXT titlegc)
+static int addClientWindow(xcb_window_t child, xcb_window_t parent, xcb_gcontext_t titlegc)
 {
 	int success;
 	ClientWindow *record = malloc(sizeof(ClientWindow));
@@ -73,66 +73,66 @@ static int addClientWindow(XCBWINDOW child, XCBWINDOW parent, XCBGCONTEXT titleg
 	return 1;
 }
 
-void reparentWindow(XCBConnection *c, XCBWINDOW child,
-		XCBVISUALID v, XCBWINDOW r, CARD8 d,
-		INT16 x, INT16 y, CARD16 width, CARD16 height)
+void reparentWindow(xcb_connection_t *c, xcb_window_t child,
+		xcb_visualid_t v, xcb_window_t r, uint8_t d,
+		int16_t x, int16_t y, uint16_t width, uint16_t height)
 {
-	XCBWINDOW w;
-	XCBDRAWABLE drawable;
-	CARD32 mask = 0;
-	CARD32 values[3];
-	XCBSCREEN *root = XCBSetupRootsIter(XCBGetSetup(c)).data;
-	XCBGCONTEXT titlegc;
+	xcb_window_t w;
+	xcb_drawable_t drawable;
+	uint32_t mask = 0;
+	uint32_t values[3];
+	xcb_screen_t *root = xcb_setup_roots_iterator(xcb_get_setup(c)).data;
+	xcb_gcontext_t titlegc;
 
-	w = XCBWINDOWNew(c);
+	w = xcb_window_new(c);
 
-	mask |= XCBCWBackPixel;
+	mask |= XCB_CW_BACK_PIXEL;
 	values[0] = root->white_pixel;
 
-	mask |= XCBCWOverrideRedirect;
+	mask |= XCB_CW_OVERRIDE_REDIRECT;
 	values[1] = 1;
 
-	mask |= XCBCWEventMask;
-	values[2] = XCBEventMaskButtonPress | XCBEventMaskButtonRelease
-		| XCBEventMaskExposure /* | XCBEventMaskEnterWindow | XCBEventMaskLeaveWindow */;
+	mask |= XCB_CW_EVENT_MASK;
+	values[2] = XCB_EVENT_MASK_BUTTON_PRESS | XCB_EVENT_MASK_BUTTON_RELEASE
+		| XCB_EVENT_MASK_EXPOSURE /* | XCB_EVENT_MASK_ENTER_WINDOW | XCB_EVENT_MASK_LEAVE_WINDOW */;
 
 	printf("Reparenting 0x%08x under 0x%08x.\n", child.xid, w.xid);
-	XCBCreateWindow(c, d, w, r, x, y,
+	xcb_create_window(c, d, w, r, x, y,
 			width + LEFT + RIGHT, height + TOP + BOTTOM,
-			/* border_width */ 0, XCBWindowClassInputOutput, v, mask, values);
-	XCBChangeSaveSet(c, XCBSetModeInsert, child);
-	XCBMapWindow(c, w);
+			/* border_width */ 0, XCB_WINDOW_CLASS_INPUT_OUTPUT, v, mask, values);
+	xcb_change_save_set(c, XCB_SET_MODE_INSERT, child);
+	xcb_map_window(c, w);
 
-	titlegc = XCBGCONTEXTNew(c);
+	titlegc = xcb_gcontext_new(c);
 
-	mask = XCBGCForeground | XCBGCBackground;
+	mask = XCB_GC_FOREGROUND | XCB_GC_BACKGROUND;
 	values[0] = root->black_pixel;
 	values[1] = root->white_pixel;
 	drawable.window = w;
-	XCBCreateGC(c, titlegc, drawable, mask, values);
+	xcb_create_gc(c, titlegc, drawable, mask, values);
 	addClientWindow(child, w, titlegc);
 
-	XCBReparentWindow(c, child, w, LEFT - 1, TOP - 1);
+	xcb_reparent_window(c, child, w, LEFT - 1, TOP - 1);
 
-	mask = XCBCWEventMask;
-	values[0] = XCBEventMaskPropertyChange | XCBEventMaskStructureNotify;
-	XCBChangeWindowAttributes(c, child, mask, values);
+	mask = XCB_CW_EVENT_MASK;
+	values[0] = XCB_EVENT_MASK_PROPERTY_CHANGE | XCB_EVENT_MASK_STRUCTURE_NOTIFY;
+	xcb_change_window_attributes(c, child, mask, values);
 
-	XCBFlush(c);
+	xcb_flush(c);
 }
 
-static void redrawWindow(XCBConnection *c, ClientWindow *client)
+static void redrawWindow(xcb_connection_t *c, ClientWindow *client)
 {
-	XCBDRAWABLE d = { client->parent };
+	xcb_drawable_t d = { client->parent };
 	if(!client->name_len)
 		return;
-	XCBClearArea(c, 0, d.window, 0, 0, 0, 0);
-	XCBImageText8(c, client->name_len, d, client->titlegc,
+	xcb_clear_area(c, 0, d.window, 0, 0, 0, 0);
+	xcb_image_text_8(c, client->name_len, d, client->titlegc,
 			LEFT - 1, TOP - 4, client->name);
-	XCBFlush(c);
+	xcb_flush(c);
 }
 
-static int handleExposeEvent(void *data, XCBConnection *c, XCBExposeEvent *e)
+static int handleExposeEvent(void *data, xcb_connection_t *c, xcb_expose_event_t *e)
 {
 	ClientWindow *client = TableGet(byParent, e->window.xid);
 	if(!client || e->count != 0)
@@ -141,7 +141,7 @@ static int handleExposeEvent(void *data, XCBConnection *c, XCBExposeEvent *e)
 	return 1;
 }
 
-static int handleWMNameChange(void *data, XCBConnection *c, BYTE state, XCBWINDOW window, XCBATOM atom, XCBGetPropertyRep *prop)
+static int handleWMNameChange(void *data, xcb_connection_t *c, uint8_t state, xcb_window_t window, xcb_atom_t atom, xcb_get_property_reply_t *prop)
 {
 	ClientWindow *client = TableGet(byChild, window.xid);
 	printf("WM_NAME change: Window 0x%08x ", window.xid);
@@ -163,10 +163,10 @@ static int handleWMNameChange(void *data, XCBConnection *c, BYTE state, XCBWINDO
 		return 1;
 	}
 
-	client->name_len = XCBGetPropertyValueLength(prop);
+	client->name_len = xcb_get_property_value_length(prop);
 	client->name = malloc(client->name_len);
 	assert(client->name);
-	strncpy(client->name, XCBGetPropertyValue(prop), client->name_len);
+	strncpy(client->name, xcb_get_property_value(prop), client->name_len);
 	printf("is named \"%.*s\".\n", client->name_len, client->name);
 
 	redrawWindow(c, client);
@@ -175,10 +175,10 @@ static int handleWMNameChange(void *data, XCBConnection *c, BYTE state, XCBWINDO
 
 int main(int argc, char **argv)
 {
-	XCBConnection *c;
-	EventHandlers *evenths;
-	PropertyHandlers *prophs;
-	XCBWINDOW root;
+	xcb_connection_t *c;
+	event_handlers_t *evenths;
+	property_handlers_t *prophs;
+	xcb_window_t root;
 	pthread_t event_thread;
         int screen_nbr;
 	int i;
@@ -186,36 +186,36 @@ int main(int argc, char **argv)
 	byChild = AllocTable();
 	byParent = AllocTable();
 
-	c = XCBConnect(NULL, &screen_nbr);
+	c = xcb_connect(NULL, &screen_nbr);
 
-	evenths = allocEventHandlers(c);
+	evenths = alloc_event_handlers(c);
 
 	for(i = 2; i < 128; ++i)
-		setEventHandler(evenths, i, handleEvent, 0);
+		set_event_handler(evenths, i, handleEvent, 0);
 	for(i = 0; i < 256; ++i)
-		setErrorHandler(evenths, i, (GenericErrorHandler) handleEvent, 0);
-	setButtonPressEventHandler(evenths, handleButtonPressEvent, 0);
-	setButtonReleaseEventHandler(evenths, handleButtonReleaseEvent, 0);
-	setUnmapNotifyEventHandler(evenths, handleUnmapNotifyEvent, 0);
-	setExposeEventHandler(evenths, handleExposeEvent, 0);
+		set_error_handler(evenths, i, (generic_error_handler) handleEvent, 0);
+	set_button_press_event_handler(evenths, handleButtonPressEvent, 0);
+	set_button_release_event_handler(evenths, handleButtonReleaseEvent, 0);
+	set_unmap_notify_event_handler(evenths, handleUnmapNotifyEvent, 0);
+	set_expose_event_handler(evenths, handleExposeEvent, 0);
 
-	prophs = AllocPropertyHandlers(evenths);
-	setMapNotifyEventHandler(evenths, handleMapNotifyEvent, prophs);
+	prophs = alloc_property_handlers(evenths);
+	set_map_notify_event_handler(evenths, handleMapNotifyEvent, prophs);
 	WatchWMName(prophs, 40, handleWMNameChange, 0);
 
 	if(TEST_THREADS)
 	{
-		pthread_create(&event_thread, 0, (void *(*)(void *))eventLoop, evenths);
+		pthread_create(&event_thread, 0, (void *(*)(void *))event_loop, evenths);
 	}
 
-	root = XCBAuxGetScreen(c, screen_nbr)->root;
+	root = xcb_aux_get_screen(c, screen_nbr)->root;
 
 	{
-		CARD32 mask = XCBCWEventMask;
-		CARD32 values[] = { XCBEventMaskSubstructureNotify | XCBEventMaskPropertyChange };
-		XCBChangeWindowAttributes(c, root, mask, values);
+		uint32_t mask = XCB_CW_EVENT_MASK;
+		uint32_t values[] = { XCB_EVENT_MASK_SUBSTRUCTURE_NOTIFY | XCB_EVENT_MASK_PROPERTY_CHANGE };
+		xcb_change_window_attributes(c, root, mask, values);
 	}
-	XCBFlush(c);
+	xcb_flush(c);
 
 	manageExistingWindows(c, prophs, root);
 
@@ -223,7 +223,7 @@ int main(int argc, char **argv)
 	if(TEST_THREADS)
 		pthread_join(event_thread, 0);
 	else
-		eventLoop(evenths);
+		event_loop(evenths);
 
 	exit(0);
 	/*NOTREACHED*/

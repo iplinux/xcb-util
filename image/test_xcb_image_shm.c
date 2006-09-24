@@ -18,59 +18,59 @@
 int
 main (int argc, char *argv[])
 {
-  XCBConnection   *c;
-  XCBSCREEN       *screen;
-  XCBDRAWABLE      win;
-  XCBDRAWABLE      rect;
-  XCBRECTANGLE     rect_coord = { 0, 0, W_W, W_H};
-  XCBGCONTEXT      bgcolor, fgcolor;
-  XCBPOINT         points[2];
-  CARD32           mask;
-  CARD32           valgc[2];
-  CARD32           valwin[3];
+  xcb_connection_t   *c;
+  xcb_screen_t       *screen;
+  xcb_drawable_t      win;
+  xcb_drawable_t      rect;
+  xcb_rectangle_t     rect_coord = { 0, 0, W_W, W_H};
+  xcb_gcontext_t      bgcolor, fgcolor;
+  xcb_point_t         points[2];
+  uint32_t           mask;
+  uint32_t           valgc[2];
+  uint32_t           valwin[3];
   int              depth;
   int              screen_nbr;
-  XCBGenericEvent *e;
+  xcb_generic_event_t *e;
   
   /* Open the connexion to the X server and get the first screen */
-  c = XCBConnect (NULL, &screen_nbr);
-  screen = XCBAuxGetScreen (c, screen_nbr);
-  depth = XCBAuxGetDepth (c, screen);
+  c = xcb_connect (NULL, &screen_nbr);
+  screen = xcb_aux_get_screen (c, screen_nbr);
+  depth = xcb_aux_get_depth (c, screen);
 
   /* Create a black graphic context for drawing in the foreground */
   win.window = screen->root;
 
-  fgcolor = XCBGCONTEXTNew(c);
-  mask = XCBGCForeground | XCBGCGraphicsExposures;
+  fgcolor = xcb_gcontext_new(c);
+  mask = XCB_GC_FOREGROUND | XCB_GC_GRAPHICS_EXPOSURES;
   valgc[0] = screen->black_pixel;
   valgc[1] = 0; /* no graphics exposures */
-  XCBCreateGC(c, fgcolor, win, mask, valgc);
+  xcb_create_gc(c, fgcolor, win, mask, valgc);
 
-  bgcolor = XCBGCONTEXTNew(c);
-  mask = XCBGCForeground | XCBGCGraphicsExposures;
+  bgcolor = xcb_gcontext_new(c);
+  mask = XCB_GC_FOREGROUND | XCB_GC_GRAPHICS_EXPOSURES;
   valgc[0] = screen->white_pixel;
   valgc[1] = 0; /* no graphics exposures */
-  XCBCreateGC(c, bgcolor, win, mask, valgc);
+  xcb_create_gc(c, bgcolor, win, mask, valgc);
 
   /* Shm test */
   printf ("shm test begin\n");
-  XCBImage *img = 0;
-  XCBShmQueryVersionRep *rep;
-  XCBShmSegmentInfo shminfo;
+  xcb_image_t *img = 0;
+  xcb_shm_query_version_reply_t *rep;
+  xcb_shm_segment_info_t shminfo;
 
-  rep = XCBShmQueryVersionReply (c,
-				 XCBShmQueryVersion (c),
+  rep = xcb_shm_query_version_reply (c,
+				 xcb_shm_query_version (c),
 				 NULL);
   if (rep)
     {
-      CARD8 format;
+      uint8_t format;
       
       if (rep->shared_pixmaps && 
 	  (rep->major_version > 1 || rep->minor_version > 0))
 	format = rep->pixmap_format;
       else
 	format = 0;
-      img = XCBImageSHMCreate (c, depth, format, NULL, W_W, W_H);
+      img = xcb_image_shm_create (c, depth, format, NULL, W_W, W_H);
 
       printf ("Create image summary:\n");
       printf (" * format..........: %d\n", img->format);
@@ -85,8 +85,8 @@ main (int argc, char *argv[])
       shminfo.shmaddr = shmat(shminfo.shmid, 0, 0);
       img->data = shminfo.shmaddr;
 
-      shminfo.shmseg = XCBShmSEGNew (c);
-      XCBShmAttach(c, shminfo.shmseg,
+      shminfo.shmseg = xcb_shm_seg_new (c);
+      xcb_shm_attach(c, shminfo.shmseg,
 		   shminfo.shmid, 0);
       shmctl(shminfo.shmid, IPC_RMID, 0);
     }
@@ -99,63 +99,63 @@ main (int argc, char *argv[])
 
   /* Draw in the image */
   printf ("put the pixel\n");
-  XCBImagePutPixel (img, 20, 20, 65535);
+  xcb_image_put_pixel (img, 20, 20, 65535);
   printf ("fin put pixel\n");
 
   /* Ask for our window's Id */
-  win.window = XCBWINDOWNew(c);
+  win.window = xcb_window_new(c);
 
   /* Create the window */
-  mask = XCBCWBackPixel | XCBCWEventMask | XCBCWDontPropagate;
+  mask = XCB_CW_BACK_PIXEL | XCB_CW_EVENT_MASK | XCB_CW_DONT_PROPAGATE;
   valwin[0] = screen->white_pixel;
-  valwin[1] = XCBEventMaskKeyPress | XCBEventMaskButtonRelease | XCBEventMaskExposure;
-  valwin[2] = XCBEventMaskButtonPress;
-  XCBCreateWindow (c,                        /* Connection          */
+  valwin[1] = XCB_EVENT_MASK_KEY_PRESS | XCB_EVENT_MASK_BUTTON_RELEASE | XCB_EVENT_MASK_EXPOSURE;
+  valwin[2] = XCB_EVENT_MASK_BUTTON_PRESS;
+  xcb_create_window (c,                        /* Connection          */
  		   0,                        /* depth               */
 		   win.window,               /* window Id           */
 		   screen->root,             /* parent window       */
 		   0, 0,                     /* x, y                */
 		   W_W, W_H,                 /* width, height       */
 		   10,                       /* border_width        */
-		   XCBWindowClassInputOutput,/* class               */
+		   XCB_WINDOW_CLASS_INPUT_OUTPUT,/* class               */
 		   screen->root_visual,      /* visual              */
 		   mask, valwin);            /* masks, not used yet */
 
   /* Map the window on the screen */
-  XCBMapWindow (c, win.window);
+  xcb_map_window (c, win.window);
 
   /* Create a Pixmap that will fill the window */
-  rect.pixmap = XCBPIXMAPNew (c);
-  XCBCreatePixmap(c, depth, rect.pixmap, win, W_W, W_H);
-  XCBPolyFillRectangle(c, rect, bgcolor, 1, &rect_coord);
+  rect.pixmap = xcb_pixmap_new (c);
+  xcb_create_pixmap(c, depth, rect.pixmap, win, W_W, W_H);
+  xcb_poly_fill_rectangle(c, rect, bgcolor, 1, &rect_coord);
   points[0].x = 0;
   points[0].y = 0;
   points[1].x = 1;
   points[1].y = 1;
-  XCBPolyLine(c, XCBCoordModeOrigin, rect, fgcolor, 2, points);
+  xcb_poly_line(c, XCB_COORD_MODE_ORIGIN, rect, fgcolor, 2, points);
 /*   points[0].x = 10; */
 /*   points[0].y = 10; */
 /*   points[1].x = 10; */
 /*   points[1].y = 40; */
-/*   XCBPolyLine(c, XCBCoordModeOrigin, rect, fgcolor, 2, points); */
+/*   xcb_poly_line(c, XCB_COORD_MODE_ORIGIN, rect, fgcolor, 2, points); */
 
 
-  XCBFlush (c); 
+  xcb_flush (c); 
 
-  while ((e = XCBWaitForEvent(c)))
+  while ((e = xcb_wait_for_event(c)))
     {
       switch (e->response_type)
 	{ 
-	case XCBExpose:
+	case XCB_EXPOSE:
 	  {
-	    XCBCopyArea(c, rect, win, bgcolor,
+	    xcb_copy_area(c, rect, win, bgcolor,
 			0, 0, 0, 0, W_W, W_H);
 	    printf ("put image\n");
-	    XCBImageSHMPut (c, win, fgcolor,
+	    xcb_image_shm_put (c, win, fgcolor,
 			       img, shminfo,
 			       0, 0, 0, 0, W_W,W_H,
 			       0);
-	    XCBFlush (c);
+	    xcb_flush (c);
 	    break;
 	  }
 	}

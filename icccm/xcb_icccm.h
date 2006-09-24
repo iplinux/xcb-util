@@ -12,62 +12,62 @@ extern "C" {
 
 /* WM_NAME */
 
-void SetWMName   (XCBConnection *c,
-		  XCBWINDOW      window,
-		  XCBATOM        encoding,
-		  CARD32         name_len,
+void SetWMName   (xcb_connection_t *c,
+		  xcb_window_t      window,
+		  xcb_atom_t        encoding,
+		  uint32_t         name_len,
 		  const char    *name);
 
-int  GetWMName   (XCBConnection *c,
-		  XCBWINDOW      window,
-		  CARD8         *format,
-		  XCBATOM       *encoding,
-		  CARD32        *name_len,
+int  GetWMName   (xcb_connection_t *c,
+		  xcb_window_t      window,
+		  uint8_t         *format,
+		  xcb_atom_t       *encoding,
+		  uint32_t        *name_len,
 		  char         **name);
 
-void WatchWMName (PropertyHandlers      *prophs,
-		  CARD32                 long_len,
-		  GenericPropertyHandler handler,
+void WatchWMName (property_handlers_t      *prophs,
+		  uint32_t                 long_len,
+		  generic_property_handler handler,
 		  void                  *data);
 
 /* WM_ICON_NAME */
 
-void SetWMIconName   (XCBConnection *c,
-		      XCBWINDOW      window,
-		      XCBATOM        encoding,
-		      CARD32         name_len,
+void SetWMIconName   (xcb_connection_t *c,
+		      xcb_window_t      window,
+		      xcb_atom_t        encoding,
+		      uint32_t         name_len,
 		      const char    *name);
 
-int  GetWMIconName (XCBConnection *c,
-                    XCBWINDOW      window,
-                    CARD8         *format,
-                    XCBATOM       *encoding,
-                    CARD32        *name_len,
+int  GetWMIconName (xcb_connection_t *c,
+                    xcb_window_t      window,
+                    uint8_t         *format,
+                    xcb_atom_t       *encoding,
+                    uint32_t        *name_len,
                     char         **name);
 
-void WatchWMIconName (PropertyHandlers      *prophs,
-		      CARD32                 long_len,
-		      GenericPropertyHandler handler,
+void WatchWMIconName (property_handlers_t      *prophs,
+		      uint32_t                 long_len,
+		      generic_property_handler handler,
 		      void                  *data);
 
 /* WM_CLIENT_MACHINE */
 
-void SetWMClientMachine (XCBConnection *c,
-                         XCBWINDOW      window,
-                         XCBATOM        encoding,
-                         CARD32         name_len,
+void SetWMClientMachine (xcb_connection_t *c,
+                         xcb_window_t      window,
+                         xcb_atom_t        encoding,
+                         uint32_t         name_len,
                          const char    *name);
 
-int  GetWMClientMachine (XCBConnection *c,
-                         XCBWINDOW      window,
-                         CARD8         *format,
-                         XCBATOM       *encoding,
-                         CARD32        *name_len,
+int  GetWMClientMachine (xcb_connection_t *c,
+                         xcb_window_t      window,
+                         uint8_t         *format,
+                         xcb_atom_t       *encoding,
+                         uint32_t        *name_len,
                          char         **name);
 
-void WatchWMClientMachine (PropertyHandlers      *prophs,
-                           CARD32                 long_len,
-                           GenericPropertyHandler handler,
+void WatchWMClientMachine (property_handlers_t      *prophs,
+                           uint32_t                 long_len,
+                           generic_property_handler handler,
                            void                  *data);
 
 /* WM_SIZE_HINTS */
@@ -79,41 +79,41 @@ SizeHints *AllocSizeHints         ();
 void       FreeSizeHints          (SizeHints *hints);
 
 void       SizeHintsGetPosition (SizeHints *hints,
-				 INT32     *x,
-				 INT32     *y);
+				 int32_t     *x,
+				 int32_t     *y);
 void       SizeHintsGetSize     (SizeHints *hints,
-				 INT32     *width,
-				 INT32     *height);
+				 int32_t     *width,
+				 int32_t     *height);
 void       SizeHintsGetMinSize  (SizeHints *hints,
-				 INT32     *min_width,
-				 INT32     *min_height);
+				 int32_t     *min_width,
+				 int32_t     *min_height);
 void       SizeHintsGetMaxSize  (SizeHints *hints,
-				 INT32     *max_width,
-				 INT32     *max_height);
+				 int32_t     *max_width,
+				 int32_t     *max_height);
 void       SizeHintsGetIncrease  (SizeHints *hints,
-				  INT32     *width_inc,
-				  INT32     *height_inc);
+				  int32_t     *width_inc,
+				  int32_t     *height_inc);
 void       SizeHintsGetMinAspect (SizeHints *hints,
-				  INT32     *min_aspect_num,
-				  INT32     *min_aspect_den);
+				  int32_t     *min_aspect_num,
+				  int32_t     *min_aspect_den);
 void       SizeHintsGetMaxAspect (SizeHints *hints,
-				  INT32     *max_aspect_num,
-				  INT32     *max_aspect_den);
+				  int32_t     *max_aspect_num,
+				  int32_t     *max_aspect_den);
 void       SizeHintsGetBaseSize  (SizeHints *hints,
-				  INT32     *base_width,
-				  INT32     *base_height);
-CARD32     SizeHintsGetWinGravity (SizeHints *hints);
+				  int32_t     *base_width,
+				  int32_t     *base_height);
+uint32_t     SizeHintsGetWinGravity (SizeHints *hints);
 
-BOOL       SizeHintsIsUSPosition  (SizeHints *hints);
-BOOL       SizeHintsIsUSSize      (SizeHints *hints);
-BOOL       SizeHintsIsPPosition   (SizeHints *hints);
-BOOL       SizeHintsIsPSize       (SizeHints *hints);
-BOOL       SizeHintsIsPMinSize    (SizeHints *hints);
-BOOL       SizeHintsIsPMaxSize    (SizeHints *hints);
-BOOL       SizeHintsIsPResizeInc  (SizeHints *hints);
-BOOL       SizeHintsIsPAspect     (SizeHints *hints);
-BOOL       SizeHintsIsPBaseSize   (SizeHints *hints);
-BOOL       SizeHintsIsPWinGravity (SizeHints *hints);
+uint8_t       SizeHintsIsUSPosition  (SizeHints *hints);
+uint8_t       SizeHintsIsUSSize      (SizeHints *hints);
+uint8_t       SizeHintsIsPPosition   (SizeHints *hints);
+uint8_t       SizeHintsIsPSize       (SizeHints *hints);
+uint8_t       SizeHintsIsPMinSize    (SizeHints *hints);
+uint8_t       SizeHintsIsPMaxSize    (SizeHints *hints);
+uint8_t       SizeHintsIsPResizeInc  (SizeHints *hints);
+uint8_t       SizeHintsIsPAspect     (SizeHints *hints);
+uint8_t       SizeHintsIsPBaseSize   (SizeHints *hints);
+uint8_t       SizeHintsIsPWinGravity (SizeHints *hints);
 
 void       SizeHintsSetFlagNone        (SizeHints *hints);
 void       SizeHintsSetFlagUSPosition  (SizeHints *hints);
@@ -129,58 +129,58 @@ void       SizeHintsSetFlagPWinGravity (SizeHints *hints);
 
 void       SizeHintsSetPosition   (SizeHints *hints,
 				   int        user_specified,
-				   INT32      x,
-				   INT32      y);
+				   int32_t      x,
+				   int32_t      y);
 
 void       SizeHintsSetSize       (SizeHints *hints,
 				   int        user_specified,
-				   INT32      width,
-				   INT32      height);
+				   int32_t      width,
+				   int32_t      height);
 
 void       SizeHintsSetMinSize    (SizeHints *hints,
-				   INT32      min_width,
-				   INT32      min_height);
+				   int32_t      min_width,
+				   int32_t      min_height);
 
 void       SizeHintsSetMaxSize    (SizeHints *hints,
-				   INT32      max_width,
-				   INT32      max_height);
+				   int32_t      max_width,
+				   int32_t      max_height);
 
 void       SizeHintsSetResizeInc  (SizeHints *hints,
-				   INT32      width_inc,
-				   INT32      height_inc);
+				   int32_t      width_inc,
+				   int32_t      height_inc);
 
 void       SizeHintsSetAspect     (SizeHints *hints,
-				   INT32      min_aspect_num,
-				   INT32      min_aspect_den,
-				   INT32      max_aspect_num,
-				   INT32      max_aspect_den);
+				   int32_t      min_aspect_num,
+				   int32_t      min_aspect_den,
+				   int32_t      max_aspect_num,
+				   int32_t      max_aspect_den);
 
 void       SizeHintsSetBaseSize   (SizeHints *hints,
-				   INT32      base_width,
-				   INT32      base_height);
+				   int32_t      base_width,
+				   int32_t      base_height);
 
 void       SizeHintsSetWinGravity (SizeHints *hints,
-				   CARD8      win_gravity);
+				   uint8_t      win_gravity);
 
-void       SetWMSizeHints         (XCBConnection *c,
-				   XCBWINDOW       window,
-				   XCBATOM         property,
+void       SetWMSizeHints         (xcb_connection_t *c,
+				   xcb_window_t       window,
+				   xcb_atom_t         property,
 				   SizeHints      *hints);
 
-int        GetWMSizeHints         (XCBConnection *c,
-				   XCBWINDOW      window,
-				   XCBATOM        property,
+int        GetWMSizeHints         (xcb_connection_t *c,
+				   xcb_window_t      window,
+				   xcb_atom_t        property,
 				   SizeHints     *hints,
 				   long          *supplied);
 
 /* WM_NORMAL_HINTS */
 
-void SetWMNormalHints (XCBConnection *c,
-		       XCBWINDOW      window,
+void SetWMNormalHints (xcb_connection_t *c,
+		       xcb_window_t      window,
 		       SizeHints     *hints);
 
-int  GetWMNormalHints (XCBConnection *c,
-		       XCBWINDOW      window,
+int  GetWMNormalHints (xcb_connection_t *c,
+		       xcb_window_t      window,
 		       SizeHints     *hints,
 		       long          *supplied);
 
@@ -190,66 +190,66 @@ typedef struct WMHints WMHints;
 #define NumWMHintsElements 9 /* number of elements in this structure */
 
 typedef enum {
-    XCBWMWithdrawnState = 0,
-    XCBWMNormalState    = 1,
-    XCBWMIconicState    = 3
-} XCBWMState;
+    xcb_wm_withdrawn_state_t = 0,
+    xcb_wm_normal_state_t    = 1,
+    xcb_wm_iconic_state_t    = 3
+} xcb_wm_state_t;
 
 WMHints *AllocWMHints();
 
-BOOL      WMHintsGetInput       (WMHints *hints);
-XCBPIXMAP WMHintsGetIconPixmap  (WMHints *hints);
-XCBPIXMAP WMHintsGetIconMask    (WMHints *hints);
-XCBWINDOW WMHintsGetIconWindow  (WMHints *hints);
-XCBWINDOW WMHintsGetWindowGroup (WMHints *hints);
+uint8_t      WMHintsGetInput       (WMHints *hints);
+xcb_pixmap_t WMHintsGetIconPixmap  (WMHints *hints);
+xcb_pixmap_t WMHintsGetIconMask    (WMHints *hints);
+xcb_window_t WMHintsGetIconWindow  (WMHints *hints);
+xcb_window_t WMHintsGetWindowGroup (WMHints *hints);
 
-BOOL WMHintsIsInputHint        (WMHints *hints);
-BOOL WMHintsIsStateHint        (WMHints *hints);
-BOOL WMHintsIsIconPixmapHint   (WMHints *hints);
-BOOL WMHintsIsIconWindowHint   (WMHints *hints);
-BOOL WMHintsIsIconPositionHint (WMHints *hints);
-BOOL WMHintsIsIconMaskHint     (WMHints *hints);
-BOOL WMHintsIsWindowGroupHint  (WMHints *hints);
-BOOL WMHintsIsXUrgencyHint     (WMHints *hints);
+uint8_t WMHintsIsInputHint        (WMHints *hints);
+uint8_t WMHintsIsStateHint        (WMHints *hints);
+uint8_t WMHintsIsIconPixmapHint   (WMHints *hints);
+uint8_t WMHintsIsIconWindowHint   (WMHints *hints);
+uint8_t WMHintsIsIconPositionHint (WMHints *hints);
+uint8_t WMHintsIsIconMaskHint     (WMHints *hints);
+uint8_t WMHintsIsWindowGroupHint  (WMHints *hints);
+uint8_t WMHintsIsXUrgencyHint     (WMHints *hints);
 
-BOOL WMHintsStateIsWithdrawn (WMHints *hints);
-BOOL WMHintsStateIsNormal    (WMHints *hints);
-BOOL WMHintsStateIsIconic    (WMHints *hints);
+uint8_t WMHintsStateIsWithdrawn (WMHints *hints);
+uint8_t WMHintsStateIsNormal    (WMHints *hints);
+uint8_t WMHintsStateIsIconic    (WMHints *hints);
 
-void WMHintsSetInput       (WMHints *hints, BOOL input);
+void WMHintsSetInput       (WMHints *hints, uint8_t input);
 void WMHintsSetIconic      (WMHints *hints);
 void WMHintsSetNormal      (WMHints *hints);
 void WMHintsSetWithdrawn   (WMHints *hints);
 void WMHintsSetNone        (WMHints *hints);
 void WMHintsSetUrgent      (WMHints *hints);
-void WMHintsSetIconPixmap  (WMHints *hints, XCBPIXMAP icon_pixmap);
-void WMHintsSetIconMask    (WMHints *hints, XCBPIXMAP icon_mask);
-void WMHintsSetIconWindow  (WMHints *hints, XCBWINDOW icon_window);
-void WMHintsSetWindowGroup (WMHints *hints, XCBWINDOW window_group);
+void WMHintsSetIconPixmap  (WMHints *hints, xcb_pixmap_t icon_pixmap);
+void WMHintsSetIconMask    (WMHints *hints, xcb_pixmap_t icon_mask);
+void WMHintsSetIconWindow  (WMHints *hints, xcb_window_t icon_window);
+void WMHintsSetWindowGroup (WMHints *hints, xcb_window_t window_group);
 
-void SetWMHints (XCBConnection *c,
-                 XCBWINDOW      window,
+void SetWMHints (xcb_connection_t *c,
+                 xcb_window_t      window,
                  WMHints       *hints);
 
-WMHints *GetWMHints (XCBConnection *c,
-		     XCBWINDOW      window);
+WMHints *GetWMHints (xcb_connection_t *c,
+		     xcb_window_t      window);
 
 /* WM_PROTOCOLS */
 
-void SetWMProtocols (XCBConnection *c,
-		     XCBWINDOW      window,
-		     CARD32         list_len,
-		     XCBATOM       *list);
-int  GetWMProtocols (XCBConnection *c,
-		     XCBWINDOW      window,
-		     CARD32        *list_len,
-		     XCBATOM      **list);
+void SetWMProtocols (xcb_connection_t *c,
+		     xcb_window_t      window,
+		     uint32_t         list_len,
+		     xcb_atom_t       *list);
+int  GetWMProtocols (xcb_connection_t *c,
+		     xcb_window_t      window,
+		     uint32_t        *list_len,
+		     xcb_atom_t      **list);
 
 #define HAS_DISCRIMINATED_NAME 0
 #if HAS_DISCRIMINATED_NAME
-char *DiscriminatedAtomNameByScreen   (const char *base, CARD8 screen);
-char *DiscriminatedAtomNameByResource (const char *base, CARD32 resource);
-char *DiscriminatedAtomNameUnique     (const char *base, CARD32 id);
+char *DiscriminatedAtomNameByScreen   (const char *base, uint8_t screen);
+char *DiscriminatedAtomNameByResource (const char *base, uint32_t resource);
+char *DiscriminatedAtomNameUnique     (const char *base, uint32_t id);
 #endif
 
 

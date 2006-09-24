@@ -21,33 +21,33 @@
 
 #include "xcb_renderutil.h"
 
-XCBRenderPICTVISUAL *
-XCBRenderUtilFindVisualFormat (const XCBRenderQueryPictFormatsRep *formats,
-			       const XCBVISUALID visual)
+xcb_render_pictvisual_t *
+xcb_render_util_find_visual_format (const xcb_render_query_pict_formats_reply_t *formats,
+			       const xcb_visualid_t visual)
 {
-    XCBRenderPICTSCREENIter screens;
-    XCBRenderPICTDEPTHIter depths;
-    XCBRenderPICTVISUALIter visuals;
+    xcb_render_pictscreen_iterator_t screens;
+    xcb_render_pictdepth_iterator_t depths;
+    xcb_render_pictvisual_iterator_t visuals;
     if (!formats)
 	return 0;
-    for (screens = XCBRenderQueryPictFormatsScreensIter(formats); screens.rem; XCBRenderPICTSCREENNext(&screens))
-	for (depths = XCBRenderPICTSCREENDepthsIter(screens.data); depths.rem; XCBRenderPICTDEPTHNext(&depths))
-	    for (visuals = XCBRenderPICTDEPTHVisualsIter(depths.data); visuals.rem; XCBRenderPICTVISUALNext(&visuals))
+    for (screens = xcb_render_query_pict_formats_screens_iterator(formats); screens.rem; xcb_render_pictscreen_next(&screens))
+	for (depths = xcb_render_pictscreen_depths_iterator(screens.data); depths.rem; xcb_render_pictdepth_next(&depths))
+	    for (visuals = xcb_render_pictdepth_visuals_iterator(depths.data); visuals.rem; xcb_render_pictvisual_next(&visuals))
 		if (visuals.data->visual.id == visual.id)
 		    return visuals.data;
     return 0;
 }
 
-XCBRenderPICTFORMINFO *
-XCBRenderUtilFindFormat (const XCBRenderQueryPictFormatsRep	*formats,
+xcb_render_pictforminfo_t *
+xcb_render_util_find_format (const xcb_render_query_pict_formats_reply_t	*formats,
 			 unsigned long				mask,
-			 const XCBRenderPICTFORMINFO		*template,
+			 const xcb_render_pictforminfo_t		*template,
 			 int					count)
 {
-    XCBRenderPICTFORMINFOIter i;
+    xcb_render_pictforminfo_iterator_t i;
     if (!formats)
 	return 0;
-    for (i = XCBRenderQueryPictFormatsFormatsIter(formats); i.rem; XCBRenderPICTFORMINFONext(&i))
+    for (i = xcb_render_query_pict_formats_formats_iterator(formats); i.rem; xcb_render_pictforminfo_next(&i))
     {
 	if (mask & PictFormatID)
 	    if (template->id.xid != i.data->id.xid)
@@ -91,19 +91,19 @@ XCBRenderUtilFindFormat (const XCBRenderQueryPictFormatsRep	*formats,
     return 0;
 }
 
-XCBRenderPICTFORMINFO *
-XCBRenderUtilFindStandardFormat (const XCBRenderQueryPictFormatsRep	*formats,
+xcb_render_pictforminfo_t *
+xcb_render_util_find_standard_format (const xcb_render_query_pict_formats_reply_t	*formats,
 				 int					format)
 {
     static const struct {
-	XCBRenderPICTFORMINFO templ;
+	xcb_render_pictforminfo_t templ;
 	unsigned long	      mask;
     } standardFormats[] = {
 	/* PictStandardARGB32 */
 	{
 	    {
 		{ 0 },			    /* id */
-		XCBRenderPictTypeDirect,    /* type */
+		XCB_RENDER_PICT_TYPE_DIRECT,    /* type */
 		32,			    /* depth */
 		{ 0 },			    /* pad */
 		{			    /* direct */
@@ -133,7 +133,7 @@ XCBRenderUtilFindStandardFormat (const XCBRenderQueryPictFormatsRep	*formats,
 	{
 	    {
 		{ 0 },			    /* id */
-		XCBRenderPictTypeDirect,    /* type */
+		XCB_RENDER_PICT_TYPE_DIRECT,    /* type */
 		24,			    /* depth */
 		{ 0 },			    /* pad */
 		{			    /* direct */
@@ -162,7 +162,7 @@ XCBRenderUtilFindStandardFormat (const XCBRenderQueryPictFormatsRep	*formats,
 	{
 	    {
 		{ 0 },			    /* id */
-		XCBRenderPictTypeDirect,    /* type */
+		XCB_RENDER_PICT_TYPE_DIRECT,    /* type */
 		8,			    /* depth */
 		{ 0 },			    /* pad */
 		{			    /* direct */
@@ -189,7 +189,7 @@ XCBRenderUtilFindStandardFormat (const XCBRenderQueryPictFormatsRep	*formats,
 	{
 	    {
 		{ 0 },			    /* id */
-		XCBRenderPictTypeDirect,    /* type */
+		XCB_RENDER_PICT_TYPE_DIRECT,    /* type */
 		4,			    /* depth */
 		{ 0 },			    /* pad */
 		{			    /* direct */
@@ -216,7 +216,7 @@ XCBRenderUtilFindStandardFormat (const XCBRenderQueryPictFormatsRep	*formats,
 	{
 	    {
 		{ 0 },			    /* id */
-		XCBRenderPictTypeDirect,    /* type */
+		XCB_RENDER_PICT_TYPE_DIRECT,    /* type */
 		1,			    /* depth */
 		{ 0 },			    /* pad */
 		{			    /* direct */
@@ -244,7 +244,7 @@ XCBRenderUtilFindStandardFormat (const XCBRenderQueryPictFormatsRep	*formats,
     if (format < 0 || format >= sizeof(standardFormats) / sizeof(*standardFormats))
 	return 0;
 
-    return XCBRenderUtilFindFormat (formats, 
+    return xcb_render_util_find_format (formats, 
 				    standardFormats[format].mask,
 				    &standardFormats[format].templ,
 				    0);

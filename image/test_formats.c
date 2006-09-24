@@ -19,89 +19,89 @@ static int xpad(int depth)
 #endif
 
 /* FIXME: this function doesn't work correctly for XYPixmaps yet. */
-static XCBImage *create_image(XCBConnection *c, int depth, int format)
+static xcb_image_t *create_image(xcb_connection_t *c, int depth, int format)
 {
 #if 0
 	int pad = (format == ZPixmap ? xpad(depth) : 8);
 #endif
-	XCBImage *im;
+	xcb_image_t *im;
 	int x, y;
-	CARD32 i = 0;
+	uint32_t i = 0;
 	printf("Image depth %d, format %d\n", depth, format);
-	im = XCBImageCreate(c, depth, format, 0, 0, WIDTH, HEIGHT, 32, 0);
+	im = xcb_image_create(c, depth, format, 0, 0, WIDTH, HEIGHT, 32, 0);
 	if(!im)
 	{
 		printf("ImageCreate failed.\n");
 		return 0;
 	}
-	im->data = malloc(im->bytes_per_line * HEIGHT * (format == XCBImageFormatZPixmap ? 1 : depth));
+	im->data = malloc(im->bytes_per_line * HEIGHT * (format == XCB_IMAGE_FORMAT_Z_PIXMAP ? 1 : depth));
 	if(!im->data)
 	{
-		XCBImageDestroy(im);
+		xcb_image_destroy(im);
 		return 0;
 	}
 	for(x = 0; x < WIDTH; ++x)
 		for(y = 0; y < HEIGHT; ++y)
 		{
-			XCBImagePutPixel(im, x, y, i);
+			xcb_image_put_pixel(im, x, y, i);
 			++i;
 			i &= (1 << depth) - 1;
 		}
 	return im;
 }
 
-static XCBWINDOW create_window(XCBConnection *c, XCBSCREEN *root)
+static xcb_window_t create_window(xcb_connection_t *c, xcb_screen_t *root)
 {
-	static const CARD32 mask = XCBCWEventMask;
-	static const CARD32 values[] = { XCBEventMaskExposure };
+	static const uint32_t mask = XCB_CW_EVENT_MASK;
+	static const uint32_t values[] = { XCB_EVENT_MASK_EXPOSURE };
 	unsigned int seq;
-	XCBWINDOW w = XCBWINDOWNew(c);
-	seq = XCBCreateWindow(c, root->root_depth, w, root->root, 30, 30, WIDTH, HEIGHT, 0, XCBWindowClassInputOutput, root->root_visual, mask, values).sequence;
+	xcb_window_t w = xcb_window_new(c);
+	seq = xcb_create_window(c, root->root_depth, w, root->root, 30, 30, WIDTH, HEIGHT, 0, XCB_WINDOW_CLASS_INPUT_OUTPUT, root->root_visual, mask, values).sequence;
 	printf("CreateWindow sequence %d, depth %d\n", seq, root->root_depth);
-	seq = XCBMapWindow(c, w).sequence;
+	seq = xcb_map_window(c, w).sequence;
 	printf("MapWindow sequence %d\n", seq);
 	return w;
 }
 
-static XCBPIXMAP create_pixmap(XCBConnection *c, XCBDRAWABLE d, CARD8 depth)
+static xcb_pixmap_t create_pixmap(xcb_connection_t *c, xcb_drawable_t d, uint8_t depth)
 {
-	XCBPIXMAP p = XCBPIXMAPNew(c);
+	xcb_pixmap_t p = xcb_pixmap_new(c);
 	unsigned int seq;
-	seq = XCBCreatePixmap(c, depth, p, d, WIDTH, HEIGHT).sequence;
+	seq = xcb_create_pixmap(c, depth, p, d, WIDTH, HEIGHT).sequence;
 	printf("CreatePixmap sequence %d, depth %d\n", seq, depth);
 	return p;
 }
 
-static XCBGCONTEXT create_gcontext(XCBConnection *c, XCBSCREEN *root)
+static xcb_gcontext_t create_gcontext(xcb_connection_t *c, xcb_screen_t *root)
 {
-	static const CARD32 mask = XCBGCForeground | XCBGCBackground;
-	const CARD32 values[] = { root->black_pixel, root->white_pixel };
-	const XCBDRAWABLE d = { root->root };
+	static const uint32_t mask = XCB_GC_FOREGROUND | XCB_GC_BACKGROUND;
+	const uint32_t values[] = { root->black_pixel, root->white_pixel };
+	const xcb_drawable_t d = { root->root };
 	unsigned int seq;
-	XCBGCONTEXT gc = XCBGCONTEXTNew(c);
-	seq = XCBCreateGC(c, gc, d, mask, values).sequence;
+	xcb_gcontext_t gc = xcb_gcontext_new(c);
+	seq = xcb_create_gc(c, gc, d, mask, values).sequence;
 	printf("CreateGC sequence %d\n", seq);
 	return gc;
 }
 
 int main(int argc, char **argv)
 {
-	int screen, depth, format = XCBImageFormatZPixmap;
-	XCBSCREEN *root;
-	XCBImage *im;
-	XCBDRAWABLE d, w = { { 0 } };
-	XCBGCONTEXT gc;
-	XCBGenericEvent *ev;
-	XCBConnection *c = XCBConnect(0, &screen);
+	int screen, depth, format = XCB_IMAGE_FORMAT_Z_PIXMAP;
+	xcb_screen_t *root;
+	xcb_image_t *im;
+	xcb_drawable_t d, w = { { 0 } };
+	xcb_gcontext_t gc;
+	xcb_generic_event_t *ev;
+	xcb_connection_t *c = xcb_connect(0, &screen);
 	if(!c)
 	{
 		printf("Connection failed.\n");
 		exit(1);
 	}
-	root = XCBAuxGetScreen(c, screen);
+	root = xcb_aux_get_screen(c, screen);
 	if(argc > 1)
 		format = atoi(argv[1]);
-	if(format == XCBImageFormatXYBitmap || argc > 2)
+	if(format == XCB_IMAGE_FORMAT_XY_BITMAP || argc > 2)
 		depth = 1;
 	else
 		depth = root->root_depth;
@@ -114,33 +114,33 @@ int main(int argc, char **argv)
 		d.pixmap = create_pixmap(c, w, depth);
 	}
 	gc = create_gcontext(c, root);
-	XCBFlush(c);
+	xcb_flush(c);
 
 	if(im)
 	{
-		while((ev = XCBWaitForEvent(c)))
+		while((ev = xcb_wait_for_event(c)))
 		{
-			if(ev->response_type == XCBExpose && ((XCBExposeEvent *) ev)->count == 0)
+			if(ev->response_type == XCB_EXPOSE && ((xcb_expose_event_t *) ev)->count == 0)
 			{
-				XCBImagePut(c, d, gc, im, 0, 0, 0, 0, WIDTH, HEIGHT);
+				xcb_image_put(c, d, gc, im, 0, 0, 0, 0, WIDTH, HEIGHT);
 				if(w.window.xid)
 				{
 					unsigned int seq;
-					seq = XCBCopyPlane(c, d, w, gc, 0, 0, WIDTH, HEIGHT, 0, 0, 1).sequence;
+					seq = xcb_copy_plane(c, d, w, gc, 0, 0, WIDTH, HEIGHT, 0, 0, 1).sequence;
 					printf("CopyPlane sequence %d\n", seq);
 				}
-				XCBFlush(c);
+				xcb_flush(c);
 			}
 			else if(ev->response_type == 0)
 			{
-				XCBGenericError *err = (XCBGenericError *) ev;
+				xcb_generic_error_t *err = (xcb_generic_error_t *) ev;
 				printf("Error: %d after sequence %d\n", err->error_code, (unsigned int) err->full_sequence);
 			}
 			free(ev);
 		}
-		XCBImageDestroy(im);
+		xcb_image_destroy(im);
 	}
 
-	XCBDisconnect(c);
+	xcb_disconnect(c);
 	exit(0);
 }

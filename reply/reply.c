@@ -6,22 +6,22 @@
 struct node {
 	struct node *next;
 	unsigned int request;
-	GenericReplyHandler handler;
+	generic_reply_handler handler;
 	void *data;
 	char handled;
 };
 
-struct ReplyHandlers {
+struct reply_handlers {
 	pthread_mutex_t lock;
 	pthread_cond_t cond;
 	struct node *head;
-	XCBConnection *c;
+	xcb_connection_t *c;
 	char stop;
 };
 
-ReplyHandlers *allocReplyHandlers(XCBConnection *c)
+reply_handlers_t *alloc_reply_handlers(xcb_connection_t *c)
 {
-	ReplyHandlers *ret = calloc(1, sizeof(ReplyHandlers));
+	reply_handlers_t *ret = calloc(1, sizeof(reply_handlers_t));
 	if(ret)
 	{
 		static const pthread_mutex_t proto_lock = PTHREAD_MUTEX_INITIALIZER;
@@ -33,17 +33,17 @@ ReplyHandlers *allocReplyHandlers(XCBConnection *c)
 	return ret;
 }
 
-void freeReplyHandlers(ReplyHandlers *h)
+void free_reply_handlers(reply_handlers_t *h)
 {
 	free(h);
 }
 
-XCBConnection *getXCBConnection(ReplyHandlers *h)
+xcb_connection_t *get_xcb_connection(reply_handlers_t *h)
 {
 	return h->c;
 }
 
-static void insert_handler(ReplyHandlers *h, struct node *cur)
+static void insert_handler(reply_handlers_t *h, struct node *cur)
 {
 	struct node **prev = &h->head;
 	while(*prev && (*prev)->request < cur->request)
@@ -52,17 +52,17 @@ static void insert_handler(ReplyHandlers *h, struct node *cur)
 	*prev = cur;
 }
 
-static int do_poll(ReplyHandlers *h)
+static int do_poll(reply_handlers_t *h)
 {
-	XCBGenericRep *reply;
-	XCBGenericError *error;
+	xcb_generic_reply_t *reply;
+	xcb_generic_error_t *error;
 	int handled;
 	struct node *cur = h->head;
 	h->head = cur->next;
 
 	pthread_mutex_unlock(&h->lock);
 	pthread_cleanup_push((void (*)(void *)) pthread_mutex_lock, &h->lock);
-	reply = XCBWaitForReply(h->c, cur->request, &error);
+	reply = xcb_wait_for_reply(h->c, cur->request, &error);
 
 	if(reply || error)
 	{
@@ -83,12 +83,12 @@ static int do_poll(ReplyHandlers *h)
 	return handled;
 }
 
-int PollReplies(ReplyHandlers *h)
+int poll_replies(reply_handlers_t *h)
 {
 	int ret = 1;
-	XCBFlush(h->c);
+	xcb_flush(h->c);
 	pthread_mutex_lock(&h->lock);
-	while(ret && h->head && XCBGetRequestRead(h->c) >= h->head->request)
+	while(ret && h->head && xcb_get_request_read(h->c) >= h->head->request)
 		ret = do_poll(h);
 	pthread_mutex_unlock(&h->lock);
 	return ret;
@@ -96,7 +96,7 @@ int PollReplies(ReplyHandlers *h)
 
 static void *reply_thread(void *hvp)
 {
-	ReplyHandlers *h = hvp;
+	reply_handlers_t *h = hvp;
 	pthread_mutex_lock(&h->lock);
 	pthread_cleanup_push((void (*)(void *)) pthread_mutex_unlock, &h->lock);
 	while(1)
@@ -111,14 +111,14 @@ static void *reply_thread(void *hvp)
 	return 0;
 }
 
-pthread_t StartReplyThread(ReplyHandlers *h)
+pthread_t start_reply_thread(reply_handlers_t *h)
 {
 	pthread_t ret;
 	pthread_create(&ret, 0, reply_thread, h);
 	return ret;
 }
 
-void StopReplyThreads(ReplyHandlers *h)
+void stop_reply_threads(reply_handlers_t *h)
 {
 	pthread_mutex_lock(&h->lock);
 	h->stop = 1;
@@ -126,7 +126,7 @@ void StopReplyThreads(ReplyHandlers *h)
 	pthread_mutex_unlock(&h->lock);
 }
 
-void AddReplyHandler(ReplyHandlers *h, unsigned int request, GenericReplyHandler handler, void *data)
+void add_reply_handler(reply_handlers_t *h, unsigned int request, generic_reply_handler handler, void *data)
 {
 	struct node *cur = malloc(sizeof(struct node));
 	cur->request = request;

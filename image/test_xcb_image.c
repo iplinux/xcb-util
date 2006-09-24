@@ -12,29 +12,29 @@
 #define W_H 4
 
 void
-reflect_window (XCBConnection *c,
-		XCBDRAWABLE win,
-		XCBDRAWABLE new_win,
-		XCBGCONTEXT gc,
-		CARD16      width,
-		CARD16      height)
+reflect_window (xcb_connection_t *c,
+		xcb_drawable_t win,
+		xcb_drawable_t new_win,
+		xcb_gcontext_t gc,
+		uint16_t      width,
+		uint16_t      height)
 {
-  XCBImage *image;
-  CARD32    pixel1;
-  CARD32    pixel2;
-  INT32     left_x;
-  INT32     right_x;
-  INT32     y;
+  xcb_image_t *image;
+  uint32_t    pixel1;
+  uint32_t    pixel2;
+  int32_t     left_x;
+  int32_t     right_x;
+  int32_t     y;
 
   int i, j;
   int format;
 
-  format = XCBImageFormatZPixmap;
+  format = XCB_IMAGE_FORMAT_Z_PIXMAP;
 
   printf ("get_image %d %d\n", width, height);
-  image = XCBImageGet (c, win,
+  image = xcb_image_get (c, win,
 			 0, 0, width, height,
-			 XCBAllPlanes,
+			 XCB_ALL_PLANES,
 			 format);
 
   printf ("Create image summary:\n");
@@ -53,7 +53,7 @@ reflect_window (XCBConnection *c,
     {
       for (i = 0 ; i < image->width ; i++)
 	{
-	  pixel1 = XCBImageGetPixel (image, i, j);
+	  pixel1 = xcb_image_get_pixel (image, i, j);
 	  printf ("%6d ", pixel1);
 	}
       printf ("\n");
@@ -65,14 +65,14 @@ reflect_window (XCBConnection *c,
     {
       for (y = 0 ; y < height ; y++)
 	{
-	  pixel1 = XCBImageGetPixel (image, left_x, y);
+	  pixel1 = xcb_image_get_pixel (image, left_x, y);
 	  right_x = width - left_x-1;
 	  if (left_x != right_x)
 	    {
-	      pixel2 = XCBImageGetPixel (image, right_x, y);
-	      XCBImagePutPixel (image, left_x, y, pixel2);
+	      pixel2 = xcb_image_get_pixel (image, right_x, y);
+	      xcb_image_put_pixel (image, left_x, y, pixel2);
 	    }
-	  XCBImagePutPixel (image, right_x, y, pixel1);
+	  xcb_image_put_pixel (image, right_x, y, pixel1);
 	}
       printf ("\n");
     }
@@ -81,23 +81,23 @@ reflect_window (XCBConnection *c,
     {
       for (i = 0 ; i < image->width ; i++)
 	{
-	  pixel1 = XCBImageGetPixel (image, i, j);
+	  pixel1 = xcb_image_get_pixel (image, i, j);
 	  printf ("%6d ", pixel1);
 	}
       printf ("\n");
     }
-  XCBImagePut (c, new_win, gc, image,
+  xcb_image_put (c, new_win, gc, image,
 		 0, 0, 0, 0, width, height);
-  image = XCBImageGet (c, new_win,
+  image = xcb_image_get (c, new_win,
 			 0, 0, width, height,
-			 XCBAllPlanes,
+			 XCB_ALL_PLANES,
 			 format);
   printf ("New : \n");
   for (j = 0 ; j < image->height ; j++)
     {
       for (i = 0 ; i < image->width ; i++)
 	{
-	  pixel1 = XCBImageGetPixel (image, i, j);
+	  pixel1 = xcb_image_get_pixel (image, i, j);
 	  printf ("%6d ", pixel1);
 	}
       printf ("\n");
@@ -108,117 +108,117 @@ reflect_window (XCBConnection *c,
 int
 main (int argc, char *argv[])
 {
-  XCBConnection   *c;
-  XCBSCREEN       *screen;
-  XCBDRAWABLE      win;
-  XCBDRAWABLE      new_win;
-  XCBDRAWABLE      rect;
-  XCBRECTANGLE     rect_coord = { 0, 0, W_W, W_H};
-  XCBGCONTEXT      bgcolor, fgcolor;
-  XCBPOINT         points[2];
-  CARD32           mask;
-  CARD32           valgc[2];
-  CARD32           valwin[3];
+  xcb_connection_t   *c;
+  xcb_screen_t       *screen;
+  xcb_drawable_t      win;
+  xcb_drawable_t      new_win;
+  xcb_drawable_t      rect;
+  xcb_rectangle_t     rect_coord = { 0, 0, W_W, W_H};
+  xcb_gcontext_t      bgcolor, fgcolor;
+  xcb_point_t         points[2];
+  uint32_t           mask;
+  uint32_t           valgc[2];
+  uint32_t           valwin[3];
   int              depth;
   int              screen_nbr;
-  XCBGenericEvent *e;
+  xcb_generic_event_t *e;
   
   /* Open the connexion to the X server and get the first screen */
-  c = XCBConnect (NULL, &screen_nbr);
-  screen = XCBAuxGetScreen (c, screen_nbr);
-  depth = XCBAuxGetDepth (c, screen);
+  c = xcb_connect (NULL, &screen_nbr);
+  screen = xcb_aux_get_screen (c, screen_nbr);
+  depth = xcb_aux_get_depth (c, screen);
 
   /* Create a black graphic context for drawing in the foreground */
   win.window = screen->root;
 
-  fgcolor = XCBGCONTEXTNew(c);
-  mask = XCBGCForeground | XCBGCGraphicsExposures;
+  fgcolor = xcb_gcontext_new(c);
+  mask = XCB_GC_FOREGROUND | XCB_GC_GRAPHICS_EXPOSURES;
   valgc[0] = screen->black_pixel;
   valgc[1] = 0; /* no graphics exposures */
-  XCBCreateGC(c, fgcolor, win, mask, valgc);
+  xcb_create_gc(c, fgcolor, win, mask, valgc);
 
-  bgcolor = XCBGCONTEXTNew(c);
-  mask = XCBGCForeground | XCBGCGraphicsExposures;
+  bgcolor = xcb_gcontext_new(c);
+  mask = XCB_GC_FOREGROUND | XCB_GC_GRAPHICS_EXPOSURES;
   valgc[0] = screen->white_pixel;
   valgc[1] = 0; /* no graphics exposures */
-  XCBCreateGC(c, bgcolor, win, mask, valgc);
+  xcb_create_gc(c, bgcolor, win, mask, valgc);
 
   /* Ask for our window's Id */
-  win.window = XCBWINDOWNew(c);
+  win.window = xcb_window_new(c);
 
   /* Create the window */
-  mask = XCBCWBackPixel | XCBCWEventMask | XCBCWDontPropagate;
+  mask = XCB_CW_BACK_PIXEL | XCB_CW_EVENT_MASK | XCB_CW_DONT_PROPAGATE;
   valwin[0] = screen->white_pixel;
-  valwin[1] = XCBEventMaskKeyPress | XCBEventMaskButtonRelease | XCBEventMaskExposure;
-  valwin[2] = XCBEventMaskButtonPress;
-  XCBCreateWindow (c,                        /* Connection          */
+  valwin[1] = XCB_EVENT_MASK_KEY_PRESS | XCB_EVENT_MASK_BUTTON_RELEASE | XCB_EVENT_MASK_EXPOSURE;
+  valwin[2] = XCB_EVENT_MASK_BUTTON_PRESS;
+  xcb_create_window (c,                        /* Connection          */
  		   0,                        /* depth               */
 		   win.window,               /* window Id           */
 		   screen->root,             /* parent window       */
 		   0, 0,                     /* x, y                */
 		   W_W, W_H,                 /* width, height       */
 		   10,                       /* border_width        */
-		   XCBWindowClassInputOutput,/* class               */
+		   XCB_WINDOW_CLASS_INPUT_OUTPUT,/* class               */
 		   screen->root_visual,      /* visual              */
 		   mask, valwin);                 /* masks, not used yet */
 
   /* Map the window on the screen */
-  XCBMapWindow (c, win.window);
+  xcb_map_window (c, win.window);
 
   /* Create a Pixmap that will fill the window */
-  rect.pixmap = XCBPIXMAPNew (c);
-  XCBCreatePixmap(c, depth, rect.pixmap, win, W_W, W_H);
-  XCBPolyFillRectangle(c, rect, bgcolor, 1, &rect_coord);
+  rect.pixmap = xcb_pixmap_new (c);
+  xcb_create_pixmap(c, depth, rect.pixmap, win, W_W, W_H);
+  xcb_poly_fill_rectangle(c, rect, bgcolor, 1, &rect_coord);
   points[0].x = 0;
   points[0].y = 0;
   points[1].x = 1;
   points[1].y = 1;
-  XCBPolyLine(c, XCBCoordModeOrigin, rect, fgcolor, 2, points);
+  xcb_poly_line(c, XCB_COORD_MODE_ORIGIN, rect, fgcolor, 2, points);
 /*   points[0].x = 10; */
 /*   points[0].y = 10; */
 /*   points[1].x = 10; */
 /*   points[1].y = 40; */
-/*   XCBPolyLine(c, CoordModeOrigin, rect, fgcolor, 2, points); */
+/*   xcb_poly_line(c, CoordModeOrigin, rect, fgcolor, 2, points); */
 
   /* Ask for our window's Id */
-  new_win.window = XCBWINDOWNew(c);
+  new_win.window = xcb_window_new(c);
 
   /* Create the window */
-  mask = XCBCWBackPixel | XCBCWEventMask | XCBCWDontPropagate;
+  mask = XCB_CW_BACK_PIXEL | XCB_CW_EVENT_MASK | XCB_CW_DONT_PROPAGATE;
   valwin[0] = screen->white_pixel;
-  valwin[1] = XCBEventMaskKeyPress | XCBEventMaskButtonRelease | XCBEventMaskExposure;
-  valwin[2] = XCBEventMaskButtonPress;
-  XCBCreateWindow (c,                        /* Connection          */
+  valwin[1] = XCB_EVENT_MASK_KEY_PRESS | XCB_EVENT_MASK_BUTTON_RELEASE | XCB_EVENT_MASK_EXPOSURE;
+  valwin[2] = XCB_EVENT_MASK_BUTTON_PRESS;
+  xcb_create_window (c,                        /* Connection          */
  		   0,                        /* depth               */
 		   new_win.window,               /* window Id           */
 		   screen->root,             /* parent window       */
 		   0, 0,                     /* x, y                */
 		   W_W, W_H,                 /* width, height       */
 		   10,                       /* border_width        */
-		   XCBWindowClassInputOutput,/* class               */
+		   XCB_WINDOW_CLASS_INPUT_OUTPUT,/* class               */
 		   screen->root_visual,      /* visual              */
 		   mask, valwin);                 /* masks, not used yet */
 
   
 
   /* Map the window on the screen */
-  XCBMapWindow (c, new_win.window);
+  xcb_map_window (c, new_win.window);
 
 
-  XCBFlush (c); 
+  xcb_flush (c); 
 
-  while ((e = XCBWaitForEvent(c)))
+  while ((e = xcb_wait_for_event(c)))
     {
       switch (e->response_type)
 	{ 
-	case XCBExpose:
+	case XCB_EXPOSE:
 	  {
-	    XCBCopyArea(c, rect, win, bgcolor,
+	    xcb_copy_area(c, rect, win, bgcolor,
 			0, 0, 0, 0, W_W, W_H);
 	    reflect_window (c, win, new_win,
 			    fgcolor,
 			    W_W, W_H);
-	    XCBFlush (c);
+	    xcb_flush (c);
 	    break;
 	  }
 	}

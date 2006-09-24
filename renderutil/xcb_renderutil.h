@@ -50,27 +50,27 @@ enum {
     PictStandardNUM
 };
 
-XCBRenderPICTVISUAL *
-XCBRenderUtilFindVisualFormat (const XCBRenderQueryPictFormatsRep *formats,
-			       const XCBVISUALID visual);
+xcb_render_pictvisual_t *
+xcb_render_util_find_visual_format (const xcb_render_query_pict_formats_reply_t *formats,
+			       const xcb_visualid_t visual);
 
-XCBRenderPICTFORMINFO *
-XCBRenderUtilFindFormat (const XCBRenderQueryPictFormatsRep	*formats,
+xcb_render_pictforminfo_t *
+xcb_render_util_find_format (const xcb_render_query_pict_formats_reply_t	*formats,
 			 unsigned long				mask,
-			 const XCBRenderPICTFORMINFO		*template,
+			 const xcb_render_pictforminfo_t		*template,
 			 int					count);
 
-XCBRenderPICTFORMINFO *
-XCBRenderUtilFindStandardFormat (const XCBRenderQueryPictFormatsRep	*formats,
+xcb_render_pictforminfo_t *
+xcb_render_util_find_standard_format (const xcb_render_query_pict_formats_reply_t	*formats,
 				 int					format);
 
-const XCBRenderQueryVersionRep *
-XCBRenderUtilQueryVersion (XCBConnection *c);
+const xcb_render_query_version_reply_t *
+xcb_render_util_query_version (xcb_connection_t *c);
 
-const XCBRenderQueryPictFormatsRep *
-XCBRenderUtilQueryFormats (XCBConnection *c);
+const xcb_render_query_pict_formats_reply_t *
+xcb_render_util_query_formats (xcb_connection_t *c);
 
 int
-XCBRenderUtilDisconnect (XCBConnection *c);
+xcb_render_util_disconnect (xcb_connection_t *c);
 
 #endif /* XCB_RENDERUTIL */

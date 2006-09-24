@@ -9,7 +9,7 @@
 
 #define WINFMT "0x%08x"
 
-int formatGetWindowAttributesReply(XCBWINDOW wid, XCBGetWindowAttributesRep *reply)
+int formatGetWindowAttributesReply(xcb_window_t wid, xcb_get_window_attributes_reply_t *reply)
 {
     if(!reply)
     {
@@ -55,7 +55,7 @@ int formatGetWindowAttributesReply(XCBWINDOW wid, XCBGetWindowAttributesRep *rep
     return 1;
 }
 
-int formatGetGeometryReply(XCBWINDOW wid, XCBGetGeometryRep *reply)
+int formatGetGeometryReply(xcb_window_t wid, xcb_get_geometry_reply_t *reply)
 {
     if(!reply)
     {
@@ -75,7 +75,7 @@ int formatGetGeometryReply(XCBWINDOW wid, XCBGetGeometryRep *reply)
     return 1;
 }
 
-int formatQueryTreeReply(XCBWINDOW wid, XCBQueryTreeRep *reply)
+int formatQueryTreeReply(xcb_window_t wid, xcb_query_tree_reply_t *reply)
 {
     int i;
 
@@ -95,7 +95,7 @@ int formatQueryTreeReply(XCBWINDOW wid, XCBQueryTreeRep *reply)
 
     for(i = 0; i < reply->children_len; ++i)
         printf("    window " WINFMT "\n",
-            (unsigned int) XCBQueryTreeChildren(reply)[i].xid);
+            (unsigned int) xcb_query_tree_children(reply)[i].xid);
 
     fflush(stdout);
     return 1;
@@ -296,22 +296,22 @@ static const char *labelSendEvent[] = {
     " (from SendEvent)",
 };
 
-int formatEvent(XCBGenericEvent *e)
+int formatEvent(xcb_generic_event_t *e)
 {
-    BYTE sendEvent;
-    CARD16 seqnum;
+    uint8_t sendEvent;
+    uint16_t seqnum;
 
     sendEvent = (e->response_type & 0x80) ? 1 : 0;
     e->response_type &= ~0x80;
-    seqnum = *((CARD16 *) e + 1);
+    seqnum = *((uint16_t *) e + 1);
 
     switch(e->response_type)
     {
     case 0:
         printf("Error %s on seqnum %d (%s).\n",
-            labelError[*((BYTE *) e + 1)],
+            labelError[*((uint8_t *) e + 1)],
             seqnum,
-            labelRequest[*((CARD8 *) e + 10)]);
+            labelRequest[*((uint8_t *) e + 10)]);
         break;
     default:
         printf("Event %s following seqnum %d%s.\n",
@@ -319,7 +319,7 @@ int formatEvent(XCBGenericEvent *e)
             seqnum,
             labelSendEvent[sendEvent]);
         break;
-    case XCBKeymapNotify:
+    case XCB_KEYMAP_NOTIFY:
         printf("Event %s%s.\n",
             labelEvent[e->response_type],
             labelSendEvent[sendEvent]);

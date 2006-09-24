@@ -4,130 +4,130 @@
 #include "xcb_property.h"
 
 typedef struct {
-	CARD32 long_len;
-	GenericPropertyHandler handler;
+	uint32_t long_len;
+	generic_property_handler handler;
 	void *data;
-} propHandler;
+} prop_handler_t;
 
 typedef struct node node;
 struct node {
 	node *next;
-	XCBATOM name;
-	propHandler h;
+	xcb_atom_t name;
+	prop_handler_t h;
 };
 
-struct PropertyHandlers {
+struct property_handlers {
 	node *head;
-	propHandler *def;
-	EventHandlers *evenths;
+	prop_handler_t *def;
+	event_handlers_t *evenths;
 };
 
-XCBGetPropertyCookie GetAnyProperty(XCBConnection *c, BOOL del, XCBWINDOW window, XCBATOM name, CARD32 long_len)
+xcb_get_property_cookie_t get_any_property(xcb_connection_t *c, uint8_t del, xcb_window_t window, xcb_atom_t name, uint32_t long_len)
 {
-	static const XCBATOM type = { XCBGetPropertyTypeAny };
-	return XCBGetProperty(c, del, window, name, type, 0, long_len);
+	static const xcb_atom_t type = { XCB_GET_PROPERTY_TYPE_ANY };
+	return xcb_get_property(c, del, window, name, type, 0, long_len);
 }
 
-static int callHandler(XCBConnection *c, BYTE state, XCBWINDOW window, XCBATOM atom, propHandler *h)
+static int call_handler(xcb_connection_t *c, uint8_t state, xcb_window_t window, xcb_atom_t atom, prop_handler_t *h)
 {
-	XCBGetPropertyRep *propr = 0;
+	xcb_get_property_reply_t *propr = 0;
 	int ret;
-	if(state != XCBPropertyDelete)
+	if(state != XCB_PROPERTY_DELETE)
 	{
-		XCBGetPropertyCookie cookie = GetAnyProperty(c, 0, window, atom, h->long_len);
-		propr = XCBGetPropertyReply(c, cookie, 0);
+		xcb_get_property_cookie_t cookie = get_any_property(c, 0, window, atom, h->long_len);
+		propr = xcb_get_property_reply(c, cookie, 0);
 	}
 	ret = h->handler(h->data, c, state, window, atom, propr);
 	free(propr);
 	return ret;
 }
 
-int PropertyChanged(PropertyHandlers *prophs, BYTE state, XCBWINDOW window, XCBATOM atom)
+int property_changed(property_handlers_t *prophs, uint8_t state, xcb_window_t window, xcb_atom_t atom)
 {
-	XCBConnection *c = getXCBConnection(GetPropertyEventHandlers(prophs));
+	xcb_connection_t *c = get_xcb_connection(get_property_event_handlers(prophs));
 	node *cur;
 	for(cur = prophs->head; cur; cur = cur->next)
 		if(cur->name.xid == atom.xid)
-			return callHandler(c, state, window, atom, &cur->h);
+			return call_handler(c, state, window, atom, &cur->h);
 	if(prophs->def)
-		return callHandler(c, state, window, atom, prophs->def);
+		return call_handler(c, state, window, atom, prophs->def);
 	return 0;
 }
 
-static int handlePropertyNotifyEvent(void *data, XCBConnection *c, XCBPropertyNotifyEvent *e)
+static int handle_property_notify_event(void *data, xcb_connection_t *c, xcb_property_notify_event_t *e)
 {
-	PropertyHandlers *prophs = data;
-	BYTE state = e->state;
-	XCBWINDOW window = e->window;
-	XCBATOM atom = e->atom;
+	property_handlers_t *prophs = data;
+	uint8_t state = e->state;
+	xcb_window_t window = e->window;
+	xcb_atom_t atom = e->atom;
 
-	return PropertyChanged(prophs, state, window, atom);
+	return property_changed(prophs, state, window, atom);
 }
 
-PropertyHandlers *AllocPropertyHandlers(EventHandlers *evenths)
+property_handlers_t *alloc_property_handlers(event_handlers_t *evenths)
 {
-	PropertyHandlers *prophs = malloc(sizeof(PropertyHandlers));
+	property_handlers_t *prophs = malloc(sizeof(property_handlers_t));
 	if(prophs)
 	{
 		prophs->head = 0;
 		prophs->def = 0;
 		prophs->evenths = evenths;
-		setPropertyNotifyEventHandler(evenths, handlePropertyNotifyEvent, prophs);
+		set_property_notify_event_handler(evenths, handle_property_notify_event, prophs);
 	}
 	return prophs;
 }
 
-void FreePropertyHandlers(PropertyHandlers *prophs)
+void free_property_handlers(property_handlers_t *prophs)
 {
 	free(prophs);
 }
 
-EventHandlers *GetPropertyEventHandlers(PropertyHandlers *prophs)
+event_handlers_t *get_property_event_handlers(property_handlers_t *prophs)
 {
 	return prophs->evenths;
 }
 
-static inline void setPropHandler(propHandler *cur, CARD32 long_len, GenericPropertyHandler handler, void *data)
+static inline void set_prop_handler(prop_handler_t *cur, uint32_t long_len, generic_property_handler handler, void *data)
 {
 	cur->long_len = long_len;
 	cur->handler = handler;
 	cur->data = data;
 }
 
-int SetPropertyHandler(PropertyHandlers *prophs, XCBATOM name, CARD32 long_len, GenericPropertyHandler handler, void *data)
+int set_property_handler(property_handlers_t *prophs, xcb_atom_t name, uint32_t long_len, generic_property_handler handler, void *data)
 {
 	node *cur = malloc(sizeof(node));
 	if(!cur)
 		return 0;
 	cur->next = prophs->head;
 	cur->name = name;
-	setPropHandler(&cur->h, long_len, handler, data);
+	set_prop_handler(&cur->h, long_len, handler, data);
 	prophs->head = cur;
 	return 1;
 }
 
-int SetDefaultPropertyHandler(PropertyHandlers *prophs, CARD32 long_len, GenericPropertyHandler handler, void *data)
+int set_default_property_handler(property_handlers_t *prophs, uint32_t long_len, generic_property_handler handler, void *data)
 {
 	assert(!prophs->def);
-	prophs->def = malloc(sizeof(propHandler));
+	prophs->def = malloc(sizeof(prop_handler_t));
 	if(!prophs->def)
 		return 0;
-	setPropHandler(prophs->def, long_len, handler, data);
+	set_prop_handler(prophs->def, long_len, handler, data);
 	return 1;
 }
 
-int rootOfScreen(XCBConnection *c, int screen, XCBWINDOW *root)
+int root_of_screen(xcb_connection_t *c, int screen, xcb_window_t *root)
 {
-	XCBSCREENIter i = XCBSetupRootsIter(XCBGetSetup(c));
+	xcb_screen_iterator_t i = xcb_setup_roots_iterator(xcb_get_setup(c));
 	if(screen >= i.rem)
 		return 0;
-	for(; screen && i.rem; --screen, XCBSCREENNext(&i))
+	for(; screen && i.rem; --screen, xcb_screen_next(&i))
 		/* empty */;
 	*root = i.data->root;
 	return 1;
 }
 
-XCBVoidCookie sendToWindow(XCBConnection *c, XCBWINDOW root, const XCBClientMessageEvent *ev)
+xcb_void_cookie_t send_to_window(xcb_connection_t *c, xcb_window_t root, const xcb_client_message_event_t *ev)
 {
-	return XCBSendEvent(c, /* propagate */ 0, root, XCBEventMaskSubstructureNotify | XCBEventMaskSubstructureRedirect, (const char *) ev);
+	return xcb_send_event(c, /* propagate */ 0, root, XCB_EVENT_MASK_SUBSTRUCTURE_NOTIFY | XCB_EVENT_MASK_SUBSTRUCTURE_REDIRECT, (const char *) ev);
 }

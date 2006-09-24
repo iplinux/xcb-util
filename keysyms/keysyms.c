@@ -22,42 +22,42 @@ enum tag_t {
 
 struct _XCBKeySymbols
 {
-  XCBConnection *c;
+  xcb_connection_t *c;
   enum tag_t     tag;
   union {
-    XCBGetKeyboardMappingCookie cookie;
-    XCBGetKeyboardMappingRep *reply;
+    xcb_get_keyboard_mapping_cookie_t cookie;
+    xcb_get_keyboard_mapping_reply_t *reply;
   } u;
 };
 
-static void XCBConvertCase(XCBKEYSYM  sym,
-			   XCBKEYSYM *lower,
-			   XCBKEYSYM *upper);
+static void xcb_convert_case(xcb_keysym_t  sym,
+			   xcb_keysym_t *lower,
+			   xcb_keysym_t *upper);
 
-static void XCBKeySymbolsGetReply (XCBKeySymbols    *syms,
-				   XCBGenericError **e);
+static void xcb_key_symbols_get_reply (xcb_key_symbols_t    *syms,
+				   xcb_generic_error_t **e);
 
 /* public implementation */
 
-XCBKeySymbols *
-XCBKeySymbolsAlloc (XCBConnection *c)
+xcb_key_symbols_t *
+xcb_key_symbols_alloc (xcb_connection_t *c)
 {
-  XCBKeySymbols *syms;
-  XCBKEYCODE     min_keycode;
-  XCBKEYCODE     max_keycode;
+  xcb_key_symbols_t *syms;
+  xcb_keycode_t     min_keycode;
+  xcb_keycode_t     max_keycode;
 
   if (!c)
     return NULL;
 
-  syms = (XCBKeySymbols *)malloc (sizeof (XCBKeySymbols));
+  syms = (xcb_key_symbols_t *)malloc (sizeof (xcb_key_symbols_t));
 
   syms->c = c;
   syms->tag = TAG_COOKIE;
 
-  min_keycode = XCBGetSetup (c)->min_keycode;
-  max_keycode = XCBGetSetup (c)->max_keycode;
+  min_keycode = xcb_get_setup (c)->min_keycode;
+  max_keycode = xcb_get_setup (c)->max_keycode;
   
-  syms->u.cookie = XCBGetKeyboardMapping(c,
+  syms->u.cookie = xcb_get_keyboard_mapping(c,
 					 min_keycode,
 					 max_keycode.id - min_keycode.id + 1);
   
@@ -65,7 +65,7 @@ XCBKeySymbolsAlloc (XCBConnection *c)
 }
 
 void
-XCBKeySymbolsFree (XCBKeySymbols *syms)
+xcb_key_symbols_free (xcb_key_symbols_t *syms)
 {
   if (syms)
     {
@@ -153,26 +153,26 @@ rule that is satisfied from the following list:
 
 */
 
-XCBKEYSYM XCBKeySymbolsGetKeysym (XCBKeySymbols *syms,
-				  XCBKEYCODE     keycode,
+xcb_keysym_t xcb_key_symbols_get_keysym (xcb_key_symbols_t *syms,
+				  xcb_keycode_t     keycode,
 				  int            col)
 {
-  XCBKEYSYM *keysyms;
-  XCBKEYSYM  keysym_null = { 0 };
-  XCBKEYSYM  lsym;
-  XCBKEYSYM  usym;
-  XCBKEYCODE min_keycode;
-  XCBKEYCODE max_keycode;
+  xcb_keysym_t *keysyms;
+  xcb_keysym_t  keysym_null = { 0 };
+  xcb_keysym_t  lsym;
+  xcb_keysym_t  usym;
+  xcb_keycode_t min_keycode;
+  xcb_keycode_t max_keycode;
   int        per;
   
   if (!syms)
     return keysym_null;
   
-  XCBKeySymbolsGetReply (syms, NULL);
+  xcb_key_symbols_get_reply (syms, NULL);
   
-  keysyms = XCBGetKeyboardMappingKeysyms (syms->u.reply);
-  min_keycode = XCBGetSetup (syms->c)->min_keycode;
-  max_keycode = XCBGetSetup (syms->c)->max_keycode;
+  keysyms = xcb_get_keyboard_mapping_keysyms (syms->u.reply);
+  min_keycode = xcb_get_setup (syms->c)->min_keycode;
+  max_keycode = xcb_get_setup (syms->c)->max_keycode;
 
   per = syms->u.reply->keysyms_per_keycode;
   if ((col < 0) || ((col >= per) && (col > 3)) ||
@@ -192,7 +192,7 @@ XCBKEYSYM XCBKeySymbolsGetKeysym (XCBKeySymbols *syms,
 	}
       if ((per <= (col|1)) || (keysyms[col|1].id == 0))
 	{
-	  XCBConvertCase(keysyms[col&~1], &lsym, &usym);
+	  xcb_convert_case(keysyms[col&~1], &lsym, &usym);
 	  if (!(col & 1))
 	    return lsym;
 	  else if (usym.id == lsym.id)
@@ -205,27 +205,27 @@ XCBKEYSYM XCBKeySymbolsGetKeysym (XCBKeySymbols *syms,
 }
 
 
-XCBKEYCODE
-XCBKeySymbolsGetKeycode (XCBKeySymbols *syms,
-			 XCBKEYSYM      keysym)
+xcb_keycode_t
+xcb_key_symbols_get_keycode (xcb_key_symbols_t *syms,
+			 xcb_keysym_t      keysym)
 {
-  XCBKEYSYM    ks;
-  XCBKEYCODE   keycode_null = { 0 };
+  xcb_keysym_t    ks;
+  xcb_keycode_t   keycode_null = { 0 };
   int          i, j;
 
   if (!syms)
     return keycode_null;
   
-  XCBKeySymbolsGetReply (syms, NULL);
+  xcb_key_symbols_get_reply (syms, NULL);
 
   for (j = 0; j < syms->u.reply->keysyms_per_keycode; j++)
     {
-      for (i = XCBGetSetup (syms->c)->min_keycode.id; i <= XCBGetSetup (syms->c)->max_keycode.id; i++)
+      for (i = xcb_get_setup (syms->c)->min_keycode.id; i <= xcb_get_setup (syms->c)->max_keycode.id; i++)
 	{
-	  XCBKEYCODE keycode;
+	  xcb_keycode_t keycode;
 	  
 	  keycode.id = i;
-	  ks = XCBKeySymbolsGetKeysym (syms, keycode, j);
+	  ks = xcb_key_symbols_get_keysym (syms, keycode, j);
 	  if (ks.id == keysym.id)
 	    return keycode;
 	}
@@ -234,40 +234,40 @@ XCBKeySymbolsGetKeycode (XCBKeySymbols *syms,
   return keycode_null;
 }
 
-XCBKEYSYM
-XCBKeyPressLookupKeysym (XCBKeySymbols    *syms,
-			 XCBKeyPressEvent *event,
+xcb_keysym_t
+xcb_key_press_lookup_keysym (xcb_key_symbols_t    *syms,
+			 xcb_key_press_event_t *event,
 			 int               col)
 {
-  return XCBKeySymbolsGetKeysym (syms, event->detail, col);
+  return xcb_key_symbols_get_keysym (syms, event->detail, col);
 }
 
-XCBKEYSYM
-XCBKeyReleaseLookupKeysym (XCBKeySymbols      *syms,
-			   XCBKeyReleaseEvent *event,
+xcb_keysym_t
+xcb_key_release_lookup_keysym (xcb_key_symbols_t      *syms,
+			   xcb_key_release_event_t *event,
 			   int                 col)
 {
-  return XCBKeySymbolsGetKeysym (syms, event->detail, col);
+  return xcb_key_symbols_get_keysym (syms, event->detail, col);
 }
 
 int
-XCBRefreshKeyboardMapping (XCBKeySymbols         *syms,
-			   XCBMappingNotifyEvent *event)
+xcb_refresh_keyboard_mapping (xcb_key_symbols_t         *syms,
+			   xcb_mapping_notify_event_t *event)
 {
-  if (event->request == XCBMappingKeyboard && syms) {
+  if (event->request == XCB_MAPPING_KEYBOARD && syms) {
     if (syms->tag == TAG_VALUE) {
-      XCBKEYCODE     min_keycode;
-      XCBKEYCODE     max_keycode;
+      xcb_keycode_t     min_keycode;
+      xcb_keycode_t     max_keycode;
 
       if (syms->u.reply) {
 	free (syms->u.reply);
 	syms->u.reply = NULL;
       }
       syms->tag = TAG_COOKIE;
-      min_keycode = XCBGetSetup (syms->c)->min_keycode;
-      max_keycode = XCBGetSetup (syms->c)->max_keycode;
+      min_keycode = xcb_get_setup (syms->c)->min_keycode;
+      max_keycode = xcb_get_setup (syms->c)->max_keycode;
   
-      syms->u.cookie = XCBGetKeyboardMapping(syms->c,
+      syms->u.cookie = xcb_get_keyboard_mapping(syms->c,
 					     min_keycode,
 					     max_keycode.id - min_keycode.id + 1);
       
@@ -281,43 +281,43 @@ XCBRefreshKeyboardMapping (XCBKeySymbols         *syms,
 /* Tests for classes of symbols */
 
 int
-XCBIsKeypadKey (XCBKEYSYM keysym)
+xcb_is_keypad_key (xcb_keysym_t keysym)
 {
   return ((keysym.id >= XK_KP_Space) && (keysym.id <= XK_KP_Equal));
 }
 
 int
-XCBIsPrivateKeypadKey (XCBKEYSYM keysym)
+xcb_is_private_keypad_key (xcb_keysym_t keysym)
 {
   return ((keysym.id >= 0x11000000) && (keysym.id <= 0x1100FFFF));
 }
 
 int
-XCBIsCursorKey (XCBKEYSYM keysym)
+xcb_is_cursor_key (xcb_keysym_t keysym)
 {
   return ((keysym.id >= XK_Home) && (keysym.id <= XK_Select));
 }
 
 int
-XCBIsPFKey (XCBKEYSYM keysym)
+xcb_is_pf_key (xcb_keysym_t keysym)
 {
   return ((keysym.id >= XK_KP_F1) && (keysym.id <= XK_KP_F4));
 }
 
 int
-XCBIsFunctionKey (XCBKEYSYM keysym)
+xcb_is_function_key (xcb_keysym_t keysym)
 {
   return ((keysym.id >= XK_F1) && (keysym.id <= XK_F35));
 }
 
 int
-XCBIsMiscFunctionKey (XCBKEYSYM keysym)
+xcb_is_misc_function_key (xcb_keysym_t keysym)
 {
   return ((keysym.id >= XK_Select) && (keysym.id <= XK_Break));
 }
 
 int
-XCBIsModifierKey (XCBKEYSYM keysym)
+xcb_is_modifier_key (xcb_keysym_t keysym)
 {
   return  (((keysym.id >= XK_Shift_L)  && (keysym.id <= XK_Hyper_R)) ||
 	   ((keysym.id >= XK_ISO_Lock) && (keysym.id <= XK_ISO_Last_Group_Lock)) ||
@@ -328,9 +328,9 @@ XCBIsModifierKey (XCBKEYSYM keysym)
 /* private functions */
 
 void
-XCBConvertCase(XCBKEYSYM  sym,
-	       XCBKEYSYM *lower,
-	       XCBKEYSYM *upper)
+xcb_convert_case(xcb_keysym_t  sym,
+	       xcb_keysym_t *lower,
+	       xcb_keysym_t *upper)
 {
   lower->id = sym.id;
   upper->id = sym.id;
@@ -439,8 +439,8 @@ XCBConvertCase(XCBKEYSYM  sym,
 }
 
 void
-XCBKeySymbolsGetReply (XCBKeySymbols    *syms,
-		       XCBGenericError **e)
+xcb_key_symbols_get_reply (xcb_key_symbols_t    *syms,
+		       xcb_generic_error_t **e)
 {
   if (!syms)
     return;
@@ -448,7 +448,7 @@ XCBKeySymbolsGetReply (XCBKeySymbols    *syms,
   if (syms->tag == TAG_COOKIE)
     {
       syms->tag = TAG_VALUE;
-      syms->u.reply = XCBGetKeyboardMappingReply(syms->c,
+      syms->u.reply = xcb_get_keyboard_mapping_reply(syms->c,
 						 syms->u.cookie,
 						 e);
     }

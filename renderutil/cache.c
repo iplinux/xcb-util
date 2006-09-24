@@ -32,9 +32,9 @@
 
 typedef struct connection_cache {
     struct connection_cache      *next;		/* keep a linked list */
-    XCBConnection                *c;		/* which display this is */
-    XCBRenderQueryVersionRep     *version;
-    XCBRenderQueryPictFormatsRep *formats;
+    xcb_connection_t                *c;		/* which display this is */
+    xcb_render_query_version_reply_t     *version;
+    xcb_render_query_pict_formats_reply_t *formats;
 } connection_cache;
 
 static struct {
@@ -63,17 +63,17 @@ static struct {
 /* Test each depth not explicitly advertised to see if pixmap creation
  * succeeds: if it does, that depth is usable. */
 static int
-pixmap_depths_usable (XCBConnection *c, CARD32 missing, XCBPIXMAP pixmap, XCBDRAWABLE root)
+pixmap_depths_usable (xcb_connection_t *c, uint32_t missing, xcb_pixmap_t pixmap, xcb_drawable_t root)
 {
-    XCBVoidCookie create_cookie[32] = { { 0 } };
-    XCBVoidCookie free_cookie[32]   = { { 0 } };
+    xcb_void_cookie_t create_cookie[32] = { { 0 } };
+    xcb_void_cookie_t free_cookie[32]   = { { 0 } };
     int d;
     int success = 1;
     for (d = 1; d <= 32; d++)
 	if (missing & DEPTH_MASK(d))
 	{
-	    create_cookie[d - 1] = XCBCreatePixmapChecked (c, d, pixmap, root, 1, 1);
-	    free_cookie[d - 1] = XCBFreePixmapChecked (c, pixmap);
+	    create_cookie[d - 1] = xcb_create_pixmap_checked (c, d, pixmap, root, 1, 1);
+	    free_cookie[d - 1] = xcb_free_pixmap_checked (c, pixmap);
 	    if (!create_cookie[d - 1].sequence || !free_cookie[d - 1].sequence)
 	    {
 		success = 0;
@@ -83,8 +83,8 @@ pixmap_depths_usable (XCBConnection *c, CARD32 missing, XCBPIXMAP pixmap, XCBDRA
     for (d = 0; d < 32; d++)
 	if (create_cookie[d].sequence || free_cookie[d].sequence)
 	{
-	    XCBGenericError *create_error = XCBRequestCheck (c, create_cookie[d]);
-	    XCBGenericError *free_error = XCBRequestCheck (c, free_cookie[d]);
+	    xcb_generic_error_t *create_error = xcb_request_check (c, create_cookie[d]);
+	    xcb_generic_error_t *free_error = xcb_request_check (c, free_cookie[d]);
 	    success = success && !create_error;
 	    free(create_error);
 	    free(free_error);
@@ -93,17 +93,17 @@ pixmap_depths_usable (XCBConnection *c, CARD32 missing, XCBPIXMAP pixmap, XCBDRA
 }
 
 static int
-has_required_depths (XCBConnection *c)
+has_required_depths (xcb_connection_t *c)
 {
-    XCBSCREENIter screens;
-    XCBPIXMAP pixmap = { -1 };
-    for (screens = XCBSetupRootsIter(XCBGetSetup(c)); screens.rem; XCBSCREENNext(&screens))
+    xcb_screen_iterator_t screens;
+    xcb_pixmap_t pixmap = { -1 };
+    for (screens = xcb_setup_roots_iterator(xcb_get_setup(c)); screens.rem; xcb_screen_next(&screens))
     {
-	XCBDEPTHIter depths;
-	CARD32 missing = REQUIRED_DEPTHS;
-	XCBDRAWABLE root;
+	xcb_depth_iterator_t depths;
+	uint32_t missing = REQUIRED_DEPTHS;
+	xcb_drawable_t root;
 
-	for (depths = XCBSCREENAllowedDepthsIter(screens.data); depths.rem; XCBDEPTHNext(&depths))
+	for (depths = xcb_screen_allowed_depths_iterator(screens.data); depths.rem; xcb_depth_next(&depths))
 	    missing &= ~DEPTH_MASK(depths.data->depth);
 	if (!missing)
 	    continue;
@@ -116,7 +116,7 @@ has_required_depths (XCBConnection *c)
 	 * work, but the only way to find out is to try them.
 	 */
 	if (pixmap.xid == -1)
-	    pixmap = XCBPIXMAPNew(c);
+	    pixmap = xcb_pixmap_new(c);
 	root.window = screens.data->root;
 	if (!pixmap_depths_usable (c, missing, pixmap, root))
 	    return 0;
@@ -125,11 +125,11 @@ has_required_depths (XCBConnection *c)
 }
 
 static connection_cache *
-find_or_create_display (XCBConnection *c)
+find_or_create_display (xcb_connection_t *c)
 {
     connection_cache *info;
-    XCBRenderQueryVersionCookie version_cookie;
-    XCBRenderQueryPictFormatsCookie formats_cookie;
+    xcb_render_query_version_cookie_t version_cookie;
+    xcb_render_query_pict_formats_cookie_t formats_cookie;
     int present;
 
     /*
@@ -149,12 +149,12 @@ find_or_create_display (XCBConnection *c)
 	return NULL;
     info->c = c;
 
-    version_cookie = XCBRenderQueryVersion(c, 0, 10);
-    formats_cookie = XCBRenderQueryPictFormats(c);
-    XCBFlush(c);
+    version_cookie = xcb_render_query_version(c, 0, 10);
+    formats_cookie = xcb_render_query_pict_formats(c);
+    xcb_flush(c);
     present = has_required_depths (c);
-    info->version = XCBRenderQueryVersionReply(c, version_cookie, 0);
-    info->formats = XCBRenderQueryPictFormatsReply(c, formats_cookie, 0);
+    info->version = xcb_render_query_version_reply(c, version_cookie, 0);
+    info->formats = xcb_render_query_pict_formats_reply(c, formats_cookie, 0);
 
     if (!present || !info->version || !info->formats)
     {
@@ -178,7 +178,7 @@ find_or_create_display (XCBConnection *c)
 }
 
 static connection_cache *
-find_display (XCBConnection *c)
+find_display (xcb_connection_t *c)
 {
     connection_cache *info;
 
@@ -194,8 +194,8 @@ find_display (XCBConnection *c)
     return info;
 }
 
-const XCBRenderQueryVersionRep *
-XCBRenderUtilQueryVersion (XCBConnection *c)
+const xcb_render_query_version_reply_t *
+xcb_render_util_query_version (xcb_connection_t *c)
 {
     connection_cache *info = find_display (c);
     if (!info)
@@ -203,8 +203,8 @@ XCBRenderUtilQueryVersion (XCBConnection *c)
     return info->version;
 }
 
-const XCBRenderQueryPictFormatsRep *
-XCBRenderUtilQueryFormats (XCBConnection *c)
+const xcb_render_query_pict_formats_reply_t *
+xcb_render_util_query_formats (xcb_connection_t *c)
 {
     connection_cache *info = find_display (c);
     if (!info)
@@ -213,7 +213,7 @@ XCBRenderUtilQueryFormats (XCBConnection *c)
 }
 
 int
-XCBRenderUtilDisconnect (XCBConnection *c)
+xcb_render_util_disconnect (xcb_connection_t *c)
 {
     connection_cache **prev, *cur = NULL;
     pthread_mutex_lock(&connections.lock);

@@ -8,19 +8,19 @@ enum tag_t {
 typedef struct {
 	enum tag_t tag;
 	union {
-		XCBInternAtomCookie cookie;
-		XCBATOM atom;
+		xcb_intern_atom_cookie_t cookie;
+		xcb_atom_t atom;
 	} u;
 } InternAtomFastCookie;
 
-XCBATOM InternAtomPredefined(CARD16 name_len, const char *name);
-InternAtomFastCookie InternAtomFast(XCBConnection *c, BOOL only_if_exists, CARD16 name_len, const char *name);
-XCBATOM InternAtomFastReply(XCBConnection *c, InternAtomFastCookie cookie, XCBGenericError **e);
+xcb_atom_t InternAtomPredefined(uint16_t name_len, const char *name);
+InternAtomFastCookie InternAtomFast(xcb_connection_t *c, uint8_t only_if_exists, uint16_t name_len, const char *name);
+xcb_atom_t InternAtomFastReply(xcb_connection_t *c, InternAtomFastCookie cookie, xcb_generic_error_t **e);
 
-const char *GetAtomNamePredefined(XCBATOM atom);
-int GetAtomName(XCBConnection *c, XCBATOM atom, const char **namep, int *lengthp);
+const char *GetAtomNamePredefined(xcb_atom_t atom);
+int GetAtomName(xcb_connection_t *c, xcb_atom_t atom, const char **namep, int *lengthp);
 
-define(`DO', `extern const XCBATOM $1;')dnl
+define(`DO', `extern const xcb_atom_t $1;')dnl
 include(atomlist.m4)`'dnl
 
 #endif /* ATOMS_H */

@@ -4,7 +4,7 @@
 typedef struct node node;
 struct node {
 	node *next;
-	CARD32 key;
+	uint32_t key;
 	void *value;
 };
 
@@ -22,7 +22,7 @@ void FreeTable(Table *table)
 	free(table);
 }
 
-int TablePut(Table *table, CARD32 key, void *value)
+int TablePut(Table *table, uint32_t key, void *value)
 {
 	node *record = malloc(sizeof(node));
 	if(!record)
@@ -34,7 +34,7 @@ int TablePut(Table *table, CARD32 key, void *value)
 	return 1;
 }
 
-void *TableGet(Table *table, CARD32 key)
+void *TableGet(Table *table, uint32_t key)
 {
 	node *cur;
 	for(cur = table->head; cur; cur = cur->next)
@@ -43,7 +43,7 @@ void *TableGet(Table *table, CARD32 key)
 	return 0;
 }
 
-void *TableRemove(Table *table, CARD32 key)
+void *TableRemove(Table *table, uint32_t key)
 {
 	node **cur;
 	for(cur = &table->head; *cur; cur = &(*cur)->next)
