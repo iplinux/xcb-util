@@ -4,8 +4,8 @@
 #include <sys/ipc.h>
 #include <sys/shm.h>
 
-#include <X11/XCB/xcb.h>
-#include <X11/XCB/shm.h>
+#include <xcb/xcb.h>
+#include <xcb/shm.h>
 
 #include "xcb_aux.h"
 #include "xcb_image.h"

@@ -1,7 +1,7 @@
 #include "xcb_reply.h"
 
 #include <stdlib.h>
-#include <X11/XCB/xcbext.h>
+#include <xcb/xcbext.h>
 
 struct node {
 	struct node *next;

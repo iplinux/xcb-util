@@ -1,6 +1,6 @@
 #include <stdlib.h>
 
-#include <X11/XCB/xcb.h>
+#include <xcb/xcb.h>
 #define XK_MISCELLANY
 #define XK_XKB_KEYS
 #define XK_LATIN1

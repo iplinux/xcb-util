@@ -7,7 +7,7 @@
 #ifndef REPLY_FORMATS_H
 #define REPLY_FORMATS_H
 
-#include <X11/XCB/xcb.h>
+#include <xcb/xcb.h>
 
 int formatGetWindowAttributesReply(xcb_window_t wid, xcb_get_window_attributes_reply_t *reply);
 int formatGetGeometryReply(xcb_window_t wid, xcb_get_geometry_reply_t *reply);

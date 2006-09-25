@@ -25,7 +25,7 @@
 
 #ifndef XCB_RENDERUTIL
 #define XCB_RENDERUTIL
-#include <X11/XCB/render.h>
+#include <xcb/render.h>
 
 /* FIXME: These PictFormat declarations should be in render.xml. */
 #define PictFormatID	    (1 << 0)

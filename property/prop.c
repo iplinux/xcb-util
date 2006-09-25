@@ -1,6 +1,6 @@
 #include <stdlib.h>
 #include <assert.h>
-#include <X11/XCB/xcb.h>
+#include <xcb/xcb.h>
 #include "xcb_property.h"
 
 typedef struct {

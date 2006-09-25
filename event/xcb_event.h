@@ -1,7 +1,7 @@
 #ifndef __XCB_EVENTS_H__
 #define __XCB_EVENTS_H__
 
-#include <X11/XCB/xcb.h>
+#include <xcb/xcb.h>
 
 
 #ifdef __cplusplus

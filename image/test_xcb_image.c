@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include <X11/XCB/xcb.h>
+#include <xcb/xcb.h>
 
 #include "xcb_aux.h"
 #include "xcb_image.h"

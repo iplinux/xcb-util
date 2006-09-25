@@ -1,4 +1,4 @@
-#include <X11/XCB/xcb.h>
+#include <xcb/xcb.h>
 #include "xcb_image.h"
 #include "xcb_aux.h"
 #include <stdio.h>

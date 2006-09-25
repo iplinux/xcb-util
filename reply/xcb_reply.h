@@ -1,7 +1,7 @@
 #ifndef __XCB_REPLY_H__
 #define __XCB_REPLY_H__
 
-#include <X11/XCB/xcb.h>
+#include <xcb/xcb.h>
 #include <pthread.h>
 
 

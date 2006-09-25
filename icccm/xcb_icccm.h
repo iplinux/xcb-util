@@ -1,7 +1,7 @@
 #ifndef __XCB_ICCCM_H__
 #define __XCB_ICCCM_H__
 
-#include <X11/XCB/xcb.h>
+#include <xcb/xcb.h>
 #include "xcb_property.h"
 
 

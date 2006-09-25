@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <assert.h>
 
-#include <X11/XCB/xcb.h>
+#include <xcb/xcb.h>
 #include "reply_formats.h"
 #include "xcb_aux.h"
 #include "xcb_event.h"

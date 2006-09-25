@@ -4,8 +4,8 @@
 #include <stdio.h>
 #include <string.h>
 
-#include <X11/XCB/xcb.h>
-#include <X11/XCB/shm.h>
+#include <xcb/xcb.h>
+#include <xcb/shm.h>
 
 #include "xcb_image.h"
 

@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include <X11/XCB/xcb.h>
+#include <xcb/xcb.h>
 #include "xcb_aux.h"
 
 /* Connection related functions */
