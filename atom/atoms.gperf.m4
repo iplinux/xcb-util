@@ -1,5 +1,5 @@
 %{
-#include <X11/XCB/xcb.h>
+#include <xcb/xcb.h>
 #include <stdlib.h>
 #include "xcb_atom.h"
 
