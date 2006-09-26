@@ -11,7 +11,7 @@ fi
 AC_PROG_CC
 AC_PROG_LIBTOOL
 
-xcbincludedir='${includedir}/X11/XCB'
+xcbincludedir='${includedir}/xcb'
 AC_SUBST(xcbincludedir)
 
 pkgconfigdir='${libdir}/pkgconfig'
