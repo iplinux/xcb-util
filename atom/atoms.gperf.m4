@@ -4,7 +4,7 @@
 #include "xcb_atom.h"
 
 define(`COUNT', 0)dnl
-define(`DO', `const xcb_atom_t $1 = { define(`COUNT', incr(COUNT))COUNT };')dnl
+define(`DO', `const xcb_atom_t $1 = define(`COUNT', incr(COUNT))COUNT;')dnl
 include(atomlist.m4)`'dnl
 %}
 
@@ -18,7 +18,7 @@ include(atomlist.m4)`'dnl
 %struct-type
 struct atom_map { int name; xcb_atom_t value; };
 %%
-define(`DO', `$1,{ define(`COUNT', incr(COUNT))COUNT }')dnl
+define(`DO', `$1,define(`COUNT', incr(COUNT))COUNT')dnl
 include(atomlist.m4)`'dnl
 %%
 static const char *const atom_names[] = {
@@ -29,7 +29,7 @@ include(atomlist.m4)`'dnl
 xcb_atom_t intern_atom_predefined(uint16_t name_len, const char *name)
 {
 	const struct atom_map *value = in_word_set(name, name_len);
-	xcb_atom_t ret = { XCB_NONE };
+	xcb_atom_t ret = XCB_NONE;
 	if(value)
 		ret = value->value;
 	return ret;
@@ -39,7 +39,7 @@ intern_atom_fast_cookie_t intern_atom_fast(xcb_connection_t *c, uint8_t only_if_
 {
 	intern_atom_fast_cookie_t cookie;
 
-	if((cookie.u.atom = intern_atom_predefined(name_len, name)).xid != XCB_NONE)
+	if((cookie.u.atom = intern_atom_predefined(name_len, name)) != XCB_NONE)
 	{
 		cookie.tag = TAG_VALUE;
 		return cookie;
@@ -67,7 +67,7 @@ xcb_atom_t intern_atom_fast_reply(xcb_connection_t *c, intern_atom_fast_cookie_t
 			free(reply);
 		}
 		else
-			cookie.u.atom.xid = 0;
+			cookie.u.atom = XCB_NONE;
 		break;
 	}
 	return cookie.u.atom;
@@ -75,9 +75,9 @@ xcb_atom_t intern_atom_fast_reply(xcb_connection_t *c, intern_atom_fast_cookie_t
 
 const char *get_atom_name_predefined(xcb_atom_t atom)
 {
-	if(atom.xid <= 0 || atom.xid > (sizeof(atom_names) / sizeof(*atom_names)))
+	if(atom <= 0 || atom > (sizeof(atom_names) / sizeof(*atom_names)))
 		return 0;
-	return atom_names[atom.xid - 1];
+	return atom_names[atom - 1];
 }
 
 int get_atom_name(xcb_connection_t *c, xcb_atom_t atom, const char **namep, int *lengthp)

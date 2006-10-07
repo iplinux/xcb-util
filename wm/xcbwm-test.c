@@ -67,8 +67,8 @@ static int addClientWindow(xcb_window_t child, xcb_window_t parent, xcb_gcontext
 	record->name_len = 0;
 	record->name = 0;
 	record->titlegc = titlegc;
-	success = TablePut(byParent, parent.xid, record) &&
-		TablePut(byChild, child.xid, record);
+	success = TablePut(byParent, parent, record) &&
+		TablePut(byChild, child, record);
 	assert(success);
 	return 1;
 }
@@ -84,7 +84,7 @@ void reparentWindow(xcb_connection_t *c, xcb_window_t child,
 	xcb_screen_t *root = xcb_setup_roots_iterator(xcb_get_setup(c)).data;
 	xcb_gcontext_t titlegc;
 
-	w = xcb_window_new(c);
+	w = xcb_generate_id(c);
 
 	mask |= XCB_CW_BACK_PIXEL;
 	values[0] = root->white_pixel;
@@ -96,19 +96,19 @@ void reparentWindow(xcb_connection_t *c, xcb_window_t child,
 	values[2] = XCB_EVENT_MASK_BUTTON_PRESS | XCB_EVENT_MASK_BUTTON_RELEASE
 		| XCB_EVENT_MASK_EXPOSURE /* | XCB_EVENT_MASK_ENTER_WINDOW | XCB_EVENT_MASK_LEAVE_WINDOW */;
 
-	printf("Reparenting 0x%08x under 0x%08x.\n", child.xid, w.xid);
+	printf("Reparenting 0x%08x under 0x%08x.\n", child, w);
 	xcb_create_window(c, d, w, r, x, y,
 			width + LEFT + RIGHT, height + TOP + BOTTOM,
 			/* border_width */ 0, XCB_WINDOW_CLASS_INPUT_OUTPUT, v, mask, values);
 	xcb_change_save_set(c, XCB_SET_MODE_INSERT, child);
 	xcb_map_window(c, w);
 
-	titlegc = xcb_gcontext_new(c);
+	titlegc = xcb_generate_id(c);
 
 	mask = XCB_GC_FOREGROUND | XCB_GC_BACKGROUND;
 	values[0] = root->black_pixel;
 	values[1] = root->white_pixel;
-	drawable.window = w;
+	drawable = w;
 	xcb_create_gc(c, titlegc, drawable, mask, values);
 	addClientWindow(child, w, titlegc);
 
@@ -126,7 +126,7 @@ static void redrawWindow(xcb_connection_t *c, ClientWindow *client)
 	xcb_drawable_t d = { client->parent };
 	if(!client->name_len)
 		return;
-	xcb_clear_area(c, 0, d.window, 0, 0, 0, 0);
+	xcb_clear_area(c, 0, d, 0, 0, 0, 0);
 	xcb_image_text_8(c, client->name_len, d, client->titlegc,
 			LEFT - 1, TOP - 4, client->name);
 	xcb_flush(c);
@@ -134,7 +134,7 @@ static void redrawWindow(xcb_connection_t *c, ClientWindow *client)
 
 static int handleExposeEvent(void *data, xcb_connection_t *c, xcb_expose_event_t *e)
 {
-	ClientWindow *client = TableGet(byParent, e->window.xid);
+	ClientWindow *client = TableGet(byParent, e->window);
 	if(!client || e->count != 0)
 		return 1;
 	redrawWindow(c, client);
@@ -143,8 +143,8 @@ static int handleExposeEvent(void *data, xcb_connection_t *c, xcb_expose_event_t
 
 static int handleWMNameChange(void *data, xcb_connection_t *c, uint8_t state, xcb_window_t window, xcb_atom_t atom, xcb_get_property_reply_t *prop)
 {
-	ClientWindow *client = TableGet(byChild, window.xid);
-	printf("WM_NAME change: Window 0x%08x ", window.xid);
+	ClientWindow *client = TableGet(byChild, window);
+	printf("WM_NAME change: Window 0x%08x ", window);
 	if(!client)
 	{
 		printf("is not being managed.\n");

@@ -115,9 +115,9 @@ has_required_depths (xcb_connection_t *c)
 	 * associated visual.  Of course, the other depths still
 	 * work, but the only way to find out is to try them.
 	 */
-	if (pixmap.xid == -1)
-	    pixmap = xcb_pixmap_new(c);
-	root.window = screens.data->root;
+	if (pixmap == -1)
+	    pixmap = xcb_generate_id(c);
+	root = screens.data->root;
 	if (!pixmap_depths_usable (c, missing, pixmap, root))
 	    return 0;
     }

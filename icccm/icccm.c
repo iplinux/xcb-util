@@ -493,7 +493,7 @@ GetWMSizeHints (xcb_connection_t *c,
 	if (!rep)
 	        return 0;
 
-	if ((rep->type.xid == WM_SIZE_HINTS.xid) &&
+	if ((rep->type == WM_SIZE_HINTS) &&
 	    ((rep->format == 8)  ||
 	     (rep->format == 16) ||
 	     (rep->format == 32)) &&
@@ -781,7 +781,7 @@ GetWMHints (xcb_connection_t *c,
 	if (!rep)
 		return NULL;
 
-	if ((rep->type.xid != WM_HINTS.xid) ||
+	if ((rep->type != WM_HINTS) ||
 	    (rep->value_len < (NumWMHintsElements - 1)) ||
 	    (rep->format != 32))
 	{
@@ -800,7 +800,7 @@ GetWMHints (xcb_connection_t *c,
 	prop[length] = '\0';
 	hints = (WMHints *)strdup (prop);
 	if (rep->value_len < NumWMHintsElements)
-		hints->window_group.xid = 0;
+		hints->window_group = XCB_NONE;
 
 	return hints;
 }
@@ -843,7 +843,7 @@ GetWMProtocols (xcb_connection_t *c,
 	rep = xcb_get_property_reply(c, cookie, 0);
 	if (!rep)
 	        return 0;
-	if ((rep->type.xid == ATOM.xid) ||
+	if ((rep->type == ATOM) ||
 	    (rep->format == 32))
 	{
 	        int length;

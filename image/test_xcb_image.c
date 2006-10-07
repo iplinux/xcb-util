@@ -129,22 +129,22 @@ main (int argc, char *argv[])
   depth = xcb_aux_get_depth (c, screen);
 
   /* Create a black graphic context for drawing in the foreground */
-  win.window = screen->root;
+  win = screen->root;
 
-  fgcolor = xcb_gcontext_new(c);
+  fgcolor = xcb_generate_id(c);
   mask = XCB_GC_FOREGROUND | XCB_GC_GRAPHICS_EXPOSURES;
   valgc[0] = screen->black_pixel;
   valgc[1] = 0; /* no graphics exposures */
   xcb_create_gc(c, fgcolor, win, mask, valgc);
 
-  bgcolor = xcb_gcontext_new(c);
+  bgcolor = xcb_generate_id(c);
   mask = XCB_GC_FOREGROUND | XCB_GC_GRAPHICS_EXPOSURES;
   valgc[0] = screen->white_pixel;
   valgc[1] = 0; /* no graphics exposures */
   xcb_create_gc(c, bgcolor, win, mask, valgc);
 
   /* Ask for our window's Id */
-  win.window = xcb_window_new(c);
+  win = xcb_generate_id(c);
 
   /* Create the window */
   mask = XCB_CW_BACK_PIXEL | XCB_CW_EVENT_MASK | XCB_CW_DONT_PROPAGATE;
@@ -153,7 +153,7 @@ main (int argc, char *argv[])
   valwin[2] = XCB_EVENT_MASK_BUTTON_PRESS;
   xcb_create_window (c,                        /* Connection          */
  		   0,                        /* depth               */
-		   win.window,               /* window Id           */
+		   win,                      /* window Id           */
 		   screen->root,             /* parent window       */
 		   0, 0,                     /* x, y                */
 		   W_W, W_H,                 /* width, height       */
@@ -163,11 +163,11 @@ main (int argc, char *argv[])
 		   mask, valwin);                 /* masks, not used yet */
 
   /* Map the window on the screen */
-  xcb_map_window (c, win.window);
+  xcb_map_window (c, win);
 
   /* Create a Pixmap that will fill the window */
-  rect.pixmap = xcb_pixmap_new (c);
-  xcb_create_pixmap(c, depth, rect.pixmap, win, W_W, W_H);
+  rect = xcb_generate_id (c);
+  xcb_create_pixmap(c, depth, rect, win, W_W, W_H);
   xcb_poly_fill_rectangle(c, rect, bgcolor, 1, &rect_coord);
   points[0].x = 0;
   points[0].y = 0;
@@ -181,7 +181,7 @@ main (int argc, char *argv[])
 /*   xcb_poly_line(c, CoordModeOrigin, rect, fgcolor, 2, points); */
 
   /* Ask for our window's Id */
-  new_win.window = xcb_window_new(c);
+  new_win = xcb_generate_id(c);
 
   /* Create the window */
   mask = XCB_CW_BACK_PIXEL | XCB_CW_EVENT_MASK | XCB_CW_DONT_PROPAGATE;
@@ -190,7 +190,7 @@ main (int argc, char *argv[])
   valwin[2] = XCB_EVENT_MASK_BUTTON_PRESS;
   xcb_create_window (c,                        /* Connection          */
  		   0,                        /* depth               */
-		   new_win.window,               /* window Id           */
+		   new_win,                  /* window Id           */
 		   screen->root,             /* parent window       */
 		   0, 0,                     /* x, y                */
 		   W_W, W_H,                 /* width, height       */
@@ -202,7 +202,7 @@ main (int argc, char *argv[])
   
 
   /* Map the window on the screen */
-  xcb_map_window (c, new_win.window);
+  xcb_map_window (c, new_win);
 
 
   xcb_flush (c); 

@@ -18,22 +18,22 @@ void manageWindow(property_handlers_t *prophs, xcb_connection_t *c, xcb_window_t
 			return;
 		if(attr->map_state != XCB_MAP_STATE_VIEWABLE)
 		{
-			printf("Window 0x%08x is not mapped. Ignoring.\n", window.xid);
+			printf("Window 0x%08x is not mapped. Ignoring.\n", window);
 			free(attr);
 			return;
 		}
 		wa.tag = TAG_VALUE;
 		wa.u.override_redirect = attr->override_redirect;
 	}
-	if(!wa.u.override_redirect && TableGet(byChild, window.xid))
+	if(!wa.u.override_redirect && TableGet(byChild, window))
 	{
-		printf("Window 0x%08x already managed. Ignoring.\n", window.xid);
+		printf("Window 0x%08x already managed. Ignoring.\n", window);
 		free(attr);
 		return;
 	}
 	if(wa.u.override_redirect)
 	{
-		printf("Window 0x%08x has override-redirect set. Ignoring.\n", window.xid);
+		printf("Window 0x%08x has override-redirect set. Ignoring.\n", window);
 		free(attr);
 		return;
 	}
@@ -58,16 +58,16 @@ int handleMapNotifyEvent(void *prophs, xcb_connection_t *c, xcb_map_notify_event
 {
 	WindowAttributes wa = { TAG_VALUE };
 	wa.u.override_redirect = e->override_redirect;
-	printf("MapNotify for 0x%08x.\n", e->window.xid);
+	printf("MapNotify for 0x%08x.\n", e->window);
 	manageWindow(prophs, c, e->window, wa);
 	return 1;
 }
 
 int handleUnmapNotifyEvent(void *data, xcb_connection_t *c, xcb_unmap_notify_event_t *e)
 {
-	ClientWindow *client = TableRemove(byChild, e->event.xid);
+	ClientWindow *client = TableRemove(byChild, e->event);
 	xcb_window_t root;
-	printf("UnmapNotify for 0x%08x (received from 0x%08x): ", e->window.xid, e->event.xid);
+	printf("UnmapNotify for 0x%08x (received from 0x%08x): ", e->window, e->event);
 	if(!client)
 	{
 		printf("not a managed window. Ignoring.\n");
@@ -75,11 +75,11 @@ int handleUnmapNotifyEvent(void *data, xcb_connection_t *c, xcb_unmap_notify_eve
 	}
 
 	root = xcb_setup_roots_iterator(xcb_get_setup(c)).data->root;
-	printf("child of 0x%08x.\n", client->parent.xid);
+	printf("child of 0x%08x.\n", client->parent);
 	xcb_reparent_window(c, client->child, root, 0, 0);
 	xcb_destroy_window(c, client->parent);
 	xcb_flush(c);
-	TableRemove(byParent, client->parent.xid);
+	TableRemove(byParent, client->parent);
 	free(client);
 	return 1;
 }

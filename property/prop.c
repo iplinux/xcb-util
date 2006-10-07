@@ -47,7 +47,7 @@ int property_changed(property_handlers_t *prophs, uint8_t state, xcb_window_t wi
 	xcb_connection_t *c = get_xcb_connection(get_property_event_handlers(prophs));
 	node *cur;
 	for(cur = prophs->head; cur; cur = cur->next)
-		if(cur->name.xid == atom.xid)
+		if(cur->name == atom)
 			return call_handler(c, state, window, atom, &cur->h);
 	if(prophs->def)
 		return call_handler(c, state, window, atom, prophs->def);

@@ -59,7 +59,7 @@ xcb_key_symbols_alloc (xcb_connection_t *c)
   
   syms->u.cookie = xcb_get_keyboard_mapping(c,
 					 min_keycode,
-					 max_keycode.id - min_keycode.id + 1);
+					 max_keycode - min_keycode + 1);
   
   return syms;
 }
@@ -158,7 +158,7 @@ xcb_keysym_t xcb_key_symbols_get_keysym (xcb_key_symbols_t *syms,
 				  int            col)
 {
   xcb_keysym_t *keysyms;
-  xcb_keysym_t  keysym_null = { 0 };
+  xcb_keysym_t  keysym_null = { XCB_NO_SYMBOL };
   xcb_keysym_t  lsym;
   xcb_keysym_t  usym;
   xcb_keycode_t min_keycode;
@@ -176,26 +176,26 @@ xcb_keysym_t xcb_key_symbols_get_keysym (xcb_key_symbols_t *syms,
 
   per = syms->u.reply->keysyms_per_keycode;
   if ((col < 0) || ((col >= per) && (col > 3)) ||
-      (keycode.id < min_keycode.id) ||
-      (keycode.id > max_keycode.id))
+      (keycode < min_keycode) ||
+      (keycode > max_keycode))
     return keysym_null;
 
-  keysyms = &keysyms[(keycode.id - min_keycode.id) * per];
+  keysyms = &keysyms[(keycode - min_keycode) * per];
   if (col < 4)
     {
       if (col > 1)
 	{
-	  while ((per > 2) && (keysyms[per - 1].id == 0))
+	  while ((per > 2) && (keysyms[per - 1] == XCB_NO_SYMBOL))
 	    per--;
 	  if (per < 3)
 	    col -= 2;
 	}
-      if ((per <= (col|1)) || (keysyms[col|1].id == 0))
+      if ((per <= (col|1)) || (keysyms[col|1] == XCB_NO_SYMBOL))
 	{
 	  xcb_convert_case(keysyms[col&~1], &lsym, &usym);
 	  if (!(col & 1))
 	    return lsym;
-	  else if (usym.id == lsym.id)
+	  else if (usym == lsym)
 	    return keysym_null;
 	  else
 	    return usym;
@@ -210,7 +210,7 @@ xcb_key_symbols_get_keycode (xcb_key_symbols_t *syms,
 			 xcb_keysym_t      keysym)
 {
   xcb_keysym_t    ks;
-  xcb_keycode_t   keycode_null = { 0 };
+  xcb_keycode_t   keycode_null = { XCB_NO_SYMBOL };
   int          i, j;
 
   if (!syms)
@@ -220,13 +220,13 @@ xcb_key_symbols_get_keycode (xcb_key_symbols_t *syms,
 
   for (j = 0; j < syms->u.reply->keysyms_per_keycode; j++)
     {
-      for (i = xcb_get_setup (syms->c)->min_keycode.id; i <= xcb_get_setup (syms->c)->max_keycode.id; i++)
+      for (i = xcb_get_setup (syms->c)->min_keycode; i <= xcb_get_setup (syms->c)->max_keycode; i++)
 	{
 	  xcb_keycode_t keycode;
 	  
-	  keycode.id = i;
+	  keycode = i;
 	  ks = xcb_key_symbols_get_keysym (syms, keycode, j);
-	  if (ks.id == keysym.id)
+	  if (ks == keysym)
 	    return keycode;
 	}
     }
@@ -269,7 +269,7 @@ xcb_refresh_keyboard_mapping (xcb_key_symbols_t         *syms,
   
       syms->u.cookie = xcb_get_keyboard_mapping(syms->c,
 					     min_keycode,
-					     max_keycode.id - min_keycode.id + 1);
+					     max_keycode - min_keycode + 1);
       
     }
     return 1;
@@ -283,46 +283,46 @@ xcb_refresh_keyboard_mapping (xcb_key_symbols_t         *syms,
 int
 xcb_is_keypad_key (xcb_keysym_t keysym)
 {
-  return ((keysym.id >= XK_KP_Space) && (keysym.id <= XK_KP_Equal));
+  return ((keysym >= XK_KP_Space) && (keysym <= XK_KP_Equal));
 }
 
 int
 xcb_is_private_keypad_key (xcb_keysym_t keysym)
 {
-  return ((keysym.id >= 0x11000000) && (keysym.id <= 0x1100FFFF));
+  return ((keysym >= 0x11000000) && (keysym <= 0x1100FFFF));
 }
 
 int
 xcb_is_cursor_key (xcb_keysym_t keysym)
 {
-  return ((keysym.id >= XK_Home) && (keysym.id <= XK_Select));
+  return ((keysym >= XK_Home) && (keysym <= XK_Select));
 }
 
 int
 xcb_is_pf_key (xcb_keysym_t keysym)
 {
-  return ((keysym.id >= XK_KP_F1) && (keysym.id <= XK_KP_F4));
+  return ((keysym >= XK_KP_F1) && (keysym <= XK_KP_F4));
 }
 
 int
 xcb_is_function_key (xcb_keysym_t keysym)
 {
-  return ((keysym.id >= XK_F1) && (keysym.id <= XK_F35));
+  return ((keysym >= XK_F1) && (keysym <= XK_F35));
 }
 
 int
 xcb_is_misc_function_key (xcb_keysym_t keysym)
 {
-  return ((keysym.id >= XK_Select) && (keysym.id <= XK_Break));
+  return ((keysym >= XK_Select) && (keysym <= XK_Break));
 }
 
 int
 xcb_is_modifier_key (xcb_keysym_t keysym)
 {
-  return  (((keysym.id >= XK_Shift_L)  && (keysym.id <= XK_Hyper_R)) ||
-	   ((keysym.id >= XK_ISO_Lock) && (keysym.id <= XK_ISO_Last_Group_Lock)) ||
-	   (keysym.id == XK_Mode_switch) ||
-	   (keysym.id == XK_Num_Lock));
+  return  (((keysym >= XK_Shift_L)  && (keysym <= XK_Hyper_R)) ||
+	   ((keysym >= XK_ISO_Lock) && (keysym <= XK_ISO_Last_Group_Lock)) ||
+	   (keysym == XK_Mode_switch) ||
+	   (keysym == XK_Num_Lock));
 }
 
 /* private functions */
@@ -332,107 +332,107 @@ xcb_convert_case(xcb_keysym_t  sym,
 	       xcb_keysym_t *lower,
 	       xcb_keysym_t *upper)
 {
-  lower->id = sym.id;
-  upper->id = sym.id;
+  *lower = sym;
+  *upper = sym;
 
-  switch(sym.id >> 8)
+  switch(sym >> 8)
     {
     case 0: /* Latin 1 */
-      if ((sym.id >= XK_A) && (sym.id <= XK_Z))
-	lower->id += (XK_a - XK_A);
-      else if ((sym.id >= XK_a) && (sym.id <= XK_z))
-	upper->id -= (XK_a - XK_A);
-      else if ((sym.id >= XK_Agrave) && (sym.id <= XK_Odiaeresis))
-	lower->id += (XK_agrave - XK_Agrave);
-      else if ((sym.id >= XK_agrave) && (sym.id <= XK_odiaeresis))
-	upper->id -= (XK_agrave - XK_Agrave);
-      else if ((sym.id >= XK_Ooblique) && (sym.id <= XK_Thorn))
-	lower->id += (XK_oslash - XK_Ooblique);
-      else if ((sym.id >= XK_oslash) && (sym.id <= XK_thorn))
-	upper->id -= (XK_oslash - XK_Ooblique);
+      if ((sym >= XK_A) && (sym <= XK_Z))
+	*lower += (XK_a - XK_A);
+      else if ((sym >= XK_a) && (sym <= XK_z))
+	*upper -= (XK_a - XK_A);
+      else if ((sym >= XK_Agrave) && (sym <= XK_Odiaeresis))
+	*lower += (XK_agrave - XK_Agrave);
+      else if ((sym >= XK_agrave) && (sym <= XK_odiaeresis))
+	*upper -= (XK_agrave - XK_Agrave);
+      else if ((sym >= XK_Ooblique) && (sym <= XK_Thorn))
+	*lower += (XK_oslash - XK_Ooblique);
+      else if ((sym >= XK_oslash) && (sym <= XK_thorn))
+	*upper -= (XK_oslash - XK_Ooblique);
       break;
     case 1: /* Latin 2 */
-      /* Assume the KeySym.Id is a legal value (ignore discontinuities) */
-      if (sym.id == XK_Aogonek)
-	lower->id = XK_aogonek;
-      else if (sym.id >= XK_Lstroke && sym.id <= XK_Sacute)
-	lower->id += (XK_lstroke - XK_Lstroke);
-      else if (sym.id >= XK_Scaron && sym.id <= XK_Zacute)
-	lower->id += (XK_scaron - XK_Scaron);
-      else if (sym.id >= XK_Zcaron && sym.id <= XK_Zabovedot)
-	lower->id += (XK_zcaron - XK_Zcaron);
-      else if (sym.id == XK_aogonek)
-	upper->id = XK_Aogonek;
-      else if (sym.id >= XK_lstroke && sym.id <= XK_sacute)
-	upper->id -= (XK_lstroke - XK_Lstroke);
-      else if (sym.id >= XK_scaron && sym.id <= XK_zacute)
-	upper->id -= (XK_scaron - XK_Scaron);
-      else if (sym.id >= XK_zcaron && sym.id <= XK_zabovedot)
-	upper->id -= (XK_zcaron - XK_Zcaron);
-      else if (sym.id >= XK_Racute && sym.id <= XK_Tcedilla)
-	lower->id += (XK_racute - XK_Racute);
-      else if (sym.id >= XK_racute && sym.id <= XK_tcedilla)
-	upper->id -= (XK_racute - XK_Racute);
+      /* Assume the KeySym is a legal value (ignore discontinuities) */
+      if (sym == XK_Aogonek)
+	*lower = XK_aogonek;
+      else if (sym >= XK_Lstroke && sym <= XK_Sacute)
+	*lower += (XK_lstroke - XK_Lstroke);
+      else if (sym >= XK_Scaron && sym <= XK_Zacute)
+	*lower += (XK_scaron - XK_Scaron);
+      else if (sym >= XK_Zcaron && sym <= XK_Zabovedot)
+	*lower += (XK_zcaron - XK_Zcaron);
+      else if (sym == XK_aogonek)
+	*upper = XK_Aogonek;
+      else if (sym >= XK_lstroke && sym <= XK_sacute)
+	*upper -= (XK_lstroke - XK_Lstroke);
+      else if (sym >= XK_scaron && sym <= XK_zacute)
+	*upper -= (XK_scaron - XK_Scaron);
+      else if (sym >= XK_zcaron && sym <= XK_zabovedot)
+	*upper -= (XK_zcaron - XK_Zcaron);
+      else if (sym >= XK_Racute && sym <= XK_Tcedilla)
+	*lower += (XK_racute - XK_Racute);
+      else if (sym >= XK_racute && sym <= XK_tcedilla)
+	*upper -= (XK_racute - XK_Racute);
       break;
     case 2: /* Latin 3 */
-      /* Assume the KeySym.Id is a legal value (ignore discontinuities) */
-      if (sym.id >= XK_Hstroke && sym.id <= XK_Hcircumflex)
-	lower->id += (XK_hstroke - XK_Hstroke);
-      else if (sym.id >= XK_Gbreve && sym.id <= XK_Jcircumflex)
-	lower->id += (XK_gbreve - XK_Gbreve);
-      else if (sym.id >= XK_hstroke && sym.id <= XK_hcircumflex)
-	upper->id -= (XK_hstroke - XK_Hstroke);
-      else if (sym.id >= XK_gbreve && sym.id <= XK_jcircumflex)
-	upper->id -= (XK_gbreve - XK_Gbreve);
-      else if (sym.id >= XK_Cabovedot && sym.id <= XK_Scircumflex)
-	lower->id += (XK_cabovedot - XK_Cabovedot);
-      else if (sym.id >= XK_cabovedot && sym.id <= XK_scircumflex)
-	upper->id -= (XK_cabovedot - XK_Cabovedot);
+      /* Assume the KeySym is a legal value (ignore discontinuities) */
+      if (sym >= XK_Hstroke && sym <= XK_Hcircumflex)
+	*lower += (XK_hstroke - XK_Hstroke);
+      else if (sym >= XK_Gbreve && sym <= XK_Jcircumflex)
+	*lower += (XK_gbreve - XK_Gbreve);
+      else if (sym >= XK_hstroke && sym <= XK_hcircumflex)
+	*upper -= (XK_hstroke - XK_Hstroke);
+      else if (sym >= XK_gbreve && sym <= XK_jcircumflex)
+	*upper -= (XK_gbreve - XK_Gbreve);
+      else if (sym >= XK_Cabovedot && sym <= XK_Scircumflex)
+	*lower += (XK_cabovedot - XK_Cabovedot);
+      else if (sym >= XK_cabovedot && sym <= XK_scircumflex)
+	*upper -= (XK_cabovedot - XK_Cabovedot);
       break;
     case 3: /* Latin 4 */
-      /* Assume the KeySym.Id is a legal value (ignore discontinuities) */
-      if (sym.id >= XK_Rcedilla && sym.id <= XK_Tslash)
-	lower->id += (XK_rcedilla - XK_Rcedilla);
-      else if (sym.id >= XK_rcedilla && sym.id <= XK_tslash)
-	upper->id -= (XK_rcedilla - XK_Rcedilla);
-      else if (sym.id == XK_ENG)
-	lower->id = XK_eng;
-      else if (sym.id == XK_eng)
-	upper->id = XK_ENG;
-      else if (sym.id >= XK_Amacron && sym.id <= XK_Umacron)
-	lower->id += (XK_amacron - XK_Amacron);
-      else if (sym.id >= XK_amacron && sym.id <= XK_umacron)
-	upper->id -= (XK_amacron - XK_Amacron);
+      /* Assume the KeySym is a legal value (ignore discontinuities) */
+      if (sym >= XK_Rcedilla && sym <= XK_Tslash)
+	*lower += (XK_rcedilla - XK_Rcedilla);
+      else if (sym >= XK_rcedilla && sym <= XK_tslash)
+	*upper -= (XK_rcedilla - XK_Rcedilla);
+      else if (sym == XK_ENG)
+	*lower = XK_eng;
+      else if (sym == XK_eng)
+	*upper = XK_ENG;
+      else if (sym >= XK_Amacron && sym <= XK_Umacron)
+	*lower += (XK_amacron - XK_Amacron);
+      else if (sym >= XK_amacron && sym <= XK_umacron)
+	*upper -= (XK_amacron - XK_Amacron);
       break;
     case 6: /* Cyrillic */
-      /* Assume the KeySym.Id is a legal value (ignore discontinuities) */
-      if (sym.id >= XK_Serbian_DJE && sym.id <= XK_Serbian_DZE)
-	lower->id -= (XK_Serbian_DJE - XK_Serbian_dje);
-      else if (sym.id >= XK_Serbian_dje && sym.id <= XK_Serbian_dze)
-	upper->id += (XK_Serbian_DJE - XK_Serbian_dje);
-      else if (sym.id >= XK_Cyrillic_YU && sym.id <= XK_Cyrillic_HARDSIGN)
-	lower->id -= (XK_Cyrillic_YU - XK_Cyrillic_yu);
-      else if (sym.id >= XK_Cyrillic_yu && sym.id <= XK_Cyrillic_hardsign)
-	upper->id += (XK_Cyrillic_YU - XK_Cyrillic_yu);
+      /* Assume the KeySym is a legal value (ignore discontinuities) */
+      if (sym >= XK_Serbian_DJE && sym <= XK_Serbian_DZE)
+	*lower -= (XK_Serbian_DJE - XK_Serbian_dje);
+      else if (sym >= XK_Serbian_dje && sym <= XK_Serbian_dze)
+	*upper += (XK_Serbian_DJE - XK_Serbian_dje);
+      else if (sym >= XK_Cyrillic_YU && sym <= XK_Cyrillic_HARDSIGN)
+	*lower -= (XK_Cyrillic_YU - XK_Cyrillic_yu);
+      else if (sym >= XK_Cyrillic_yu && sym <= XK_Cyrillic_hardsign)
+	*upper += (XK_Cyrillic_YU - XK_Cyrillic_yu);
       break;
     case 7: /* Greek */
-      /* Assume the KeySym.Id is a legal value (ignore discontinuities) */
-      if (sym.id >= XK_Greek_ALPHAaccent && sym.id <= XK_Greek_OMEGAaccent)
-	lower->id += (XK_Greek_alphaaccent - XK_Greek_ALPHAaccent);
-      else if (sym.id >= XK_Greek_alphaaccent && sym.id <= XK_Greek_omegaaccent &&
-	       sym.id != XK_Greek_iotaaccentdieresis &&
-	       sym.id != XK_Greek_upsilonaccentdieresis)
-	upper->id -= (XK_Greek_alphaaccent - XK_Greek_ALPHAaccent);
-      else if (sym.id >= XK_Greek_ALPHA && sym.id <= XK_Greek_OMEGA)
-	lower->id += (XK_Greek_alpha - XK_Greek_ALPHA);
-      else if (sym.id >= XK_Greek_alpha && sym.id <= XK_Greek_omega &&
-	       sym.id != XK_Greek_finalsmallsigma)
-	upper->id -= (XK_Greek_alpha - XK_Greek_ALPHA);
+      /* Assume the KeySym is a legal value (ignore discontinuities) */
+      if (sym >= XK_Greek_ALPHAaccent && sym <= XK_Greek_OMEGAaccent)
+	*lower += (XK_Greek_alphaaccent - XK_Greek_ALPHAaccent);
+      else if (sym >= XK_Greek_alphaaccent && sym <= XK_Greek_omegaaccent &&
+	       sym != XK_Greek_iotaaccentdieresis &&
+	       sym != XK_Greek_upsilonaccentdieresis)
+	*upper -= (XK_Greek_alphaaccent - XK_Greek_ALPHAaccent);
+      else if (sym >= XK_Greek_ALPHA && sym <= XK_Greek_OMEGA)
+	*lower += (XK_Greek_alpha - XK_Greek_ALPHA);
+      else if (sym >= XK_Greek_alpha && sym <= XK_Greek_omega &&
+	       sym != XK_Greek_finalsmallsigma)
+	*upper -= (XK_Greek_alpha - XK_Greek_ALPHA);
       break;
     case 0x14: /* Armenian */
-      if (sym.id >= XK_Armenian_AYB && sym.id <= XK_Armenian_fe) {
-	lower->id = sym.id | 1;
-	upper->id = sym.id & ~1;
+      if (sym >= XK_Armenian_AYB && sym <= XK_Armenian_fe) {
+	*lower = sym | 1;
+	*upper = sym & ~1;
       }
       break;
     }

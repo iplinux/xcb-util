@@ -14,7 +14,7 @@ int formatGetWindowAttributesReply(xcb_window_t wid, xcb_get_window_attributes_r
     if(!reply)
     {
         fprintf(stderr, "Failed to get attributes for window " WINFMT ".\n",
-            (unsigned int) wid.xid);
+            (unsigned int) wid);
         return 0;
     }
 
@@ -34,9 +34,9 @@ int formatGetWindowAttributesReply(xcb_window_t wid, xcb_get_window_attributes_r
            "    allEventMasks      = 0x%08x\n"
            "    yourEventMask      = 0x%08x\n"
            "    doNotPropagateMask = 0x%08x\n",
-        (unsigned int) wid.xid,
+        (unsigned int) wid,
         reply->backing_store,
-        (unsigned int) reply->visual.id,
+        (unsigned int) reply->visual,
         reply->_class,
         reply->bit_gravity,
         reply->win_gravity,
@@ -46,7 +46,7 @@ int formatGetWindowAttributesReply(xcb_window_t wid, xcb_get_window_attributes_r
         reply->map_is_installed,
         reply->map_state,
         reply->override_redirect,
-        (unsigned int) reply->colormap.xid,
+        (unsigned int) reply->colormap,
         (unsigned int) reply->all_event_masks,
         (unsigned int) reply->your_event_mask,
         reply->do_not_propagate_mask);
@@ -60,12 +60,12 @@ int formatGetGeometryReply(xcb_window_t wid, xcb_get_geometry_reply_t *reply)
     if(!reply)
     {
         fprintf(stderr, "Failed to get geometry for window " WINFMT ".\n",
-            (unsigned int) wid.xid);
+            (unsigned int) wid);
         return 0;
     }
 
     printf("Geometry for window " WINFMT ": %dx%d%+d%+d\n",
-        (unsigned int) wid.xid,
+        (unsigned int) wid,
         reply->width,
         reply->height,
         reply->x,
@@ -82,20 +82,20 @@ int formatQueryTreeReply(xcb_window_t wid, xcb_query_tree_reply_t *reply)
     if(!reply)
     {
         fprintf(stderr, "Failed to query tree for window " WINFMT ".\n",
-            (unsigned int) wid.xid);
+            (unsigned int) wid);
         return 0;
     }
 
     printf("Window " WINFMT " has parent " WINFMT ", root " WINFMT ", and %d children%c\n",
-        (unsigned int) wid.xid,
-        (unsigned int) reply->parent.xid,
-        (unsigned int) reply->root.xid,
+        (unsigned int) wid,
+        (unsigned int) reply->parent,
+        (unsigned int) reply->root,
         (unsigned int) reply->children_len,
         reply->children_len ? ':' : '.');
 
     for(i = 0; i < reply->children_len; ++i)
         printf("    window " WINFMT "\n",
-            (unsigned int) xcb_query_tree_children(reply)[i].xid);
+            (unsigned int) xcb_query_tree_children(reply)[i]);
 
     fflush(stdout);
     return 1;

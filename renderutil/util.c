@@ -33,7 +33,7 @@ xcb_render_util_find_visual_format (const xcb_render_query_pict_formats_reply_t 
     for (screens = xcb_render_query_pict_formats_screens_iterator(formats); screens.rem; xcb_render_pictscreen_next(&screens))
 	for (depths = xcb_render_pictscreen_depths_iterator(screens.data); depths.rem; xcb_render_pictdepth_next(&depths))
 	    for (visuals = xcb_render_pictdepth_visuals_iterator(depths.data); visuals.rem; xcb_render_pictvisual_next(&visuals))
-		if (visuals.data->visual.id == visual.id)
+		if (visuals.data->visual == visual)
 		    return visuals.data;
     return 0;
 }
@@ -50,7 +50,7 @@ xcb_render_util_find_format (const xcb_render_query_pict_formats_reply_t	*format
     for (i = xcb_render_query_pict_formats_formats_iterator(formats); i.rem; xcb_render_pictforminfo_next(&i))
     {
 	if (mask & PictFormatID)
-	    if (template->id.xid != i.data->id.xid)
+	    if (template->id != i.data->id)
 		continue;
 	if (mask & PictFormatType)
 	    if (template->type != i.data->type)
@@ -83,7 +83,7 @@ xcb_render_util_find_format (const xcb_render_query_pict_formats_reply_t	*format
 	    if (template->direct.alpha_mask != i.data->direct.alpha_mask)
 		continue;
 	if (mask & PictFormatColormap)
-	    if (template->colormap.xid != i.data->colormap.xid)
+	    if (template->colormap != i.data->colormap)
 		continue;
 	if (count-- == 0)
 	    return i.data;
@@ -102,7 +102,7 @@ xcb_render_util_find_standard_format (const xcb_render_query_pict_formats_reply_
 	/* PictStandardARGB32 */
 	{
 	    {
-		{ 0 },			    /* id */
+		0,			    /* id */
 		XCB_RENDER_PICT_TYPE_DIRECT,    /* type */
 		32,			    /* depth */
 		{ 0 },			    /* pad */
@@ -116,7 +116,7 @@ xcb_render_util_find_standard_format (const xcb_render_query_pict_formats_reply_
 		    24,			    /* direct.alpha */
 		    0xff,		    /* direct.alphaMask */
 		},
-		{ 0 },			    /* colormap */
+		0,			    /* colormap */
 	    },
 	    PictFormatType | 
 	    PictFormatDepth |
@@ -132,7 +132,7 @@ xcb_render_util_find_standard_format (const xcb_render_query_pict_formats_reply_
 	/* PictStandardRGB24 */
 	{
 	    {
-		{ 0 },			    /* id */
+		0,			    /* id */
 		XCB_RENDER_PICT_TYPE_DIRECT,    /* type */
 		24,			    /* depth */
 		{ 0 },			    /* pad */
@@ -146,7 +146,7 @@ xcb_render_util_find_standard_format (const xcb_render_query_pict_formats_reply_
 		    0,			    /* direct.alpha */
 		    0x00,		    /* direct.alphaMask */
 		},
-		{ 0 },			    /* colormap */
+		0,			    /* colormap */
 	    },
 	    PictFormatType | 
 	    PictFormatDepth |
@@ -161,7 +161,7 @@ xcb_render_util_find_standard_format (const xcb_render_query_pict_formats_reply_
 	/* PictStandardA8 */
 	{
 	    {
-		{ 0 },			    /* id */
+		0,			    /* id */
 		XCB_RENDER_PICT_TYPE_DIRECT,    /* type */
 		8,			    /* depth */
 		{ 0 },			    /* pad */
@@ -175,7 +175,7 @@ xcb_render_util_find_standard_format (const xcb_render_query_pict_formats_reply_
 		    0,			    /* direct.alpha */
 		    0xff,		    /* direct.alphaMask */
 		},
-		{ 0 },			    /* colormap */
+		0,			    /* colormap */
 	    },
 	    PictFormatType | 
 	    PictFormatDepth |
@@ -188,7 +188,7 @@ xcb_render_util_find_standard_format (const xcb_render_query_pict_formats_reply_
 	/* PictStandardA4 */
 	{
 	    {
-		{ 0 },			    /* id */
+		0,			    /* id */
 		XCB_RENDER_PICT_TYPE_DIRECT,    /* type */
 		4,			    /* depth */
 		{ 0 },			    /* pad */
@@ -202,7 +202,7 @@ xcb_render_util_find_standard_format (const xcb_render_query_pict_formats_reply_
 		    0,			    /* direct.alpha */
 		    0x0f,		    /* direct.alphaMask */
 		},
-		{ 0 },			    /* colormap */
+		0,			    /* colormap */
 	    },
 	    PictFormatType | 
 	    PictFormatDepth |
@@ -215,7 +215,7 @@ xcb_render_util_find_standard_format (const xcb_render_query_pict_formats_reply_
 	/* PictStandardA1 */
 	{
 	    {
-		{ 0 },			    /* id */
+		0,			    /* id */
 		XCB_RENDER_PICT_TYPE_DIRECT,    /* type */
 		1,			    /* depth */
 		{ 0 },			    /* pad */
@@ -229,7 +229,7 @@ xcb_render_util_find_standard_format (const xcb_render_query_pict_formats_reply_
 		    0,			    /* direct.alpha */
 		    0x01,		    /* direct.alphaMask */
 		},
-		{ 0 },			    /* colormap */
+		0,			    /* colormap */
 	    },
 	    PictFormatType | 
 	    PictFormatDepth |

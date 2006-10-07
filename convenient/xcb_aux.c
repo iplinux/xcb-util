@@ -14,7 +14,7 @@ xcb_aux_get_depth (xcb_connection_t *c,
   xcb_get_geometry_reply_t *geom;
   int                       depth;
 
-  drawable.window = screen->root;
+  drawable = screen->root;
   geom = xcb_get_geometry_reply (c, xcb_get_geometry(c, drawable), 0);
 
   if (!geom) {
@@ -57,7 +57,7 @@ xcb_aux_get_visualtype (xcb_connection_t *c,
    
    iter = xcb_depth_visuals_iterator(depth);
    for (cur = 0 ; cur < iter.rem ; xcb_visualtype_next(&iter), ++cur)
-      if (vid.id == iter.data->visual_id.id)
+      if (vid == iter.data->visual_id)
 	 return iter.data;
 
    return NULL;
