@@ -48,7 +48,7 @@ void manageWindow(property_handlers_t *prophs, xcb_connection_t *c, xcb_window_t
 	if(attr && geom)
 	{
 		reparentWindow(c, window, attr->visual, geom->root, geom->depth, geom->x, geom->y, geom->width, geom->height);
-		PropertyChanged(prophs, XCB_PROPERTY_NEW_VALUE, window, WM_NAME);
+		property_changed(prophs, XCB_PROPERTY_NEW_VALUE, window, WM_NAME);
 	}
 	free(attr);
 	free(geom);
