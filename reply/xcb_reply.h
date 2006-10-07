@@ -16,8 +16,8 @@ void free_reply_handlers(reply_handlers_t *h);
 xcb_connection_t *get_xcb_connection(reply_handlers_t *h);
 
 int poll_replies(reply_handlers_t *h);
-pthread_t start_reply_thread(reply_handlers_t *h);
-void stop_reply_threads(reply_handlers_t *h);
+void start_reply_thread(reply_handlers_t *h);
+void stop_reply_thread(reply_handlers_t *h);
 
 typedef void (*generic_reply_handler)(void *data, xcb_connection_t *c, xcb_generic_reply_t *reply, xcb_generic_error_t *error);
 

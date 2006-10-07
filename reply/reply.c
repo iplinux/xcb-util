@@ -16,7 +16,7 @@ struct reply_handlers {
 	pthread_cond_t cond;
 	struct node *head;
 	xcb_connection_t *c;
-	char stop;
+	pthread_t thread;
 };
 
 reply_handlers_t *alloc_reply_handlers(xcb_connection_t *c)
@@ -52,78 +52,74 @@ static void insert_handler(reply_handlers_t *h, struct node *cur)
 	*prev = cur;
 }
 
-static int do_poll(reply_handlers_t *h)
+static void remove_handler(reply_handlers_t *h, struct node *cur)
 {
-	xcb_generic_reply_t *reply;
-	xcb_generic_error_t *error;
-	int handled;
-	struct node *cur = h->head;
-	h->head = cur->next;
-
-	pthread_mutex_unlock(&h->lock);
-	pthread_cleanup_push((void (*)(void *)) pthread_mutex_lock, &h->lock);
-	reply = xcb_wait_for_reply(h->c, cur->request, &error);
-
-	if(reply || error)
-	{
-		cur->handler(cur->data, h->c, reply, error);
-		handled = cur->handled = 1;
-		free(reply);
-		free(error);
-	}
-	else
-	{
-		handled = cur->handled;
-		free(cur);
-	}
-
-	pthread_cleanup_pop(1);
-	if(reply || error)
-		insert_handler(h, cur);
-	return handled;
+	struct node **prev = &h->head;
+	while(*prev && (*prev)->request < cur->request)
+		prev = &(*prev)->next;
+	if(!(*prev) || (*prev)->request != cur->request)
+		return;
+	*prev = cur->next;
+	free(cur);
 }
 
-int poll_replies(reply_handlers_t *h)
+static int process_replies(reply_handlers_t *h, int block)
 {
-	int ret = 1;
-	xcb_flush(h->c);
-	pthread_mutex_lock(&h->lock);
-	while(ret && h->head && xcb_get_request_read(h->c) >= h->head->request)
-		ret = do_poll(h);
-	pthread_mutex_unlock(&h->lock);
-	return ret;
-}
-
-static void *reply_thread(void *hvp)
-{
-	reply_handlers_t *h = hvp;
+	int handled = 0;
 	pthread_mutex_lock(&h->lock);
 	pthread_cleanup_push((void (*)(void *)) pthread_mutex_unlock, &h->lock);
 	while(1)
 	{
-		while(h->head)
-			do_poll(h);
-		if(h->stop)
-			break;
-		pthread_cond_wait(&h->cond, &h->lock);
+		struct node *cur = h->head;
+		xcb_generic_error_t *error;
+		void *reply;
+		pthread_mutex_unlock(&h->lock);
+		pthread_cleanup_push((void (*)(void *)) pthread_mutex_lock, &h->lock);
+		if(block)
+			reply = xcb_wait_for_reply(h->c, cur->request, &error);
+		else if(!xcb_poll_for_reply(h->c, cur->request, &reply, &error))
+			return handled;
+		if(reply || error)
+		{
+			cur->handler(cur->data, h->c, reply, error);
+			cur->handled = 1;
+			free(reply);
+			free(error);
+		}
+		handled |= cur->handled;
+		pthread_cleanup_pop(1);
+		if(!reply)
+			remove_handler(h, cur);
+		if(!h->head)
+			if(block)
+				pthread_cond_wait(&h->cond, &h->lock);
+			else
+				break;
 	}
 	pthread_cleanup_pop(1);
+}
+
+int poll_replies(reply_handlers_t *h)
+{
+	xcb_flush(h->c);
+	return process_replies(h, 0);
+}
+
+static void *reply_thread(void *h)
+{
+	process_replies(h, 1);
 	return 0;
 }
 
-pthread_t start_reply_thread(reply_handlers_t *h)
+void start_reply_thread(reply_handlers_t *h)
 {
-	pthread_t ret;
-	pthread_create(&ret, 0, reply_thread, h);
-	return ret;
+	pthread_create(&h->thread, 0, reply_thread, h);
 }
 
-void stop_reply_threads(reply_handlers_t *h)
+void stop_reply_thread(reply_handlers_t *h)
 {
-	pthread_mutex_lock(&h->lock);
-	h->stop = 1;
-	pthread_cond_broadcast(&h->cond);
-	pthread_mutex_unlock(&h->lock);
+	pthread_cancel(h->thread);
+	pthread_join(h->thread, 0);
 }
 
 void add_reply_handler(reply_handlers_t *h, unsigned int request, generic_reply_handler handler, void *data)
