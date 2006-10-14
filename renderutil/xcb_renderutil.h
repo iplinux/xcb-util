@@ -28,6 +28,7 @@
 #include <xcb/render.h>
 
 /* FIXME: These PictFormat declarations should be in render.xml. */
+/* FIXME: update the names for the new XCB naming conventions */
 #define PictFormatID	    (1 << 0)
 #define PictFormatType	    (1 << 1)
 #define PictFormatDepth	    (1 << 2)
@@ -49,6 +50,7 @@ enum {
     PictStandardA1,
     PictStandardNUM
 };
+
 
 xcb_render_pictvisual_t *
 xcb_render_util_find_visual_format (const xcb_render_query_pict_formats_reply_t *formats,
@@ -72,5 +74,59 @@ xcb_render_util_query_formats (xcb_connection_t *c);
 
 int
 xcb_render_util_disconnect (xcb_connection_t *c);
+
+/* wrappers for xcb_render_composite_glyphs_8/16/32 */
+
+typedef struct xcb_render_util_composite_text_stream_t xcb_render_util_composite_text_stream_t;
+
+xcb_render_util_composite_text_stream_t *
+xcb_render_util_composite_text_stream (
+	xcb_render_glyphset_t initial_glyphset,
+	uint32_t              total_glyphs,
+	uint32_t              total_glyphset_changes );
+
+void
+xcb_render_util_glyphs_8 (
+	xcb_render_util_composite_text_stream_t *stream,
+	int16_t  dx,
+	int16_t  dy,
+	uint32_t count,
+	uint8_t *glyphs );
+
+void
+xcb_render_util_glyphs_16 (
+	xcb_render_util_composite_text_stream_t *stream,
+	int16_t  dx,
+	int16_t  dy,
+	uint32_t count,
+	uint16_t *glyphs );
+
+void
+xcb_render_util_glyphs_32 (
+	xcb_render_util_composite_text_stream_t *stream,
+	int16_t  dx,
+	int16_t  dy,
+	uint32_t count,
+	uint32_t *glyphs );
+
+void
+xcb_render_util_change_glyphset (
+	xcb_render_util_composite_text_stream_t *stream,
+	xcb_render_glyphset_t glyphset );
+
+xcb_void_cookie_t
+xcb_render_util_composite_text (
+	xcb_connection_t        *xc,
+	uint8_t                  op,
+	xcb_render_picture_t     src,
+	xcb_render_picture_t     dst,
+	xcb_render_pictformat_t  mask_format,
+	int16_t                  src_x,
+	int16_t                  src_y,
+	xcb_render_util_composite_text_stream_t *stream );
+
+void
+xcb_render_util_composite_text_free (
+	xcb_render_util_composite_text_stream_t *stream );
 
 #endif /* XCB_RENDERUTIL */
