@@ -91,7 +91,7 @@ xcb_render_util_glyphs_8 (
 	int16_t  dx,
 	int16_t  dy,
 	uint32_t count,
-	uint8_t *glyphs );
+	const uint8_t *glyphs );
 
 void
 xcb_render_util_glyphs_16 (
@@ -99,7 +99,7 @@ xcb_render_util_glyphs_16 (
 	int16_t  dx,
 	int16_t  dy,
 	uint32_t count,
-	uint16_t *glyphs );
+	const uint16_t *glyphs );
 
 void
 xcb_render_util_glyphs_32 (
@@ -107,7 +107,7 @@ xcb_render_util_glyphs_32 (
 	int16_t  dx,
 	int16_t  dy,
 	uint32_t count,
-	uint32_t *glyphs );
+	const uint32_t *glyphs );
 
 void
 xcb_render_util_change_glyphset (
