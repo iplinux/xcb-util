@@ -100,7 +100,7 @@ xcb_render_util_glyphs_8 (
 	uint32_t count,
 	const uint8_t *glyphs )
 {
-	_glyph_header_t header = { count, {0,0,0}, htons(dx), htons(dy) };
+	_glyph_header_t header = { count, {0,0,0}, dx, dy };
 
 	if (count > 252) return; /* FIXME */
 
@@ -126,8 +126,7 @@ xcb_render_util_glyphs_16 (
 	uint32_t count,
 	const uint16_t *glyphs )
 {
-	uint16_t *current16;
-	_glyph_header_t header = { count, {0,0,0}, htons(dx), htons(dy) };
+	_glyph_header_t header = { count, {0,0,0}, dx, dy };
 
 	if (count > 254) return; /* FIXME */
 
@@ -141,11 +140,8 @@ xcb_render_util_glyphs_16 (
 	memcpy(stream->current, &header, sizeof(header));
 	stream->current += 2;
 
-	current16 = (uint16_t *)stream->current;
-	while (count--) {
-		*current16++ = htons(*glyphs++);
-	}
-	stream->current += ((int)header.count*sizeof(*glyphs)+1)>>2;
+	memcpy(stream->current, glyphs, header.count*sizeof(*glyphs));
+	stream->current += ((int)header.count*sizeof(*glyphs)+3)>>2;
 }
 
 void
@@ -156,7 +152,7 @@ xcb_render_util_glyphs_32 (
 	uint32_t count,
 	const uint32_t *glyphs )
 {
-	_glyph_header_t header = { count, {0,0,0}, htons(dx), htons(dy) };
+	_glyph_header_t header = { count, {0,0,0}, dx, dy };
 
 	if (count > 254) return; /* FIXME */
 
@@ -170,9 +166,8 @@ xcb_render_util_glyphs_32 (
 	memcpy(stream->current, &header, sizeof(header));
 	stream->current += 2;
 
-	while (count--) {
-		*stream->current++ = htonl(*glyphs++);
-	}
+	memcpy(stream->current, glyphs, header.count*sizeof(*glyphs));
+	stream->current += header.count;
 }
 
 /* note: these glyph arrays must be swapped to network byte order */
@@ -192,7 +187,7 @@ xcb_render_util_change_glyphset (
 	memcpy(stream->current, &header, sizeof(header));
 	stream->current += 2;
 
-	*stream->current = htonl(glyphset);
+	*stream->current = glyphset;
 	stream->current++;
 
 	stream->current_glyphset = glyphset;
