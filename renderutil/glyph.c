@@ -198,6 +198,18 @@ xcb_render_util_change_glyphset (
 	stream->current_glyphset = glyphset;
 }
 	
+typedef xcb_void_cookie_t
+(*xcb_render_composite_glyphs_func) (xcb_connection_t        *c,
+	                             uint8_t                  op,
+                                     xcb_render_picture_t     src,
+                                     xcb_render_picture_t     dst,
+                                     xcb_render_pictformat_t  mask_format,
+                                     xcb_render_glyphset_t    glyphset,
+                                     int16_t                  src_x,
+                                     int16_t                  src_y,
+                                     uint32_t                 glyphcmds_len,
+                                     const uint8_t           *glyphcmds);
+
 
 xcb_void_cookie_t
 xcb_render_util_composite_text (
@@ -210,45 +222,66 @@ xcb_render_util_composite_text (
 	int16_t                  src_y,
 	xcb_render_util_composite_text_stream_t *stream )
 {
-	xcb_void_cookie_t reply = { 0 };
-	uint32_t stream_len = CURRENT_LEN(stream);
+	xcb_render_composite_glyphs_func f;
 
 	switch (stream->glyph_size)
 	{
 	case 1:
-		reply = xcb_render_composite_glyphs_8 (
-			xc, op, src, dst, mask_format,
-			stream->initial_glyphset,
-			src_x, src_y,
-			stream_len,
-			(uint8_t *)stream->stream
-		);
+		f = xcb_render_composite_glyphs_8;
 		break;
 	case 2:
-		reply = xcb_render_composite_glyphs_16 (
-			xc, op, src, dst, mask_format,
-			stream->initial_glyphset,
-			src_x, src_y,
-			stream_len,
-			(uint8_t *)stream->stream
-		);
+		f = xcb_render_composite_glyphs_16;
 		break;
 	case 4:
-		reply = xcb_render_composite_glyphs_32 (
-			xc, op, src, dst, mask_format,
-			stream->initial_glyphset,
-			src_x, src_y,
-			stream_len,
-			(uint8_t *)stream->stream
-		);
+		f = xcb_render_composite_glyphs_32;
 		break;
 	default: /* uninitialized */
-		break;
+		return xcb_no_operation(xc);
 	}
-	return reply;
+	return f(
+		xc, op, src, dst, mask_format,
+		stream->initial_glyphset,
+		src_x, src_y,
+		CURRENT_LEN(stream),
+		(uint8_t *)stream->stream
+	);
 }
 
-/* FIXME: xcb_render_util_composite_text_checked */
+xcb_void_cookie_t
+xcb_render_util_composite_text_checked (
+	xcb_connection_t        *xc,
+	uint8_t                  op,
+	xcb_render_picture_t     src,
+	xcb_render_picture_t     dst,
+	xcb_render_pictformat_t  mask_format,
+	int16_t                  src_x,
+	int16_t                  src_y,
+	xcb_render_util_composite_text_stream_t *stream )
+{
+	xcb_render_composite_glyphs_func f;
+
+	switch (stream->glyph_size)
+	{
+	case 1:
+		f = xcb_render_composite_glyphs_8_checked;
+		break;
+	case 2:
+		f = xcb_render_composite_glyphs_16_checked;
+		break;
+	case 4:
+		f = xcb_render_composite_glyphs_32_checked;
+		break;
+	default: /* uninitialized */
+		return xcb_no_operation_checked(xc);
+	}
+	return f(
+		xc, op, src, dst, mask_format,
+		stream->initial_glyphset,
+		src_x, src_y,
+		CURRENT_LEN(stream),
+		(uint8_t *)stream->stream
+	);
+}
 
 void
 xcb_render_util_composite_text_free (

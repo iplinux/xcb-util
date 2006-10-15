@@ -125,6 +125,17 @@ xcb_render_util_composite_text (
 	int16_t                  src_y,
 	xcb_render_util_composite_text_stream_t *stream );
 
+xcb_void_cookie_t
+xcb_render_util_composite_text_checked (
+	xcb_connection_t        *xc,
+	uint8_t                  op,
+	xcb_render_picture_t     src,
+	xcb_render_picture_t     dst,
+	xcb_render_pictformat_t  mask_format,
+	int16_t                  src_x,
+	int16_t                  src_y,
+	xcb_render_util_composite_text_stream_t *stream );
+
 void
 xcb_render_util_composite_text_free (
 	xcb_render_util_composite_text_stream_t *stream );
