@@ -49,40 +49,40 @@ xcb_render_util_find_format (const xcb_render_query_pict_formats_reply_t	*format
 	return 0;
     for (i = xcb_render_query_pict_formats_formats_iterator(formats); i.rem; xcb_render_pictforminfo_next(&i))
     {
-	if (mask & PictFormatID)
+	if (mask & XCB_PICT_FORMAT_ID)
 	    if (template->id != i.data->id)
 		continue;
-	if (mask & PictFormatType)
+	if (mask & XCB_PICT_FORMAT_TYPE)
 	    if (template->type != i.data->type)
 		continue;
-	if (mask & PictFormatDepth)
+	if (mask & XCB_PICT_FORMAT_DEPTH)
 	    if (template->depth != i.data->depth)
 		continue;
-	if (mask & PictFormatRed)
+	if (mask & XCB_PICT_FORMAT_RED)
 	    if (template->direct.red_shift != i.data->direct.red_shift)
 		continue;
-	if (mask & PictFormatRedMask)
+	if (mask & XCB_PICT_FORMAT_RED_MASK)
 	    if (template->direct.red_mask != i.data->direct.red_mask)
 		continue;
-	if (mask & PictFormatGreen)
+	if (mask & XCB_PICT_FORMAT_GREEN)
 	    if (template->direct.green_shift != i.data->direct.green_shift)
 		continue;
-	if (mask & PictFormatGreenMask)
+	if (mask & XCB_PICT_FORMAT_GREEN_MASK)
 	    if (template->direct.green_mask != i.data->direct.green_mask)
 		continue;
-	if (mask & PictFormatBlue)
+	if (mask & XCB_PICT_FORMAT_BLUE)
 	    if (template->direct.blue_shift != i.data->direct.blue_shift)
 		continue;
-	if (mask & PictFormatBlueMask)
+	if (mask & XCB_PICT_FORMAT_BLUE_MASK)
 	    if (template->direct.blue_mask != i.data->direct.blue_mask)
 		continue;
-	if (mask & PictFormatAlpha)
+	if (mask & XCB_PICT_FORMAT_ALPHA)
 	    if (template->direct.alpha_shift != i.data->direct.alpha_shift)
 		continue;
-	if (mask & PictFormatAlphaMask)
+	if (mask & XCB_PICT_FORMAT_ALPHA_MASK)
 	    if (template->direct.alpha_mask != i.data->direct.alpha_mask)
 		continue;
-	if (mask & PictFormatColormap)
+	if (mask & XCB_PICT_FORMAT_COLORMAP)
 	    if (template->colormap != i.data->colormap)
 		continue;
 	if (count-- == 0)
@@ -93,13 +93,13 @@ xcb_render_util_find_format (const xcb_render_query_pict_formats_reply_t	*format
 
 xcb_render_pictforminfo_t *
 xcb_render_util_find_standard_format (const xcb_render_query_pict_formats_reply_t	*formats,
-				 int					format)
+				 xcb_pict_standard_t					format)
 {
     static const struct {
 	xcb_render_pictforminfo_t templ;
 	unsigned long	      mask;
     } standardFormats[] = {
-	/* PictStandardARGB32 */
+	/* XCB_PICT_STANDARD_ARGB_32 */
 	{
 	    {
 		0,			    /* id */
@@ -108,28 +108,28 @@ xcb_render_util_find_standard_format (const xcb_render_query_pict_formats_reply_
 		{ 0 },			    /* pad */
 		{			    /* direct */
 		    16,			    /* direct.red */
-		    0xff,		    /* direct.redMask */
+		    0xff,		    /* direct.red_mask */
 		    8,			    /* direct.green */
-		    0xff,		    /* direct.greenMask */
+		    0xff,		    /* direct.green_mask */
 		    0,			    /* direct.blue */
-		    0xff,		    /* direct.blueMask */
+		    0xff,		    /* direct.blue_mask */
 		    24,			    /* direct.alpha */
-		    0xff,		    /* direct.alphaMask */
+		    0xff,		    /* direct.alpha_mask */
 		},
 		0,			    /* colormap */
 	    },
-	    PictFormatType | 
-	    PictFormatDepth |
-	    PictFormatRed |
-	    PictFormatRedMask |
-	    PictFormatGreen |
-	    PictFormatGreenMask |
-	    PictFormatBlue |
-	    PictFormatBlueMask |
-	    PictFormatAlpha |
-	    PictFormatAlphaMask,
+	    XCB_PICT_FORMAT_TYPE | 
+	    XCB_PICT_FORMAT_DEPTH |
+	    XCB_PICT_FORMAT_RED |
+	    XCB_PICT_FORMAT_RED_MASK |
+	    XCB_PICT_FORMAT_GREEN |
+	    XCB_PICT_FORMAT_GREEN_MASK |
+	    XCB_PICT_FORMAT_BLUE |
+	    XCB_PICT_FORMAT_BLUE_MASK |
+	    XCB_PICT_FORMAT_ALPHA |
+	    XCB_PICT_FORMAT_ALPHA_MASK,
 	},
-	/* PictStandardRGB24 */
+	/* XCB_PICT_STANDARD_RGB_24 */
 	{
 	    {
 		0,			    /* id */
@@ -138,27 +138,27 @@ xcb_render_util_find_standard_format (const xcb_render_query_pict_formats_reply_
 		{ 0 },			    /* pad */
 		{			    /* direct */
 		    16,			    /* direct.red */
-		    0xff,		    /* direct.redMask */
+		    0xff,		    /* direct.red_MASK */
 		    8,			    /* direct.green */
-		    0xff,		    /* direct.greenMask */
+		    0xff,		    /* direct.green_MASK */
 		    0,			    /* direct.blue */
-		    0xff,		    /* direct.blueMask */
+		    0xff,		    /* direct.blue_MASK */
 		    0,			    /* direct.alpha */
-		    0x00,		    /* direct.alphaMask */
+		    0x00,		    /* direct.alpha_MASK */
 		},
 		0,			    /* colormap */
 	    },
-	    PictFormatType | 
-	    PictFormatDepth |
-	    PictFormatRed |
-	    PictFormatRedMask |
-	    PictFormatGreen |
-	    PictFormatGreenMask |
-	    PictFormatBlue |
-	    PictFormatBlueMask |
-	    PictFormatAlphaMask,
+	    XCB_PICT_FORMAT_TYPE | 
+	    XCB_PICT_FORMAT_DEPTH |
+	    XCB_PICT_FORMAT_RED |
+	    XCB_PICT_FORMAT_RED_MASK |
+	    XCB_PICT_FORMAT_GREEN |
+	    XCB_PICT_FORMAT_GREEN_MASK |
+	    XCB_PICT_FORMAT_BLUE |
+	    XCB_PICT_FORMAT_BLUE_MASK |
+	    XCB_PICT_FORMAT_ALPHA_MASK,
 	},
-	/* PictStandardA8 */
+	/* XCB_PICT_STANDARD_A_8 */
 	{
 	    {
 		0,			    /* id */
@@ -167,25 +167,25 @@ xcb_render_util_find_standard_format (const xcb_render_query_pict_formats_reply_
 		{ 0 },			    /* pad */
 		{			    /* direct */
 		    0,			    /* direct.red */
-		    0x00,		    /* direct.redMask */
+		    0x00,		    /* direct.red_MASK */
 		    0,			    /* direct.green */
-		    0x00,		    /* direct.greenMask */
+		    0x00,		    /* direct.green_MASK */
 		    0,			    /* direct.blue */
-		    0x00,		    /* direct.blueMask */
+		    0x00,		    /* direct.blue_MASK */
 		    0,			    /* direct.alpha */
-		    0xff,		    /* direct.alphaMask */
+		    0xff,		    /* direct.alpha_MASK */
 		},
 		0,			    /* colormap */
 	    },
-	    PictFormatType | 
-	    PictFormatDepth |
-	    PictFormatRedMask |
-	    PictFormatGreenMask |
-	    PictFormatBlueMask |
-	    PictFormatAlpha |
-	    PictFormatAlphaMask,
+	    XCB_PICT_FORMAT_TYPE | 
+	    XCB_PICT_FORMAT_DEPTH |
+	    XCB_PICT_FORMAT_RED_MASK |
+	    XCB_PICT_FORMAT_GREEN_MASK |
+	    XCB_PICT_FORMAT_BLUE_MASK |
+	    XCB_PICT_FORMAT_ALPHA |
+	    XCB_PICT_FORMAT_ALPHA_MASK,
 	},
-	/* PictStandardA4 */
+	/* XCB_PICT_STANDARD_A_4 */
 	{
 	    {
 		0,			    /* id */
@@ -194,25 +194,25 @@ xcb_render_util_find_standard_format (const xcb_render_query_pict_formats_reply_
 		{ 0 },			    /* pad */
 		{			    /* direct */
 		    0,			    /* direct.red */
-		    0x00,		    /* direct.redMask */
+		    0x00,		    /* direct.red_MASK */
 		    0,			    /* direct.green */
-		    0x00,		    /* direct.greenMask */
+		    0x00,		    /* direct.green_MASK */
 		    0,			    /* direct.blue */
-		    0x00,		    /* direct.blueMask */
+		    0x00,		    /* direct.blue_MASK */
 		    0,			    /* direct.alpha */
-		    0x0f,		    /* direct.alphaMask */
+		    0x0f,		    /* direct.alpha_MASK */
 		},
 		0,			    /* colormap */
 	    },
-	    PictFormatType | 
-	    PictFormatDepth |
-	    PictFormatRedMask |
-	    PictFormatGreenMask |
-	    PictFormatBlueMask |
-	    PictFormatAlpha |
-	    PictFormatAlphaMask,
+	    XCB_PICT_FORMAT_TYPE | 
+	    XCB_PICT_FORMAT_DEPTH |
+	    XCB_PICT_FORMAT_RED_MASK |
+	    XCB_PICT_FORMAT_GREEN_MASK |
+	    XCB_PICT_FORMAT_BLUE_MASK |
+	    XCB_PICT_FORMAT_ALPHA |
+	    XCB_PICT_FORMAT_ALPHA_MASK,
 	},
-	/* PictStandardA1 */
+	/* XCB_PICT_STANDARD_A_1 */
 	{
 	    {
 		0,			    /* id */
@@ -221,23 +221,23 @@ xcb_render_util_find_standard_format (const xcb_render_query_pict_formats_reply_
 		{ 0 },			    /* pad */
 		{			    /* direct */
 		    0,			    /* direct.red */
-		    0x00,		    /* direct.redMask */
+		    0x00,		    /* direct.red_MASK */
 		    0,			    /* direct.green */
-		    0x00,		    /* direct.greenMask */
+		    0x00,		    /* direct.green_MASK */
 		    0,			    /* direct.blue */
-		    0x00,		    /* direct.blueMask */
+		    0x00,		    /* direct.blue_MASK */
 		    0,			    /* direct.alpha */
-		    0x01,		    /* direct.alphaMask */
+		    0x01,		    /* direct.alpha_MASK */
 		},
 		0,			    /* colormap */
 	    },
-	    PictFormatType | 
-	    PictFormatDepth |
-	    PictFormatRedMask |
-	    PictFormatGreenMask |
-	    PictFormatBlueMask |
-	    PictFormatAlpha |
-	    PictFormatAlphaMask,
+	    XCB_PICT_FORMAT_TYPE | 
+	    XCB_PICT_FORMAT_DEPTH |
+	    XCB_PICT_FORMAT_RED_MASK |
+	    XCB_PICT_FORMAT_GREEN_MASK |
+	    XCB_PICT_FORMAT_BLUE_MASK |
+	    XCB_PICT_FORMAT_ALPHA |
+	    XCB_PICT_FORMAT_ALPHA_MASK,
 	},
     };
 

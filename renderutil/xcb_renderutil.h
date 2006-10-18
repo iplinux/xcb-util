@@ -27,29 +27,28 @@
 #define XCB_RENDERUTIL
 #include <xcb/render.h>
 
-/* FIXME: These PictFormat declarations should be in render.xml. */
-/* FIXME: update the names for the new XCB naming conventions */
-#define PictFormatID	    (1 << 0)
-#define PictFormatType	    (1 << 1)
-#define PictFormatDepth	    (1 << 2)
-#define PictFormatRed	    (1 << 3)
-#define PictFormatRedMask   (1 << 4)
-#define PictFormatGreen	    (1 << 5)
-#define PictFormatGreenMask (1 << 6)
-#define PictFormatBlue	    (1 << 7)
-#define PictFormatBlueMask  (1 << 8)
-#define PictFormatAlpha	    (1 << 9)
-#define PictFormatAlphaMask (1 << 10)
-#define PictFormatColormap  (1 << 11)
+typedef enum xcb_pict_format_t {
+	XCB_PICT_FORMAT_ID         = (1 << 0),
+	XCB_PICT_FORMAT_TYPE       = (1 << 1),
+	XCB_PICT_FORMAT_DEPTH      = (1 << 2),
+	XCB_PICT_FORMAT_RED        = (1 << 3),
+	XCB_PICT_FORMAT_RED_MASK   = (1 << 4),
+	XCB_PICT_FORMAT_GREEN      = (1 << 5),
+	XCB_PICT_FORMAT_GREEN_MASK = (1 << 6),
+	XCB_PICT_FORMAT_BLUE       = (1 << 7),
+	XCB_PICT_FORMAT_BLUE_MASK  = (1 << 8),
+	XCB_PICT_FORMAT_ALPHA      = (1 << 9),
+	XCB_PICT_FORMAT_ALPHA_MASK = (1 << 10),
+	XCB_PICT_FORMAT_COLORMAP   = (1 << 11)
+} xcb_pict_format_t;
 
-enum {
-    PictStandardARGB32,
-    PictStandardRGB24,
-    PictStandardA8,
-    PictStandardA4,
-    PictStandardA1,
-    PictStandardNUM
-};
+typedef enum xcb_pict_standard_t {
+	XCB_PICT_STANDARD_ARGB_32,
+	XCB_PICT_STANDARD_RGB_24,
+	XCB_PICT_STANDARD_A_8,
+	XCB_PICT_STANDARD_A_4,
+	XCB_PICT_STANDARD_A_1
+} xcb_pict_standard_t;
 
 
 xcb_render_pictvisual_t *
@@ -64,7 +63,7 @@ xcb_render_util_find_format (const xcb_render_query_pict_formats_reply_t	*format
 
 xcb_render_pictforminfo_t *
 xcb_render_util_find_standard_format (const xcb_render_query_pict_formats_reply_t	*formats,
-				 int					format);
+				 xcb_pict_standard_t					format);
 
 const xcb_render_query_version_reply_t *
 xcb_render_util_query_version (xcb_connection_t *c);
