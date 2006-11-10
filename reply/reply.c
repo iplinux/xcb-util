@@ -91,12 +91,15 @@ static int process_replies(reply_handlers_t *h, int block)
 		if(!reply)
 			remove_handler(h, cur);
 		if(!h->head)
+		{
 			if(block)
 				pthread_cond_wait(&h->cond, &h->lock);
 			else
 				break;
+		}
 	}
 	pthread_cleanup_pop(1);
+	return handled;
 }
 
 int poll_replies(reply_handlers_t *h)
