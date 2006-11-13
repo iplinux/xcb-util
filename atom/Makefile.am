@@ -21,7 +21,7 @@ atoms.c: atoms.gperf
 	$(GPERF) --output-file $@ $<
 
 atoms.gperf: atoms.gperf.m4 atomlist.m4
-	$(M4) $< >$@
+	$(M4) -I$(srcdir) $< >$@
 
 xcb_atom.h: xcb_atom.h.m4 atomlist.m4
-	$(M4) $< >$@
+	$(M4) -I$(srcdir) $< >$@
