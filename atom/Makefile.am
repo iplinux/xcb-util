@@ -16,6 +16,7 @@ pkgconfig_DATA = xcb-atom.pc
 EXTRA_DIST = xcb-atom.pc.in
 
 BUILT_SOURCES = atoms.c atoms.gperf xcb_atom.h
+CLEANFILES = $(BUILT_SOURCES)
 
 atoms.c: atoms.gperf
 	$(GPERF) --output-file $@ $<
