@@ -5,7 +5,7 @@
 
 
 static int
-GetTextProperty(xcb_connection_t *c,
+get_text_property(xcb_connection_t *c,
                 xcb_window_t      window,
                 xcb_atom_t        property,
                 uint8_t         *format,
@@ -39,7 +39,7 @@ GetTextProperty(xcb_connection_t *c,
 /* WM_NAME */
 
 void
-SetWMName (xcb_connection_t *c,
+set_wm_name (xcb_connection_t *c,
 	   xcb_window_t      window,
 	   xcb_atom_t        encoding,
 	   uint32_t         name_len,
@@ -49,18 +49,18 @@ SetWMName (xcb_connection_t *c,
 }
 
 int
-GetWMName (xcb_connection_t *c,
+get_wm_name (xcb_connection_t *c,
 	   xcb_window_t      window,
 	   uint8_t         *format,
 	   xcb_atom_t       *encoding,
 	   uint32_t        *name_len,
 	   char         **name)
 {
-	return GetTextProperty(c, window, WM_NAME, format, encoding, name_len, name);
+	return get_text_property(c, window, WM_NAME, format, encoding, name_len, name);
 }
 
 void
-WatchWMName (property_handlers_t      *prophs,
+watch_wm_name (property_handlers_t      *prophs,
 	     uint32_t                 long_len,
 	     generic_property_handler handler,
 	     void                  *data)
@@ -71,7 +71,7 @@ WatchWMName (property_handlers_t      *prophs,
 /* WM_ICON_NAME */
 
 void
-SetWMIconName (xcb_connection_t *c,
+set_wm_icon_name (xcb_connection_t *c,
 	       xcb_window_t      window,
 	       xcb_atom_t        encoding,
 	       uint32_t         name_len,
@@ -81,18 +81,18 @@ SetWMIconName (xcb_connection_t *c,
 }
 
 int
-GetWMIconName (xcb_connection_t *c,
+get_wm_icon_name (xcb_connection_t *c,
                xcb_window_t      window,
                uint8_t         *format,
                xcb_atom_t       *encoding,
                uint32_t        *name_len,
                char         **name)
 {
-	return GetTextProperty(c, window, WM_ICON_NAME, format, encoding, name_len, name);
+	return get_text_property(c, window, WM_ICON_NAME, format, encoding, name_len, name);
 }
 
 void
-WatchWMIconName (property_handlers_t      *prophs,
+watch_wm_icon_name (property_handlers_t      *prophs,
 		 uint32_t                 long_len,
 		 generic_property_handler handler,
 		 void                  *data)
@@ -103,7 +103,7 @@ WatchWMIconName (property_handlers_t      *prophs,
 /* WM_CLIENT_MACHINE */
 
 void
-SetWMClientMachine (xcb_connection_t *c,
+set_wm_client_machine (xcb_connection_t *c,
                     xcb_window_t      window,
                     xcb_atom_t        encoding,
                     uint32_t         name_len,
@@ -113,18 +113,18 @@ SetWMClientMachine (xcb_connection_t *c,
 }
 
 int
-GetWMClientMachine (xcb_connection_t *c,
+get_wm_client_machine (xcb_connection_t *c,
                     xcb_window_t      window,
                     uint8_t         *format,
                     xcb_atom_t       *encoding,
                     uint32_t        *name_len,
                     char         **name)
 {
-	return GetTextProperty(c, window, WM_CLIENT_MACHINE, format, encoding, name_len, name);
+	return get_text_property(c, window, WM_CLIENT_MACHINE, format, encoding, name_len, name);
 }
 
 void
-WatchWMClientMachine (property_handlers_t      *prophs,
+watch_wm_client_machine (property_handlers_t      *prophs,
                       uint32_t                 long_len,
                       generic_property_handler handler,
                       void                  *data)
@@ -147,7 +147,7 @@ typedef enum {
 	PWinGravity = 1 << 9
 } SizeHintsFlags;
 
-struct SizeHints {
+struct size_hints_t {
 	uint32_t flags;
 	int32_t x, y, width, height;
 	int32_t min_width, min_height;
@@ -159,20 +159,20 @@ struct SizeHints {
 	uint32_t win_gravity;
 };
 
-SizeHints *
-AllocSizeHints()
+size_hints_t *
+alloc_size_hints()
 {
-	return calloc(1, sizeof(SizeHints));
+	return calloc(1, sizeof(size_hints_t));
 }
 
 void
-FreeSizeHints(SizeHints *hints)
+free_size_hints(size_hints_t *hints)
 {
 	free(hints);
 }
 
 void
-SizeHintsGetPosition (SizeHints *hints,
+size_hints_get_position (size_hints_t *hints,
 		      int32_t     *x,
 		      int32_t     *y)
 {
@@ -181,7 +181,7 @@ SizeHintsGetPosition (SizeHints *hints,
 }
 
 void
-SizeHintsGetSize (SizeHints *hints,
+size_hints_get_size (size_hints_t *hints,
 		  int32_t     *width,
 		  int32_t     *height)
 {
@@ -190,7 +190,7 @@ SizeHintsGetSize (SizeHints *hints,
 }
 
 void
-SizeHintsGetMinSize (SizeHints *hints,
+size_hints_get_min_size (size_hints_t *hints,
 		     int32_t     *min_width,
 		     int32_t     *min_height)
 {
@@ -199,7 +199,7 @@ SizeHintsGetMinSize (SizeHints *hints,
 }
 
 void
-SizeHintsGetMaxSize (SizeHints *hints,
+size_hints_get_max_size (size_hints_t *hints,
 		     int32_t     *max_width,
 		     int32_t     *max_height)
 {
@@ -208,7 +208,7 @@ SizeHintsGetMaxSize (SizeHints *hints,
 }
 
 void
-SizeHintsGetIncrease (SizeHints *hints,
+size_hints_get_increase (size_hints_t *hints,
 		     int32_t     *width_inc,
 		     int32_t     *height_inc)
 {
@@ -217,7 +217,7 @@ SizeHintsGetIncrease (SizeHints *hints,
 }
 
 void
-SizeHintsGetMinAspect (SizeHints *hints,
+size_hints_get_min_aspect (size_hints_t *hints,
 		       int32_t     *min_aspect_num,
 		       int32_t     *min_aspect_den)
 {
@@ -226,7 +226,7 @@ SizeHintsGetMinAspect (SizeHints *hints,
 }
 
 void
-SizeHintsGetMaxAspect (SizeHints *hints,
+size_hints_get_max_aspect (size_hints_t *hints,
 		       int32_t     *max_aspect_num,
 		       int32_t     *max_aspect_den)
 {
@@ -235,7 +235,7 @@ SizeHintsGetMaxAspect (SizeHints *hints,
 }
 
 void
-SizeHintsGetBaseSize (SizeHints *hints,
+size_hints_get_base_size (size_hints_t *hints,
 		      int32_t     *base_width,
 		      int32_t     *base_height)
 {
@@ -244,139 +244,139 @@ SizeHintsGetBaseSize (SizeHints *hints,
 }
 
 uint32_t
-SizeHintsGetWinGravity (SizeHints *hints)
+size_hints_get_win_gravity (size_hints_t *hints)
 {
         return hints->win_gravity;
 }
 
 uint8_t
-SizeHintsIsUSPosition (SizeHints *hints)
+size_hints_is_us_position (size_hints_t *hints)
 {
         return (hints->flags & USPosition);
 }
 
 uint8_t
-SizeHintsIsUSSize (SizeHints *hints)
+size_hints_is_us_size (size_hints_t *hints)
 {
         return (hints->flags & USSize);
 }
 
 uint8_t
-SizeHintsIsPPosition (SizeHints *hints)
+size_hints_is_p_position (size_hints_t *hints)
 {
         return (hints->flags & PPosition);
 }
 
 uint8_t
-SizeHintsIsPSize (SizeHints *hints)
+size_hints_is_p_size (size_hints_t *hints)
 {
         return (hints->flags & PSize);
 }
 
 uint8_t
-SizeHintsIsPMinSize (SizeHints *hints)
+size_hints_is_p_min_size (size_hints_t *hints)
 {
         return (hints->flags & PMinSize);
 }
 
 uint8_t
-SizeHintsIsPMaxSize (SizeHints *hints)
+size_hints_is_p_max_size (size_hints_t *hints)
 {
         return (hints->flags & PMaxSize);
 }
 
 uint8_t
-SizeHintsIsPResizeInc (SizeHints *hints)
+size_hints_is_p_resize_inc (size_hints_t *hints)
 {
         return (hints->flags & PResizeInc);
 }
 
 uint8_t
-SizeHintsIsPAspect (SizeHints *hints)
+size_hints_is_p_aspect (size_hints_t *hints)
 {
         return (hints->flags & PAspect);
 }
 
 uint8_t
-SizeHintsIsPBaseSize (SizeHints *hints)
+size_hints_is_p_base_size (size_hints_t *hints)
 {
         return (hints->flags & PBaseSize);
 }
 
 uint8_t
-SizeHintsIsPWinGravity (SizeHints *hints)
+size_hints_is_p_win_gravity (size_hints_t *hints)
 {
         return (hints->flags & PWinGravity);
 }
 
 void
-SizeHintsSetFlagNone (SizeHints *hints)
+size_hints_set_flag_none (size_hints_t *hints)
 {
         hints->flags = 0;
 }
 
 void
-SizeHintsSetFlagUSPosition (SizeHints *hints)
+size_hints_set_flag_us_position (size_hints_t *hints)
 {
         hints->flags = USPosition;
 }
 
 void
-SizeHintsSetFlagUSSize (SizeHints *hints)
+size_hints_set_flag_us_size (size_hints_t *hints)
 {
         hints->flags = USSize;
 }
 
 void
-SizeHintsSetFlagPPosition (SizeHints *hints)
+size_hints_set_flag_p_position (size_hints_t *hints)
 {
         hints->flags = PPosition;
 }
 
 void
-SizeHintsSetFlagPSize (SizeHints *hints)
+size_hints_set_flag_p_size (size_hints_t *hints)
 {
         hints->flags = PSize;
 }
 
 void
-SizeHintsSetFlagPMinSize (SizeHints *hints)
+size_hints_set_flag_p_min_size (size_hints_t *hints)
 {
         hints->flags = PMinSize;
 }
 
 void
-SizeHintsSetFlagPMaxSize (SizeHints *hints)
+size_hints_set_flag_p_max_size (size_hints_t *hints)
 {
         hints->flags = PMaxSize;
 }
 
 void
-SizeHintsSetFlagPResizeInc (SizeHints *hints)
+size_hints_set_flag_p_resize_inc (size_hints_t *hints)
 {
         hints->flags = PResizeInc;
 }
 
 void
-SizeHintsSetFlagPAspect (SizeHints *hints)
+size_hints_set_flag_p_aspect (size_hints_t *hints)
 {
         hints->flags = PAspect;
 }
 
 void
-SizeHintsSetFlagPBaseSize (SizeHints *hints)
+size_hints_set_flag_p_base_size (size_hints_t *hints)
 {
         hints->flags = PBaseSize;
 }
 
 void
-SizeHintsSetFlagPWinGravity (SizeHints *hints)
+size_hints_set_flag_p_win_gravity (size_hints_t *hints)
 {
         hints->flags = PWinGravity;
 }
 
 void
-SizeHintsSetPosition (SizeHints *hints,
+size_hints_set_position (size_hints_t *hints,
 		      int        user_specified,
 		      int32_t      x,
 		      int32_t      y)
@@ -391,7 +391,7 @@ SizeHintsSetPosition (SizeHints *hints,
 }
 
 void
-SizeHintsSetSize (SizeHints *hints,
+size_hints_set_size (size_hints_t *hints,
 		  int        user_specified,
 		  int32_t      width,
 		  int32_t      height)
@@ -406,7 +406,7 @@ SizeHintsSetSize (SizeHints *hints,
 }
 
 void
-SizeHintsSetMinSize (SizeHints *hints,
+size_hints_set_min_size (size_hints_t *hints,
 		     int32_t      min_width,
 		     int32_t      min_height)
 {
@@ -416,7 +416,7 @@ SizeHintsSetMinSize (SizeHints *hints,
 }
 
 void
-SizeHintsSetMaxSize (SizeHints *hints,
+size_hints_set_max_size (size_hints_t *hints,
 		     int32_t      max_width,
 		     int32_t      max_height)
 {
@@ -426,7 +426,7 @@ SizeHintsSetMaxSize (SizeHints *hints,
 }
 
 void
-SizeHintsSetResizeInc (SizeHints *hints,
+size_hints_set_resize_inc (size_hints_t *hints,
 		       int32_t      width_inc,
 		       int32_t      height_inc)
 {
@@ -436,7 +436,7 @@ SizeHintsSetResizeInc (SizeHints *hints,
 }
 
 void
-SizeHintsSetAspect (SizeHints *hints,
+size_hints_set_aspect (size_hints_t *hints,
 		    int32_t      min_aspect_num,
 		    int32_t      min_aspect_den,
 		    int32_t      max_aspect_num,
@@ -450,7 +450,7 @@ SizeHintsSetAspect (SizeHints *hints,
 }
 
 void
-SizeHintsSetBaseSize (SizeHints *hints,
+size_hints_set_base_size (size_hints_t *hints,
 		      int32_t      base_width,
 		      int32_t      base_height)
 {
@@ -460,7 +460,7 @@ SizeHintsSetBaseSize (SizeHints *hints,
 }
 
 void
-SizeHintsSetWinGravity (SizeHints *hints,
+size_hints_set_win_gravity (size_hints_t *hints,
 			uint8_t      win_gravity)
 {
 	hints->flags |= PWinGravity;
@@ -468,19 +468,19 @@ SizeHintsSetWinGravity (SizeHints *hints,
 }
 
 void
-SetWMSizeHints (xcb_connection_t *c,
+set_wm_size_hints (xcb_connection_t *c,
 		xcb_window_t      window,
 		xcb_atom_t        property,
-		SizeHints     *hints)
+		size_hints_t     *hints)
 {
 	xcb_change_property(c, XCB_PROP_MODE_REPLACE, window, property, WM_SIZE_HINTS, 32, sizeof(*hints) / 4, hints);
 }
 
 int
-GetWMSizeHints (xcb_connection_t *c,
+get_wm_size_hints (xcb_connection_t *c,
 		xcb_window_t      window,
 		xcb_atom_t        property,
-		SizeHints     *hints,
+		size_hints_t     *hints,
 		long          *supplied)
 {
         xcb_get_property_cookie_t cookie;
@@ -508,7 +508,7 @@ GetWMSizeHints (xcb_connection_t *c,
 		prop = (char *)malloc(sizeof(char)*length);
 		memcpy(prop, xcb_get_property_value (rep), length);
 		prop[length] = '\0';
-		hints = (SizeHints *)strdup (prop);
+		hints = (size_hints_t *)strdup (prop);
 
 		*supplied = (USPosition | USSize   |
 			     PPosition  | PSize    |
@@ -538,25 +538,25 @@ GetWMSizeHints (xcb_connection_t *c,
 /* WM_NORMAL_HINTS */
 
 void
-SetWMNormalHints (xcb_connection_t *c,
+set_wm_normal_hints (xcb_connection_t *c,
 		  xcb_window_t      window,
-		  SizeHints     *hints)
+		  size_hints_t     *hints)
 {
-	SetWMSizeHints(c, window, WM_NORMAL_HINTS, hints);
+	set_wm_size_hints(c, window, WM_NORMAL_HINTS, hints);
 }
 
 int
-GetWMNormalHints (xcb_connection_t *c,
+get_wm_normal_hints (xcb_connection_t *c,
 		  xcb_window_t      window,
-		  SizeHints     *hints,
+		  size_hints_t     *hints,
 		  long          *supplied)
 {
-	return (GetWMSizeHints (c, window, WM_NORMAL_HINTS, hints, supplied));
+	return (get_wm_size_hints (c, window, WM_NORMAL_HINTS, hints, supplied));
 }
 
 /* WM_HINTS */
 
-struct WMHints {
+struct wm_hints_t {
 	int32_t     flags;           /* marks which fields in this structure are defined */
 	uint8_t      input;           /* does this application rely on the window manager
 				      to get keyboard input? */
@@ -585,192 +585,192 @@ typedef enum {
                        IconWindowHint| IconPositionHint | IconMaskHint   | \
                        WindowGroupHint)
 
-WMHints *
-AllocWMHints()
+wm_hints_t *
+alloc_wm_hints()
 {
-	return calloc(1, sizeof(WMHints));
+	return calloc(1, sizeof(wm_hints_t));
 }
 
 uint8_t
-WMHintsGetInput(WMHints *hints)
+wm_hints_get_input(wm_hints_t *hints)
 {
         return hints->input;
 }
 
 xcb_pixmap_t
-WMHintsGetIconPixmap(WMHints *hints)
+wm_hints_get_icon_pixmap(wm_hints_t *hints)
 {
         return hints->icon_pixmap;
 }
 
 xcb_pixmap_t
-WMHintsGetIconMask(WMHints *hints)
+wm_hints_get_icon_mask(wm_hints_t *hints)
 {
         return hints->icon_mask;
 }
 
 xcb_window_t
-WMHintsGetIconWindow(WMHints *hints)
+wm_hints_get_icon_window(wm_hints_t *hints)
 {
         return hints->icon_window;
 }
 
 xcb_window_t
-WMHintsGetWindowGroup(WMHints *hints)
+wm_hints_get_window_group(wm_hints_t *hints)
 {
         return hints->window_group;
 }
 
 
 uint8_t
-WMHintsIsInputHint(WMHints *hints)
+wm_hints_is_input_hint(wm_hints_t *hints)
 {
         return (hints->flags & xcb_wm_input_hint_t);
 }
 
 uint8_t
-WMHintsIsStateHint(WMHints *hints)
+wm_hints_is_state_hint(wm_hints_t *hints)
 {
         return (hints->flags & xcb_wm_state_hint_t);
 }
 
 uint8_t
-WMHintsIsIconPixmapHint(WMHints *hints)
+wm_hints_is_icon_pixmap_hint(wm_hints_t *hints)
 {
         return (hints->flags & xcb_wm_icon_pixmap_hint_t);
 }
 
 uint8_t
-WMHintsIsIconWindowHint(WMHints *hints)
+wm_hints_is_icon_window_hint(wm_hints_t *hints)
 {
         return (hints->flags & xcb_wm_icon_window_hint_t);
 }
 
 uint8_t
-WMHintsIsIconPositionHint(WMHints *hints)
+wm_hints_is_icon_position_hint(wm_hints_t *hints)
 {
         return (hints->flags & xcb_wm_icon_position_hint_t);
 }
 
 uint8_t
-WMHintsIsIconMaskHint(WMHints *hints)
+wm_hints_is_icon_mask_hint(wm_hints_t *hints)
 {
         return (hints->flags & xcb_wm_icon_mask_hint_t);
 }
 
 uint8_t
-WMHintsIsWindowGroupHint(WMHints *hints)
+wm_hints_is_window_group_hint(wm_hints_t *hints)
 {
         return (hints->flags & xcb_wm_window_group_hint_t);
 }
 
 uint8_t
-WMHintsIsXUrgencyHint(WMHints *hints)
+wm_hints_is_xu_hint(wm_hints_t *hints)
 {
         return (hints->flags & xcb_wmx_urgency_hint_t);
 }
 
 uint8_t
-WMHintsStateIsWithdrawn(WMHints *hints)
+wm_hints_state_is_withdrawn(wm_hints_t *hints)
 {
         return (hints->initial_state == xcb_wm_withdrawn_state_t);
 }
 
 uint8_t
-WMHintsStateIsNormal(WMHints *hints)
+wm_hints_state_is_normal(wm_hints_t *hints)
 {
         return (hints->initial_state == xcb_wm_normal_state_t);
 }
 
 uint8_t
-WMHintsStateIsIconic(WMHints *hints)
+wm_hints_state_is_iconic(wm_hints_t *hints)
 {
         return (hints->initial_state == xcb_wm_iconic_state_t);
 }
 
 void
-WMHintsSetInput(WMHints *hints, uint8_t input)
+wm_hints_set_input(wm_hints_t *hints, uint8_t input)
 {
         hints->input = input;
         hints->flags |= xcb_wm_input_hint_t;
 }
 
 void
-WMHintsSetIconic(WMHints *hints)
+wm_hints_set_iconic(wm_hints_t *hints)
 {
         hints->initial_state = xcb_wm_iconic_state_t;
         hints->flags |= xcb_wm_state_hint_t;
 }
 
 void
-WMHintsSetNormal(WMHints *hints)
+wm_hints_set_normal(wm_hints_t *hints)
 {
         hints->initial_state = xcb_wm_normal_state_t;
         hints->flags |= xcb_wm_state_hint_t;
 }
 
 void
-WMHintsSetWithdrawn(WMHints *hints)
+wm_hints_set_withdrawn(wm_hints_t *hints)
 {
         hints->initial_state = xcb_wm_withdrawn_state_t;
         hints->flags |= xcb_wm_state_hint_t;
 }
 
 void
-WMHintsSetNone(WMHints *hints)
+wm_hints_set_none(wm_hints_t *hints)
 {
         hints->flags &= ~xcb_wm_state_hint_t;
 }
 
 void
-WMHintsSetUrgent(WMHints *hints)
+wm_hints_set_urgent(wm_hints_t *hints)
 {
         hints->flags |= xcb_wmx_urgency_hint_t;
 }
 
 void
-WMHintsSetIconPixmap(WMHints *hints, xcb_pixmap_t icon_pixmap)
+wm_hints_set_icon_pixmap(wm_hints_t *hints, xcb_pixmap_t icon_pixmap)
 {
         hints->icon_pixmap = icon_pixmap;
         hints->flags |= xcb_wm_icon_pixmap_hint_t;
 }
 
 void
-WMHintsSetIconMask(WMHints *hints, xcb_pixmap_t icon_mask)
+wm_hints_set_icon_mask(wm_hints_t *hints, xcb_pixmap_t icon_mask)
 {
         hints->icon_mask = icon_mask;
         hints->flags |= xcb_wm_icon_mask_hint_t;
 }
 
 void
-WMHintsSetIconWindow(WMHints *hints, xcb_window_t icon_window)
+wm_hints_set_icon_window(wm_hints_t *hints, xcb_window_t icon_window)
 {
         hints->icon_window = icon_window;
         hints->flags |= xcb_wm_icon_window_hint_t;
 }
 
 void
-WMHintsSetWindowGroup(WMHints *hints, xcb_window_t window_group)
+wm_hints_set_window_group(wm_hints_t *hints, xcb_window_t window_group)
 {
         hints->window_group = window_group;
         hints->flags |= xcb_wm_window_group_hint_t;
 }
 
 void
-SetWMHints (xcb_connection_t *c,
+set_wm_hints (xcb_connection_t *c,
             xcb_window_t      window,
-            WMHints       *hints)
+            wm_hints_t       *hints)
 {
 	xcb_change_property(c, XCB_PROP_MODE_REPLACE, window, WM_HINTS, WM_HINTS, 32, sizeof(*hints) / 4, hints);
 }
 
-WMHints *
-GetWMHints (xcb_connection_t *c,
+wm_hints_t *
+get_wm_hints (xcb_connection_t *c,
 	    xcb_window_t      window)
 {
 	xcb_get_property_cookie_t cookie;
 	xcb_get_property_reply_t   *rep;
-	WMHints             *hints;
+	wm_hints_t             *hints;
         char                *prop;
 	long                 length;
 
@@ -788,7 +788,7 @@ GetWMHints (xcb_connection_t *c,
 		free (rep);
 		return NULL;
 	}
-	hints = (WMHints *)calloc (1, (unsigned)sizeof (WMHints));
+	hints = (wm_hints_t *)calloc (1, (unsigned)sizeof (wm_hints_t));
 	if (!hints)
 	{
 		free (rep);
@@ -798,7 +798,7 @@ GetWMHints (xcb_connection_t *c,
 	length = xcb_get_property_value_length (rep);
 	prop = (char *) xcb_get_property_value (rep);
 	prop[length] = '\0';
-	hints = (WMHints *)strdup (prop);
+	hints = (wm_hints_t *)strdup (prop);
 	if (rep->value_len < NumWMHintsElements)
 		hints->window_group = XCB_NONE;
 
@@ -808,7 +808,7 @@ GetWMHints (xcb_connection_t *c,
 /* WM_PROTOCOLS */
 
 void
-SetWMProtocols (xcb_connection_t *c,
+set_wm_protocols (xcb_connection_t *c,
 		xcb_window_t      window,
 		uint32_t         list_len,
 		xcb_atom_t       *list)
@@ -823,7 +823,7 @@ SetWMProtocols (xcb_connection_t *c,
 }
 
 int
-GetWMProtocols (xcb_connection_t *c,
+get_wm_protocols (xcb_connection_t *c,
 		xcb_window_t      window,
 		uint32_t        *list_len,
 		xcb_atom_t      **list)
@@ -878,17 +878,17 @@ static char *makename(const char *fmt, ...)
 	return ret;
 }
 
-char *DiscriminatedAtomNameByScreen(const char *base, uint8_t screen)
+char *discriminated_atom_name_by_screen(const char *base, uint8_t screen)
 {
 	return makename("%s_S%u", base, screen);
 }
 
-char *DiscriminatedAtomNameByResource(const char *base, uint32_t resource)
+char *discriminated_atom_name_by_resource(const char *base, uint32_t resource)
 {
 	return makename("%s_R%08X", base, resource);
 }
 
-char *DiscriminatedAtomNameUnique(const char *base, uint32_t id)
+char *discriminated_atom_name_unique(const char *base, uint32_t id)
 {
 	if(base)
 		return makename("%s_U%lu", base, id);

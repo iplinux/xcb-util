@@ -12,181 +12,181 @@ extern "C" {
 
 /* WM_NAME */
 
-void SetWMName   (xcb_connection_t *c,
+void set_wm_name   (xcb_connection_t *c,
 		  xcb_window_t      window,
 		  xcb_atom_t        encoding,
 		  uint32_t         name_len,
 		  const char    *name);
 
-int  GetWMName   (xcb_connection_t *c,
+int  get_wm_name   (xcb_connection_t *c,
 		  xcb_window_t      window,
 		  uint8_t         *format,
 		  xcb_atom_t       *encoding,
 		  uint32_t        *name_len,
 		  char         **name);
 
-void WatchWMName (property_handlers_t      *prophs,
+void watch_wm_name (property_handlers_t      *prophs,
 		  uint32_t                 long_len,
 		  generic_property_handler handler,
 		  void                  *data);
 
 /* WM_ICON_NAME */
 
-void SetWMIconName   (xcb_connection_t *c,
+void set_wm_icon_name   (xcb_connection_t *c,
 		      xcb_window_t      window,
 		      xcb_atom_t        encoding,
 		      uint32_t         name_len,
 		      const char    *name);
 
-int  GetWMIconName (xcb_connection_t *c,
+int  get_wm_icon_name (xcb_connection_t *c,
                     xcb_window_t      window,
                     uint8_t         *format,
                     xcb_atom_t       *encoding,
                     uint32_t        *name_len,
                     char         **name);
 
-void WatchWMIconName (property_handlers_t      *prophs,
+void watch_wm_icon_name (property_handlers_t      *prophs,
 		      uint32_t                 long_len,
 		      generic_property_handler handler,
 		      void                  *data);
 
 /* WM_CLIENT_MACHINE */
 
-void SetWMClientMachine (xcb_connection_t *c,
+void set_wm_client_machine (xcb_connection_t *c,
                          xcb_window_t      window,
                          xcb_atom_t        encoding,
                          uint32_t         name_len,
                          const char    *name);
 
-int  GetWMClientMachine (xcb_connection_t *c,
+int  get_wm_client_machine (xcb_connection_t *c,
                          xcb_window_t      window,
                          uint8_t         *format,
                          xcb_atom_t       *encoding,
                          uint32_t        *name_len,
                          char         **name);
 
-void WatchWMClientMachine (property_handlers_t      *prophs,
+void watch_wm_client_machine (property_handlers_t      *prophs,
                            uint32_t                 long_len,
                            generic_property_handler handler,
                            void                  *data);
 
 /* WM_SIZE_HINTS */
 
-typedef struct SizeHints SizeHints;
+typedef struct size_hints_t size_hints_t;
 
-SizeHints *AllocSizeHints         ();
+size_hints_t *alloc_size_hints         ();
 
-void       FreeSizeHints          (SizeHints *hints);
+void       free_size_hints          (size_hints_t *hints);
 
-void       SizeHintsGetPosition (SizeHints *hints,
+void       size_hints_get_position (size_hints_t *hints,
 				 int32_t     *x,
 				 int32_t     *y);
-void       SizeHintsGetSize     (SizeHints *hints,
+void       size_hints_get_size     (size_hints_t *hints,
 				 int32_t     *width,
 				 int32_t     *height);
-void       SizeHintsGetMinSize  (SizeHints *hints,
+void       size_hints_get_min_size  (size_hints_t *hints,
 				 int32_t     *min_width,
 				 int32_t     *min_height);
-void       SizeHintsGetMaxSize  (SizeHints *hints,
+void       size_hints_get_max_size  (size_hints_t *hints,
 				 int32_t     *max_width,
 				 int32_t     *max_height);
-void       SizeHintsGetIncrease  (SizeHints *hints,
+void       size_hints_get_increase  (size_hints_t *hints,
 				  int32_t     *width_inc,
 				  int32_t     *height_inc);
-void       SizeHintsGetMinAspect (SizeHints *hints,
+void       size_hints_get_min_aspect (size_hints_t *hints,
 				  int32_t     *min_aspect_num,
 				  int32_t     *min_aspect_den);
-void       SizeHintsGetMaxAspect (SizeHints *hints,
+void       size_hints_get_max_aspect (size_hints_t *hints,
 				  int32_t     *max_aspect_num,
 				  int32_t     *max_aspect_den);
-void       SizeHintsGetBaseSize  (SizeHints *hints,
+void       size_hints_get_base_size  (size_hints_t *hints,
 				  int32_t     *base_width,
 				  int32_t     *base_height);
-uint32_t     SizeHintsGetWinGravity (SizeHints *hints);
+uint32_t     size_hints_get_win_gravity (size_hints_t *hints);
 
-uint8_t       SizeHintsIsUSPosition  (SizeHints *hints);
-uint8_t       SizeHintsIsUSSize      (SizeHints *hints);
-uint8_t       SizeHintsIsPPosition   (SizeHints *hints);
-uint8_t       SizeHintsIsPSize       (SizeHints *hints);
-uint8_t       SizeHintsIsPMinSize    (SizeHints *hints);
-uint8_t       SizeHintsIsPMaxSize    (SizeHints *hints);
-uint8_t       SizeHintsIsPResizeInc  (SizeHints *hints);
-uint8_t       SizeHintsIsPAspect     (SizeHints *hints);
-uint8_t       SizeHintsIsPBaseSize   (SizeHints *hints);
-uint8_t       SizeHintsIsPWinGravity (SizeHints *hints);
+uint8_t       size_hints_is_us_position  (size_hints_t *hints);
+uint8_t       size_hints_is_us_size      (size_hints_t *hints);
+uint8_t       size_hints_is_p_position   (size_hints_t *hints);
+uint8_t       size_hints_is_p_size       (size_hints_t *hints);
+uint8_t       size_hints_is_p_min_size    (size_hints_t *hints);
+uint8_t       size_hints_is_p_max_size    (size_hints_t *hints);
+uint8_t       size_hints_is_p_resize_inc  (size_hints_t *hints);
+uint8_t       size_hints_is_p_aspect     (size_hints_t *hints);
+uint8_t       size_hints_is_p_base_size   (size_hints_t *hints);
+uint8_t       size_hints_is_p_win_gravity (size_hints_t *hints);
 
-void       SizeHintsSetFlagNone        (SizeHints *hints);
-void       SizeHintsSetFlagUSPosition  (SizeHints *hints);
-void       SizeHintsSetFlagUSSize      (SizeHints *hints);
-void       SizeHintsSetFlagPPosition   (SizeHints *hints);
-void       SizeHintsSetFlagPSize       (SizeHints *hints);
-void       SizeHintsSetFlagPMinSize    (SizeHints *hints);
-void       SizeHintsSetFlagPMaxSize    (SizeHints *hints);
-void       SizeHintsSetFlagPResizeInc  (SizeHints *hints);
-void       SizeHintsSetFlagPAspect     (SizeHints *hints);
-void       SizeHintsSetFlagPBaseSize   (SizeHints *hints);
-void       SizeHintsSetFlagPWinGravity (SizeHints *hints);
+void       size_hints_set_flag_none        (size_hints_t *hints);
+void       size_hints_set_flag_us_position  (size_hints_t *hints);
+void       size_hints_set_flag_us_size      (size_hints_t *hints);
+void       size_hints_set_flag_p_position   (size_hints_t *hints);
+void       size_hints_set_flag_p_size       (size_hints_t *hints);
+void       size_hints_set_flag_p_min_size    (size_hints_t *hints);
+void       size_hints_set_flag_p_max_size    (size_hints_t *hints);
+void       size_hints_set_flag_p_resize_inc  (size_hints_t *hints);
+void       size_hints_set_flag_p_aspect     (size_hints_t *hints);
+void       size_hints_set_flag_p_base_size   (size_hints_t *hints);
+void       size_hints_set_flag_p_win_gravity (size_hints_t *hints);
 
-void       SizeHintsSetPosition   (SizeHints *hints,
+void       size_hints_set_position   (size_hints_t *hints,
 				   int        user_specified,
 				   int32_t      x,
 				   int32_t      y);
 
-void       SizeHintsSetSize       (SizeHints *hints,
+void       size_hints_set_size       (size_hints_t *hints,
 				   int        user_specified,
 				   int32_t      width,
 				   int32_t      height);
 
-void       SizeHintsSetMinSize    (SizeHints *hints,
+void       size_hints_set_min_size    (size_hints_t *hints,
 				   int32_t      min_width,
 				   int32_t      min_height);
 
-void       SizeHintsSetMaxSize    (SizeHints *hints,
+void       size_hints_set_max_size    (size_hints_t *hints,
 				   int32_t      max_width,
 				   int32_t      max_height);
 
-void       SizeHintsSetResizeInc  (SizeHints *hints,
+void       size_hints_set_resize_inc  (size_hints_t *hints,
 				   int32_t      width_inc,
 				   int32_t      height_inc);
 
-void       SizeHintsSetAspect     (SizeHints *hints,
+void       size_hints_set_aspect     (size_hints_t *hints,
 				   int32_t      min_aspect_num,
 				   int32_t      min_aspect_den,
 				   int32_t      max_aspect_num,
 				   int32_t      max_aspect_den);
 
-void       SizeHintsSetBaseSize   (SizeHints *hints,
+void       size_hints_set_base_size   (size_hints_t *hints,
 				   int32_t      base_width,
 				   int32_t      base_height);
 
-void       SizeHintsSetWinGravity (SizeHints *hints,
+void       size_hints_set_win_gravity (size_hints_t *hints,
 				   uint8_t      win_gravity);
 
-void       SetWMSizeHints         (xcb_connection_t *c,
+void       set_wm_size_hints         (xcb_connection_t *c,
 				   xcb_window_t       window,
 				   xcb_atom_t         property,
-				   SizeHints      *hints);
+				   size_hints_t      *hints);
 
-int        GetWMSizeHints         (xcb_connection_t *c,
+int        get_wm_size_hints         (xcb_connection_t *c,
 				   xcb_window_t      window,
 				   xcb_atom_t        property,
-				   SizeHints     *hints,
+				   size_hints_t     *hints,
 				   long          *supplied);
 
 /* WM_NORMAL_HINTS */
 
-void SetWMNormalHints (xcb_connection_t *c,
+void set_wm_normal_hints (xcb_connection_t *c,
 		       xcb_window_t      window,
-		       SizeHints     *hints);
+		       size_hints_t     *hints);
 
-int  GetWMNormalHints (xcb_connection_t *c,
+int  get_wm_normal_hints (xcb_connection_t *c,
 		       xcb_window_t      window,
-		       SizeHints     *hints,
+		       size_hints_t     *hints,
 		       long          *supplied);
 
 /* WM_HINTS */
 
-typedef struct WMHints WMHints;
+typedef struct wm_hints_t wm_hints_t;
 #define NumWMHintsElements 9 /* number of elements in this structure */
 
 typedef enum {
@@ -195,61 +195,61 @@ typedef enum {
     xcb_wm_iconic_state_t    = 3
 } xcb_wm_state_t;
 
-WMHints *AllocWMHints();
+wm_hints_t *alloc_wm_hints();
 
-uint8_t      WMHintsGetInput       (WMHints *hints);
-xcb_pixmap_t WMHintsGetIconPixmap  (WMHints *hints);
-xcb_pixmap_t WMHintsGetIconMask    (WMHints *hints);
-xcb_window_t WMHintsGetIconWindow  (WMHints *hints);
-xcb_window_t WMHintsGetWindowGroup (WMHints *hints);
+uint8_t      wm_hints_get_input       (wm_hints_t *hints);
+xcb_pixmap_t wm_hints_get_icon_pixmap  (wm_hints_t *hints);
+xcb_pixmap_t wm_hints_get_icon_mask    (wm_hints_t *hints);
+xcb_window_t wm_hints_get_icon_window  (wm_hints_t *hints);
+xcb_window_t wm_hints_get_window_group (wm_hints_t *hints);
 
-uint8_t WMHintsIsInputHint        (WMHints *hints);
-uint8_t WMHintsIsStateHint        (WMHints *hints);
-uint8_t WMHintsIsIconPixmapHint   (WMHints *hints);
-uint8_t WMHintsIsIconWindowHint   (WMHints *hints);
-uint8_t WMHintsIsIconPositionHint (WMHints *hints);
-uint8_t WMHintsIsIconMaskHint     (WMHints *hints);
-uint8_t WMHintsIsWindowGroupHint  (WMHints *hints);
-uint8_t WMHintsIsXUrgencyHint     (WMHints *hints);
+uint8_t wm_hints_is_input_hint        (wm_hints_t *hints);
+uint8_t wm_hints_is_state_hint        (wm_hints_t *hints);
+uint8_t wm_hints_is_icon_pixmap_hint   (wm_hints_t *hints);
+uint8_t wm_hints_is_icon_window_hint   (wm_hints_t *hints);
+uint8_t wm_hints_is_icon_position_hint (wm_hints_t *hints);
+uint8_t wm_hints_is_icon_mask_hint     (wm_hints_t *hints);
+uint8_t wm_hints_is_window_group_hint  (wm_hints_t *hints);
+uint8_t wm_hints_is_xu_hint     (wm_hints_t *hints);
 
-uint8_t WMHintsStateIsWithdrawn (WMHints *hints);
-uint8_t WMHintsStateIsNormal    (WMHints *hints);
-uint8_t WMHintsStateIsIconic    (WMHints *hints);
+uint8_t wm_hints_state_is_withdrawn (wm_hints_t *hints);
+uint8_t wm_hints_state_is_normal    (wm_hints_t *hints);
+uint8_t wm_hints_state_is_iconic    (wm_hints_t *hints);
 
-void WMHintsSetInput       (WMHints *hints, uint8_t input);
-void WMHintsSetIconic      (WMHints *hints);
-void WMHintsSetNormal      (WMHints *hints);
-void WMHintsSetWithdrawn   (WMHints *hints);
-void WMHintsSetNone        (WMHints *hints);
-void WMHintsSetUrgent      (WMHints *hints);
-void WMHintsSetIconPixmap  (WMHints *hints, xcb_pixmap_t icon_pixmap);
-void WMHintsSetIconMask    (WMHints *hints, xcb_pixmap_t icon_mask);
-void WMHintsSetIconWindow  (WMHints *hints, xcb_window_t icon_window);
-void WMHintsSetWindowGroup (WMHints *hints, xcb_window_t window_group);
+void wm_hints_set_input       (wm_hints_t *hints, uint8_t input);
+void wm_hints_set_iconic      (wm_hints_t *hints);
+void wm_hints_set_normal      (wm_hints_t *hints);
+void wm_hints_set_withdrawn   (wm_hints_t *hints);
+void wm_hints_set_none        (wm_hints_t *hints);
+void wm_hints_set_urgent      (wm_hints_t *hints);
+void wm_hints_set_icon_pixmap  (wm_hints_t *hints, xcb_pixmap_t icon_pixmap);
+void wm_hints_set_icon_mask    (wm_hints_t *hints, xcb_pixmap_t icon_mask);
+void wm_hints_set_icon_window  (wm_hints_t *hints, xcb_window_t icon_window);
+void wm_hints_set_window_group (wm_hints_t *hints, xcb_window_t window_group);
 
-void SetWMHints (xcb_connection_t *c,
+void set_wm_hints (xcb_connection_t *c,
                  xcb_window_t      window,
-                 WMHints       *hints);
+                 wm_hints_t       *hints);
 
-WMHints *GetWMHints (xcb_connection_t *c,
+wm_hints_t *get_wm_hints (xcb_connection_t *c,
 		     xcb_window_t      window);
 
 /* WM_PROTOCOLS */
 
-void SetWMProtocols (xcb_connection_t *c,
+void set_wm_protocols (xcb_connection_t *c,
 		     xcb_window_t      window,
 		     uint32_t         list_len,
 		     xcb_atom_t       *list);
-int  GetWMProtocols (xcb_connection_t *c,
+int  get_wm_protocols (xcb_connection_t *c,
 		     xcb_window_t      window,
 		     uint32_t        *list_len,
 		     xcb_atom_t      **list);
 
 #define HAS_DISCRIMINATED_NAME 0
 #if HAS_DISCRIMINATED_NAME
-char *DiscriminatedAtomNameByScreen   (const char *base, uint8_t screen);
-char *DiscriminatedAtomNameByResource (const char *base, uint32_t resource);
-char *DiscriminatedAtomNameUnique     (const char *base, uint32_t id);
+char *discriminated_atom_name_by_screen   (const char *base, uint8_t screen);
+char *discriminated_atom_name_by_resource (const char *base, uint32_t resource);
+char *discriminated_atom_name_unique     (const char *base, uint32_t id);
 #endif
 
 
