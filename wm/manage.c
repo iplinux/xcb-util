@@ -2,10 +2,10 @@
 #include <stdio.h>
 #include "xcb_wm.h"
 
-Table *byChild = 0;
-Table *byParent = 0;
+table_t *byChild = 0;
+table_t *byParent = 0;
 
-void manageWindow(property_handlers_t *prophs, xcb_connection_t *c, xcb_window_t window, WindowAttributes wa)
+void manage_window(property_handlers_t *prophs, xcb_connection_t *c, xcb_window_t window, window_attributes_t wa)
 {
 	xcb_drawable_t d = { window };
 	xcb_get_geometry_cookie_t geomc;
@@ -25,7 +25,7 @@ void manageWindow(property_handlers_t *prophs, xcb_connection_t *c, xcb_window_t
 		wa.tag = TAG_VALUE;
 		wa.u.override_redirect = attr->override_redirect;
 	}
-	if(!wa.u.override_redirect && TableGet(byChild, window))
+	if(!wa.u.override_redirect && table_get(byChild, window))
 	{
 		printf("Window 0x%08x already managed. Ignoring.\n", window);
 		free(attr);
@@ -47,25 +47,25 @@ void manageWindow(property_handlers_t *prophs, xcb_connection_t *c, xcb_window_t
 	geom = xcb_get_geometry_reply(c, geomc, 0);
 	if(attr && geom)
 	{
-		reparentWindow(c, window, attr->visual, geom->root, geom->depth, geom->x, geom->y, geom->width, geom->height);
+		reparent_window(c, window, attr->visual, geom->root, geom->depth, geom->x, geom->y, geom->width, geom->height);
 		property_changed(prophs, XCB_PROPERTY_NEW_VALUE, window, WM_NAME);
 	}
 	free(attr);
 	free(geom);
 }
 
-int handleMapNotifyEvent(void *prophs, xcb_connection_t *c, xcb_map_notify_event_t *e)
+int handle_map_notify_event(void *prophs, xcb_connection_t *c, xcb_map_notify_event_t *e)
 {
-	WindowAttributes wa = { TAG_VALUE };
+	window_attributes_t wa = { TAG_VALUE };
 	wa.u.override_redirect = e->override_redirect;
 	printf("MapNotify for 0x%08x.\n", e->window);
-	manageWindow(prophs, c, e->window, wa);
+	manage_window(prophs, c, e->window, wa);
 	return 1;
 }
 
-int handleUnmapNotifyEvent(void *data, xcb_connection_t *c, xcb_unmap_notify_event_t *e)
+int handle_unmap_notify_event(void *data, xcb_connection_t *c, xcb_unmap_notify_event_t *e)
 {
-	ClientWindow *client = TableRemove(byChild, e->event);
+	client_window_t *client = table_remove(byChild, e->event);
 	xcb_window_t root;
 	printf("UnmapNotify for 0x%08x (received from 0x%08x): ", e->window, e->event);
 	if(!client)
@@ -79,12 +79,12 @@ int handleUnmapNotifyEvent(void *data, xcb_connection_t *c, xcb_unmap_notify_eve
 	xcb_reparent_window(c, client->child, root, 0, 0);
 	xcb_destroy_window(c, client->parent);
 	xcb_flush(c);
-	TableRemove(byParent, client->parent);
+	table_remove(byParent, client->parent);
 	free(client);
 	return 1;
 }
 
-void manageExistingWindows(xcb_connection_t *c, property_handlers_t *prophs, xcb_window_t root)
+void manage_existing_windows(xcb_connection_t *c, property_handlers_t *prophs, xcb_window_t root)
 {
 	xcb_query_tree_cookie_t wintree;
 	xcb_query_tree_reply_t *rep;
@@ -108,8 +108,8 @@ void manageExistingWindows(xcb_connection_t *c, property_handlers_t *prophs, xcb
 		cookies[i] = xcb_get_window_attributes(c, children[i]);
 	for(i = 0; i < len; ++i)
 	{
-		WindowAttributes wa = { TAG_COOKIE, { cookies[i] } };
-		manageWindow(prophs, c, children[i], wa);
+		window_attributes_t wa = { TAG_COOKIE, { cookies[i] } };
+		manage_window(prophs, c, children[i], wa);
 	}
 	free(rep);
 }

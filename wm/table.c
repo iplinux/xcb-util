@@ -8,21 +8,21 @@ struct node {
 	void *value;
 };
 
-struct Table {
+struct table_t {
 	node *head;
 };
 
-Table *AllocTable()
+table_t *alloc_table()
 {
-	return calloc(1, sizeof(Table));
+	return calloc(1, sizeof(table_t));
 }
 
-void FreeTable(Table *table)
+void free_table(table_t *table)
 {
 	free(table);
 }
 
-int TablePut(Table *table, uint32_t key, void *value)
+int table_put(table_t *table, uint32_t key, void *value)
 {
 	node *record = malloc(sizeof(node));
 	if(!record)
@@ -34,7 +34,7 @@ int TablePut(Table *table, uint32_t key, void *value)
 	return 1;
 }
 
-void *TableGet(Table *table, uint32_t key)
+void *table_get(table_t *table, uint32_t key)
 {
 	node *cur;
 	for(cur = table->head; cur; cur = cur->next)
@@ -43,7 +43,7 @@ void *TableGet(Table *table, uint32_t key)
 	return 0;
 }
 
-void *TableRemove(Table *table, uint32_t key)
+void *table_remove(table_t *table, uint32_t key)
 {
 	node **cur;
 	for(cur = &table->head; *cur; cur = &(*cur)->next)

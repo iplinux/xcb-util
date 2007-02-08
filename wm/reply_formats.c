@@ -9,7 +9,7 @@
 
 #define WINFMT "0x%08x"
 
-int formatGetWindowAttributesReply(xcb_window_t wid, xcb_get_window_attributes_reply_t *reply)
+int format_get_window_attributes_reply(xcb_window_t wid, xcb_get_window_attributes_reply_t *reply)
 {
     if(!reply)
     {
@@ -55,7 +55,7 @@ int formatGetWindowAttributesReply(xcb_window_t wid, xcb_get_window_attributes_r
     return 1;
 }
 
-int formatGetGeometryReply(xcb_window_t wid, xcb_get_geometry_reply_t *reply)
+int format_get_geometry_reply(xcb_window_t wid, xcb_get_geometry_reply_t *reply)
 {
     if(!reply)
     {
@@ -75,7 +75,7 @@ int formatGetGeometryReply(xcb_window_t wid, xcb_get_geometry_reply_t *reply)
     return 1;
 }
 
-int formatQueryTreeReply(xcb_window_t wid, xcb_query_tree_reply_t *reply)
+int format_query_tree_reply(xcb_window_t wid, xcb_query_tree_reply_t *reply)
 {
     int i;
 
@@ -296,7 +296,7 @@ static const char *labelSendEvent[] = {
     " (from SendEvent)",
 };
 
-int formatEvent(xcb_generic_event_t *e)
+int format_event(xcb_generic_event_t *e)
 {
     uint8_t sendEvent;
     uint16_t seqnum;

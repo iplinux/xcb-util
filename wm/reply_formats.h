@@ -9,10 +9,10 @@
 
 #include <xcb/xcb.h>
 
-int formatGetWindowAttributesReply(xcb_window_t wid, xcb_get_window_attributes_reply_t *reply);
-int formatGetGeometryReply(xcb_window_t wid, xcb_get_geometry_reply_t *reply);
-int formatQueryTreeReply(xcb_window_t wid, xcb_query_tree_reply_t *reply);
-int formatEvent(xcb_generic_event_t *e);
+int format_get_window_attributes_reply(xcb_window_t wid, xcb_get_window_attributes_reply_t *reply);
+int format_get_geometry_reply(xcb_window_t wid, xcb_get_geometry_reply_t *reply);
+int format_query_tree_reply(xcb_window_t wid, xcb_query_tree_reply_t *reply);
+int format_event(xcb_generic_event_t *e);
 
 #if 0 /* not yet ready */
 int formatButtonReleaseEvent(void *data, xcb_connection_t *c, xcb_button_release_event_t *event);

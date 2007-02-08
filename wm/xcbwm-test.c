@@ -25,7 +25,7 @@ static int16_t move_from_y = -1;
 
 static int handleEvent(void *ignored, xcb_connection_t *c, xcb_generic_event_t *e)
 {
-	return formatEvent(e);
+	return format_event(e);
 }
 
 static int handleButtonPressEvent(void *data, xcb_connection_t *c, xcb_button_press_event_t *e)
@@ -60,20 +60,20 @@ static int handleButtonReleaseEvent(void *data, xcb_connection_t *c, xcb_button_
 static int addClientWindow(xcb_window_t child, xcb_window_t parent, xcb_gcontext_t titlegc)
 {
 	int success;
-	ClientWindow *record = malloc(sizeof(ClientWindow));
+	client_window_t *record = malloc(sizeof(client_window_t));
 	assert(record);
 	record->child = child;
 	record->parent = parent;
 	record->name_len = 0;
 	record->name = 0;
 	record->titlegc = titlegc;
-	success = TablePut(byParent, parent, record) &&
-		TablePut(byChild, child, record);
+	success = table_put(byParent, parent, record) &&
+		table_put(byChild, child, record);
 	assert(success);
 	return 1;
 }
 
-void reparentWindow(xcb_connection_t *c, xcb_window_t child,
+void reparent_window(xcb_connection_t *c, xcb_window_t child,
 		xcb_visualid_t v, xcb_window_t r, uint8_t d,
 		int16_t x, int16_t y, uint16_t width, uint16_t height)
 {
@@ -121,7 +121,7 @@ void reparentWindow(xcb_connection_t *c, xcb_window_t child,
 	xcb_flush(c);
 }
 
-static void redrawWindow(xcb_connection_t *c, ClientWindow *client)
+static void redrawWindow(xcb_connection_t *c, client_window_t *client)
 {
 	xcb_drawable_t d = { client->parent };
 	if(!client->name_len)
@@ -134,7 +134,7 @@ static void redrawWindow(xcb_connection_t *c, ClientWindow *client)
 
 static int handleExposeEvent(void *data, xcb_connection_t *c, xcb_expose_event_t *e)
 {
-	ClientWindow *client = TableGet(byParent, e->window);
+	client_window_t *client = table_get(byParent, e->window);
 	if(!client || e->count != 0)
 		return 1;
 	redrawWindow(c, client);
@@ -143,7 +143,7 @@ static int handleExposeEvent(void *data, xcb_connection_t *c, xcb_expose_event_t
 
 static int handleWMNameChange(void *data, xcb_connection_t *c, uint8_t state, xcb_window_t window, xcb_atom_t atom, xcb_get_property_reply_t *prop)
 {
-	ClientWindow *client = TableGet(byChild, window);
+	client_window_t *client = table_get(byChild, window);
 	printf("WM_NAME change: Window 0x%08x ", window);
 	if(!client)
 	{
@@ -183,8 +183,8 @@ int main(int argc, char **argv)
         int screen_nbr;
 	int i;
 
-	byChild = AllocTable();
-	byParent = AllocTable();
+	byChild = alloc_table();
+	byParent = alloc_table();
 
 	c = xcb_connect(NULL, &screen_nbr);
 
@@ -196,12 +196,12 @@ int main(int argc, char **argv)
 		set_error_handler(evenths, i, (generic_error_handler) handleEvent, 0);
 	set_button_press_event_handler(evenths, handleButtonPressEvent, 0);
 	set_button_release_event_handler(evenths, handleButtonReleaseEvent, 0);
-	set_unmap_notify_event_handler(evenths, handleUnmapNotifyEvent, 0);
+	set_unmap_notify_event_handler(evenths, handle_unmap_notify_event, 0);
 	set_expose_event_handler(evenths, handleExposeEvent, 0);
 
 	prophs = alloc_property_handlers(evenths);
-	set_map_notify_event_handler(evenths, handleMapNotifyEvent, prophs);
-	WatchWMName(prophs, 40, handleWMNameChange, 0);
+	set_map_notify_event_handler(evenths, handle_map_notify_event, prophs);
+	watch_wm_name(prophs, 40, handleWMNameChange, 0);
 
 	if(TEST_THREADS)
 	{
@@ -217,7 +217,7 @@ int main(int argc, char **argv)
 	}
 	xcb_flush(c);
 
-	manageExistingWindows(c, prophs, root);
+	manage_existing_windows(c, prophs, root);
 
 	/* Terminate only when the event loop terminates */
 	if(TEST_THREADS)
