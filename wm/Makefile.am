@@ -1,22 +1,22 @@
 
 MAINTAINERCLEANFILES = Makefile.in
 
-lib_LTLIBRARIES = libXCBWM.la
+lib_LTLIBRARIES = libxcb-wm.la
 
 xcbinclude_HEADERS = xcb_wm.h
 
 AM_CFLAGS = $(CWARNFLAGS)
 
-XCB_XCBWM_LIBS = libXCBWM.la
+XCB_XCBWM_LIBS = libxcb-wm.la
 
-libXCBWM_la_SOURCES = manage.c table.c
-libXCBWM_la_CFLAGS = $(XCB_CFLAGS) \
+libxcb_wm_la_SOURCES = manage.c table.c
+libxcb_wm_la_CPPFLAGS = $(XCB_CFLAGS) \
 	$(XCB_AUX_CFLAGS) \
 	$(XCB_ATOM_CFLAGS) \
 	$(XCB_EVENT_CFLAGS) \
 	$(XCB_PROPERTY_CFLAGS) \
 	$(XCB_ICCCM_CFLAGS)
-libXCBWM_la_LIBADD = $(XCB_LIBS) \
+libxcb_wm_la_LIBADD = $(XCB_LIBS) \
 	$(XCB_AUX_LIBS) \
 	$(XCB_ATOM_LIBS) \
 	$(XCB_EVENT_LIBS) \
@@ -30,7 +30,7 @@ EXTRA_DIST = xcb-wm.pc.in
 noinst_PROGRAMS = xcbwm-test
 
 xcbwm_test_SOURCES = xcbwm-test.c reply_formats.c reply_formats.h
-xcbwm_test_CFLAGS = $(XCB_CFLAGS) \
+xcbwm_test_CPPFLAGS = $(XCB_CFLAGS) \
 	$(XCB_AUX_CFLAGS) \
 	$(XCB_ATOM_CFLAGS) \
 	$(XCB_EVENT_CFLAGS) \

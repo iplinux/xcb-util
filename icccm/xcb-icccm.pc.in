@@ -3,9 +3,9 @@ exec_prefix=@exec_prefix@
 libdir=@libdir@
 includedir=@includedir@
 
-Name: XCBICCCM
+Name: XCB ICCCM library
 Description: XCB ICCCM binding
 Version: @PACKAGE_VERSION@
 Requires: xcb xcb-atom xcb-property
-Libs: -L${libdir} -lXCBICCCM @LIBS@
+Libs: -L${libdir} -lxcb-icccm @LIBS@
 Cflags: -I${includedir}

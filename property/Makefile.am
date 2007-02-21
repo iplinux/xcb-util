@@ -1,15 +1,15 @@
 
 MAINTAINERCLEANFILES = Makefile.in
 
-lib_LTLIBRARIES = libXCBProperty.la
+lib_LTLIBRARIES = libxcb-property.la
 
 xcbinclude_HEADERS = xcb_property.h
 
 AM_CFLAGS = $(CWARNFLAGS)
 
-libXCBProperty_la_SOURCES = prop.c
-libXCBProperty_la_CFLAGS = $(XCB_CFLAGS) $(XCB_EVENT_CFLAGS)
-libXCBProperty_la_LIBADD = $(XCB_LIBS) $(XCB_EVENT_LIBS)
+libxcb_property_la_SOURCES = prop.c
+libxcb_property_la_CPPFLAGS = $(XCB_CFLAGS) $(XCB_EVENT_CFLAGS)
+libxcb_property_la_LIBADD = $(XCB_LIBS) $(XCB_EVENT_LIBS)
 
 pkgconfig_DATA = xcb-property.pc
 

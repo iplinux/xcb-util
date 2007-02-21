@@ -3,9 +3,9 @@ exec_prefix=@exec_prefix@
 libdir=@libdir@
 includedir=@includedir@
 
-Name: XCBKeysyms
+Name: XCB Keysyms library
 Description: XCB Keysyms
 Version: @PACKAGE_VERSION@
 Requires: xcb
-Libs: -L${libdir} -lXCBKeysyms @LIBS@
+Libs: -L${libdir} -lxcb-keysyms @LIBS@
 Cflags: -I${includedir}

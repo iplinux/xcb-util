@@ -3,9 +3,9 @@ exec_prefix=@exec_prefix@
 libdir=@libdir@
 includedir=@includedir@
 
-Name: XCBAux library
+Name: XCB Aux library
 Description: XCB convenient functions
 Version: @PACKAGE_VERSION@
 Requires: xcb
-Libs: -L${libdir} -lXCBAux @LIBS@
+Libs: -L${libdir} -lxcb-aux @LIBS@
 Cflags: -I${includedir}

@@ -3,9 +3,9 @@ exec_prefix=@exec_prefix@
 libdir=@libdir@
 includedir=@includedir@
 
-Name: XCBImage
+Name: XCB Image library
 Description: XCB image convenience library
 Version: @PACKAGE_VERSION@
 Requires: xcb xcb-shm
-Libs: -L${libdir} -lXCBImage @LIBS@
+Libs: -L${libdir} -lxcb-image @LIBS@
 Cflags: -I${includedir}

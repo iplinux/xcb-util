@@ -3,9 +3,9 @@ exec_prefix=@exec_prefix@
 libdir=@libdir@
 includedir=@includedir@
 
-Name: XCBProperty
+Name: XCB Property library
 Description: XCB property convenience library
 Version: @PACKAGE_VERSION@
 Requires: xcb xcb-event
-Libs: -L${libdir} -lXCBProperty @LIBS@
+Libs: -L${libdir} -lxcb-property @LIBS@
 Cflags: -I${includedir}

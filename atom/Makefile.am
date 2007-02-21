@@ -1,15 +1,15 @@
 
 MAINTAINERCLEANFILES = Makefile.in
 
-lib_LTLIBRARIES = libXCBAtom.la
+lib_LTLIBRARIES = libxcb-atom.la
 
 xcbinclude_HEADERS = xcb_atom.h
 
 AM_CFLAGS = $(CWARNFLAGS)
 
-libXCBAtom_la_SOURCES = atoms.c atomlist.m4 atoms.gperf.m4 xcb_atom.h.m4
-libXCBAtom_la_CFLAGS = $(XCB_CFLAGS)
-libXCBAtom_la_LIBADD = $(XCB_LIBS)
+libxcb_atom_la_SOURCES = atoms.c atomlist.m4 atoms.gperf.m4 xcb_atom.h.m4
+libxcb_atom_la_CPPFLAGS = $(XCB_CFLAGS)
+libxcb_atom_la_LIBADD = $(XCB_LIBS)
 
 pkgconfig_DATA = xcb-atom.pc
 

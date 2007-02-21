@@ -3,9 +3,9 @@ exec_prefix=@exec_prefix@
 libdir=@libdir@
 includedir=@includedir@
 
-Name: XCBRenderUtil
+Name: XCB RenderUtil library
 Description: XCB RENDER-extension utilities library
 Version: @PACKAGE_VERSION@
 Requires: xcb xcb-render
-Libs: -L${libdir} -lXCBRenderUtil @LIBS@
+Libs: -L${libdir} -lxcb-renderUtil @LIBS@
 Cflags: -I${includedir}

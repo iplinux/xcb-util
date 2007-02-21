@@ -1,17 +1,17 @@
 
 MAINTAINERCLEANFILES = Makefile.in
 
-lib_LTLIBRARIES = libXCBReply.la
+lib_LTLIBRARIES = libxcb-reply.la
 
 xcbinclude_HEADERS = xcb_reply.h
 
 AM_CFLAGS = $(CWARNFLAGS)
 
-XCB_REPLY_LIBS = libXCBReply.la
+XCB_REPLY_LIBS = libxcb-reply.la
 
-libXCBReply_la_SOURCES = reply.c
-libXCBReply_la_CFLAGS = $(XCB_CFLAGS)
-libXCBReply_la_LIBADD = $(XCB_LIBS) -lpthread
+libxcb_reply_la_SOURCES = reply.c
+libxcb_reply_la_CPPFLAGS = $(XCB_CFLAGS)
+libxcb_reply_la_LIBADD = $(XCB_LIBS) -lpthread
 
 pkgconfig_DATA = xcb-reply.pc
 
@@ -19,6 +19,6 @@ EXTRA_DIST=xcb-reply.pc.in
 
 noinst_PROGRAMS = test_reply
 
-test_reply_CFLAGS = $(XCB_CFLAGS)
+test_reply_CPPFLAGS = $(XCB_CFLAGS)
 test_reply_LDADD = $(XCB_LIBS) $(XCB_REPLY_LIBS)
 test_reply_SOURCES = test_reply.c

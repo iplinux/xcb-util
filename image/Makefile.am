@@ -1,17 +1,17 @@
 
 MAINTAINERCLEANFILES = Makefile.in
 
-lib_LTLIBRARIES = libXCBImage.la
+lib_LTLIBRARIES = libxcb-image.la
 
 xcbinclude_HEADERS = xcb_image.h
 
 AM_CFLAGS = $(CWARNFLAGS)
 
-XCB_IMAGE_LIBS = libXCBImage.la
+XCB_IMAGE_LIBS = libxcb-image.la
 
-libXCBImage_la_SOURCES = xcb_image.c
-libXCBImage_la_CFLAGS = $(XCB_CFLAGS) $(XCB_SHM_CFLAGS) $(XCB_AUX_CFLAGS)
-libXCBImage_la_LIBADD = $(XCB_LIBS) $(XCB_SHM_LIBS) $(XCB_AUX_LIBS)
+libxcb_image_la_SOURCES = xcb_image.c
+libxcb_image_la_CPPFLAGS = $(XCB_CFLAGS) $(XCB_SHM_CFLAGS) $(XCB_AUX_CFLAGS)
+libxcb_image_la_LIBADD = $(XCB_LIBS) $(XCB_SHM_LIBS) $(XCB_AUX_LIBS)
 
 pkgconfig_DATA = xcb-image.pc
 
@@ -20,14 +20,14 @@ EXTRA_DIST=xcb-image.pc.in
 noinst_PROGRAMS = test_xcb_image test_xcb_image_shm test_formats
 
 test_xcb_image_SOURCES = test_xcb_image.c
-test_xcb_image_CFLAGS = $(XCB_CFLAGS) $(XCB_SHM_CFLAGS) $(XCB_AUX_CFLAGS)
+test_xcb_image_CPPFLAGS = $(XCB_CFLAGS) $(XCB_SHM_CFLAGS) $(XCB_AUX_CFLAGS)
 test_xcb_image_LDADD = $(XCB_LIBS) $(XCB_AUX_LIBS) $(XCB_IMAGE_LIBS)
 
 test_xcb_image_shm_SOURCES = test_xcb_image_shm.c
-test_xcb_image_shm_CFLAGS = $(XCB_CFLAGS) $(XCB_SHM_CFLAGS) $(XCB_AUX_CFLAGS)
+test_xcb_image_shm_CPPFLAGS = $(XCB_CFLAGS) $(XCB_SHM_CFLAGS) $(XCB_AUX_CFLAGS)
 test_xcb_image_shm_LDADD = $(XCB_LIBS) $(XCB_SHM_LIBS) \
 	$(XCB_AUX_LIBS) $(XCB_IMAGE_LIBS)
 
 test_formats_SOURCES = test_formats.c
-test_formats_CFLAGS = $(XCB_CFLAGS) $(XCB_SHM_CFLAGS) $(XCB_AUX_CFLAGS)
+test_formats_CPPFLAGS = $(XCB_CFLAGS) $(XCB_SHM_CFLAGS) $(XCB_AUX_CFLAGS)
 test_formats_LDADD = $(XCB_LIBS) $(XCB_AUX_LIBS) $(XCB_IMAGE_LIBS)

@@ -3,9 +3,9 @@ exec_prefix=@exec_prefix@
 libdir=@libdir@
 includedir=@includedir@
 
-Name: XCBAtom
+Name: XCB Atom library
 Description: XCB atom cache
 Version: @PACKAGE_VERSION@
 Requires: xcb
-Libs: -L${libdir} -lXCBAtom @LIBS@
+Libs: -L${libdir} -lxcb-atom @LIBS@
 Cflags: -I${includedir}

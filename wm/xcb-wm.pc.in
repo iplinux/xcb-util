@@ -3,9 +3,9 @@ exec_prefix=@exec_prefix@
 libdir=@libdir@
 includedir=@includedir@
 
-Name: XCBWM
+Name: XCB WM library
 Description: XCB window manager convenience library
 Version: @PACKAGE_VERSION@
 Requires: xcb xcb-atom xcb-event xcb-property xcb-icccm
-Libs: -L${libdir} -lXCBWM @LIBS@
+Libs: -L${libdir} -lxcb-wm @LIBS@
 Cflags: -I${includedir}
