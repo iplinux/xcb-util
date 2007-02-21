@@ -7,5 +7,5 @@ Name: XCB RenderUtil library
 Description: XCB RENDER-extension utilities library
 Version: @PACKAGE_VERSION@
 Requires: xcb xcb-render
-Libs: -L${libdir} -lxcb-renderUtil @LIBS@
+Libs: -L${libdir} -lxcb-render-util @LIBS@
 Cflags: -I${includedir}
