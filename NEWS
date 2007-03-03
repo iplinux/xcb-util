@@ -1,0 +1,14 @@
+version 0.2 (2006-03-02)
+=========================
+* adapt to the libxcb 1.0 Great Renaming, and try to obey the same conventions
+
+* render-util library: standard visuals and usable glyph support
+
+* xcb_aux_sync: provides same function as XSync
+
+* icccm library: make the wm_hints interface usable
+
+* libraries renamed libxcb-*; headers moved to xcb/xcb_*.h
+
+* Various build system fixes
+
