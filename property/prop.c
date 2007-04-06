@@ -4,37 +4,39 @@
 #include "xcb_property.h"
 
 typedef struct {
-	uint32_t long_len;
-	generic_property_handler handler;
-	void *data;
+	uint32_t                       long_len;
+	xcb_generic_property_handler_t handler;
+	void                          *data;
 } prop_handler_t;
 
 typedef struct node node;
 struct node {
-	node *next;
-	xcb_atom_t name;
+	node          *next;
+	xcb_atom_t     name;
 	prop_handler_t h;
 };
 
-struct property_handlers {
-	node *head;
-	prop_handler_t *def;
-	event_handlers_t *evenths;
+struct xcb_property_handlers {
+	node                 *head;
+	prop_handler_t       *def;
+	xcb_event_handlers_t *evenths;
 };
 
-xcb_get_property_cookie_t get_any_property(xcb_connection_t *c, uint8_t del, xcb_window_t window, xcb_atom_t name, uint32_t long_len)
+xcb_get_property_cookie_t xcb_get_any_property(xcb_connection_t *c, uint8_t del, xcb_window_t window, xcb_atom_t name, uint32_t long_len)
 {
-	static const xcb_atom_t type = { XCB_GET_PROPERTY_TYPE_ANY };
+	static const xcb_atom_t type = XCB_GET_PROPERTY_TYPE_ANY;
+
 	return xcb_get_property(c, del, window, name, type, 0, long_len);
 }
 
 static int call_handler(xcb_connection_t *c, uint8_t state, xcb_window_t window, xcb_atom_t atom, prop_handler_t *h)
 {
 	xcb_get_property_reply_t *propr = 0;
-	int ret;
+	int                       ret;
+
 	if(state != XCB_PROPERTY_DELETE)
 	{
-		xcb_get_property_cookie_t cookie = get_any_property(c, 0, window, atom, h->long_len);
+		xcb_get_property_cookie_t cookie = xcb_get_any_property(c, 0, window, atom, h->long_len);
 		propr = xcb_get_property_reply(c, cookie, 0);
 	}
 	ret = h->handler(h->data, c, state, window, atom, propr);
@@ -42,10 +44,11 @@ static int call_handler(xcb_connection_t *c, uint8_t state, xcb_window_t window,
 	return ret;
 }
 
-int property_changed(property_handlers_t *prophs, uint8_t state, xcb_window_t window, xcb_atom_t atom)
+int xcb_property_changed(xcb_property_handlers_t *prophs, uint8_t state, xcb_window_t window, xcb_atom_t atom)
 {
-	xcb_connection_t *c = get_xcb_connection(get_property_event_handlers(prophs));
-	node *cur;
+	xcb_connection_t *c = xcb_get_xcb_connection(xcb_get_property_event_handlers(prophs));
+	node             *cur;
+
 	for(cur = prophs->head; cur; cur = cur->next)
 		if(cur->name == atom)
 			return call_handler(c, state, window, atom, &cur->h);
@@ -56,17 +59,18 @@ int property_changed(property_handlers_t *prophs, uint8_t state, xcb_window_t wi
 
 static int handle_property_notify_event(void *data, xcb_connection_t *c, xcb_property_notify_event_t *e)
 {
-	property_handlers_t *prophs = data;
-	uint8_t state = e->state;
-	xcb_window_t window = e->window;
-	xcb_atom_t atom = e->atom;
+	xcb_property_handlers_t *prophs = data;
+	uint8_t                  state = e->state;
+	xcb_window_t             window = e->window;
+	xcb_atom_t               atom = e->atom;
 
-	return property_changed(prophs, state, window, atom);
+	return xcb_property_changed(prophs, state, window, atom);
 }
 
-property_handlers_t *alloc_property_handlers(event_handlers_t *evenths)
+xcb_property_handlers_t *xcb_alloc_property_handlers(xcb_event_handlers_t *evenths)
 {
-	property_handlers_t *prophs = malloc(sizeof(property_handlers_t));
+	xcb_property_handlers_t *prophs = malloc(sizeof(xcb_property_handlers_t));
+
 	if(prophs)
 	{
 		prophs->head = 0;
@@ -77,24 +81,24 @@ property_handlers_t *alloc_property_handlers(event_handlers_t *evenths)
 	return prophs;
 }
 
-void free_property_handlers(property_handlers_t *prophs)
+void xcb_free_property_handlers(xcb_property_handlers_t *prophs)
 {
 	free(prophs);
 }
 
-event_handlers_t *get_property_event_handlers(property_handlers_t *prophs)
+xcb_event_handlers_t *xcb_get_property_event_handlers(xcb_property_handlers_t *prophs)
 {
 	return prophs->evenths;
 }
 
-static inline void set_prop_handler(prop_handler_t *cur, uint32_t long_len, generic_property_handler handler, void *data)
+static inline void set_prop_handler(prop_handler_t *cur, uint32_t long_len, xcb_generic_property_handler_t handler, void *data)
 {
 	cur->long_len = long_len;
 	cur->handler = handler;
 	cur->data = data;
 }
 
-int set_property_handler(property_handlers_t *prophs, xcb_atom_t name, uint32_t long_len, generic_property_handler handler, void *data)
+int xcb_set_property_handler(xcb_property_handlers_t *prophs, xcb_atom_t name, uint32_t long_len, xcb_generic_property_handler_t handler, void *data)
 {
 	node *cur = malloc(sizeof(node));
 	if(!cur)
@@ -106,7 +110,7 @@ int set_property_handler(property_handlers_t *prophs, xcb_atom_t name, uint32_t 
 	return 1;
 }
 
-int set_default_property_handler(property_handlers_t *prophs, uint32_t long_len, generic_property_handler handler, void *data)
+int xcb_set_default_property_handler(xcb_property_handlers_t *prophs, uint32_t long_len, xcb_generic_property_handler_t handler, void *data)
 {
 	assert(!prophs->def);
 	prophs->def = malloc(sizeof(prop_handler_t));

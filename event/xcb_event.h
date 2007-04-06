@@ -9,23 +9,23 @@ extern "C" {
 #endif
 
 
-typedef struct event_handlers event_handlers_t;
-event_handlers_t *alloc_event_handlers(xcb_connection_t *c);
-void free_event_handlers(event_handlers_t *evenths);
-xcb_connection_t *get_xcb_connection(event_handlers_t *evenths);
+typedef struct xcb_event_handlers_t xcb_event_handlers_t;
+xcb_event_handlers_t *xcb_alloc_event_handlers(xcb_connection_t *c);
+void xcb_free_event_handlers(xcb_event_handlers_t *evenths);
+xcb_connection_t *xcb_get_xcb_connection(xcb_event_handlers_t *evenths);
 
-void event_loop(event_handlers_t *evenths);
+void xcb_event_loop(xcb_event_handlers_t *evenths);
 
-typedef int (*generic_event_handler)(void *data, xcb_connection_t *c, xcb_generic_event_t *event);
-typedef int (*generic_error_handler)(void *data, xcb_connection_t *c, xcb_generic_error_t *error);
+typedef int (*xcb_generic_event_handler_t)(void *data, xcb_connection_t *c, xcb_generic_event_t *event);
+typedef int (*xcb_generic_error_handler_t)(void *data, xcb_connection_t *c, xcb_generic_error_t *error);
 
-void set_event_handler(event_handlers_t *evenths, int event, generic_event_handler handler, void *data);
-void set_error_handler(event_handlers_t *evenths, int error, generic_error_handler handler, void *data);
+void xcb_set_event_handler(xcb_event_handlers_t *evenths, int event, xcb_generic_event_handler_t handler, void *data);
+void xcb_set_error_handler(xcb_event_handlers_t *evenths, int error, xcb_generic_error_handler_t handler, void *data);
 
 #define MAKE_HANDLER(cls,lkind, ukind) \
-static inline void set_##lkind##_##cls##_handler(event_handlers_t *evenths, int (*handler)(void *, xcb_connection_t *, xcb_##lkind##_##cls##_t *), void *data) \
+static inline void set_##lkind##_##cls##_handler(xcb_event_handlers_t *evenths, int (*handler)(void *, xcb_connection_t *, xcb_##lkind##_##cls##_t *), void *data) \
 { \
-	set_##cls##_handler(evenths, XCB_##ukind, (generic_event_handler) handler, data); \
+	xcb_set_##cls##_handler(evenths, XCB_##ukind, (xcb_generic_event_handler_t) handler, data); \
 }
 
 MAKE_HANDLER(event, key_press, KEY_PRESS)

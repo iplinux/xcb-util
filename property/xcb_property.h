@@ -9,20 +9,20 @@ extern "C" {
 #endif
 
 
-xcb_get_property_cookie_t get_any_property(xcb_connection_t *c, uint8_t del, xcb_window_t window, xcb_atom_t name, uint32_t long_len);
+xcb_get_property_cookie_t xcb_get_any_property(xcb_connection_t *c, uint8_t del, xcb_window_t window, xcb_atom_t name, uint32_t long_len);
 
-typedef struct property_handlers property_handlers_t;
+typedef struct xcb_property_handlers xcb_property_handlers_t;
 
-property_handlers_t *alloc_property_handlers(event_handlers_t *evenths);
-void free_property_handlers(property_handlers_t *prophs);
-event_handlers_t *get_property_event_handlers(property_handlers_t *prophs);
+xcb_property_handlers_t *xcb_alloc_property_handlers(xcb_event_handlers_t *evenths);
+void xcb_free_property_handlers(xcb_property_handlers_t *prophs);
+xcb_event_handlers_t *xcb_get_property_event_handlers(xcb_property_handlers_t *prophs);
 
-typedef int (*generic_property_handler)(void *data, xcb_connection_t *c, uint8_t state, xcb_window_t window, xcb_atom_t atom, xcb_get_property_reply_t *property);
+typedef int (*xcb_generic_property_handler_t)(void *data, xcb_connection_t *c, uint8_t state, xcb_window_t window, xcb_atom_t atom, xcb_get_property_reply_t *property);
 
-int set_property_handler(property_handlers_t *prophs, xcb_atom_t name, uint32_t long_len, generic_property_handler handler, void *data);
-int set_default_property_handler(property_handlers_t *prophs, uint32_t long_len, generic_property_handler handler, void *data);
+int xcb_set_property_handler(xcb_property_handlers_t *prophs, xcb_atom_t name, uint32_t long_len, xcb_generic_property_handler_t handler, void *data);
+int xcb_set_default_property_handler(xcb_property_handlers_t *prophs, uint32_t long_len, xcb_generic_property_handler_t handler, void *data);
 
-int property_changed(property_handlers_t *prophs, uint8_t state, xcb_window_t window, xcb_atom_t atom);
+int xcb_property_changed(xcb_property_handlers_t *prophs, uint8_t state, xcb_window_t window, xcb_atom_t atom);
 
 
 #ifdef __cplusplus

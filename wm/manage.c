@@ -5,7 +5,7 @@
 table_t *byChild = 0;
 table_t *byParent = 0;
 
-void manage_window(property_handlers_t *prophs, xcb_connection_t *c, xcb_window_t window, window_attributes_t wa)
+void manage_window(xcb_property_handlers_t *prophs, xcb_connection_t *c, xcb_window_t window, window_attributes_t wa)
 {
 	xcb_drawable_t d = { window };
 	xcb_get_geometry_cookie_t geomc;
@@ -48,7 +48,7 @@ void manage_window(property_handlers_t *prophs, xcb_connection_t *c, xcb_window_
 	if(attr && geom)
 	{
 		reparent_window(c, window, attr->visual, geom->root, geom->depth, geom->x, geom->y, geom->width, geom->height);
-		property_changed(prophs, XCB_PROPERTY_NEW_VALUE, window, WM_NAME);
+		xcb_property_changed(prophs, XCB_PROPERTY_NEW_VALUE, window, WM_NAME);
 	}
 	free(attr);
 	free(geom);
@@ -84,7 +84,7 @@ int handle_unmap_notify_event(void *data, xcb_connection_t *c, xcb_unmap_notify_
 	return 1;
 }
 
-void manage_existing_windows(xcb_connection_t *c, property_handlers_t *prophs, xcb_window_t root)
+void manage_existing_windows(xcb_connection_t *c, xcb_property_handlers_t *prophs, xcb_window_t root)
 {
 	xcb_query_tree_cookie_t wintree;
 	xcb_query_tree_reply_t *rep;

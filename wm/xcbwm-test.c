@@ -176,8 +176,8 @@ static int handleWMNameChange(void *data, xcb_connection_t *c, uint8_t state, xc
 int main(int argc, char **argv)
 {
 	xcb_connection_t *c;
-	event_handlers_t *evenths;
-	property_handlers_t *prophs;
+	xcb_event_handlers_t *evenths;
+	xcb_property_handlers_t *prophs;
 	xcb_window_t root;
 	pthread_t event_thread;
         int screen_nbr;
@@ -188,24 +188,24 @@ int main(int argc, char **argv)
 
 	c = xcb_connect(NULL, &screen_nbr);
 
-	evenths = alloc_event_handlers(c);
+	evenths = xcb_alloc_event_handlers(c);
 
 	for(i = 2; i < 128; ++i)
-		set_event_handler(evenths, i, handleEvent, 0);
+		xcb_set_event_handler(evenths, i, handleEvent, 0);
 	for(i = 0; i < 256; ++i)
-		set_error_handler(evenths, i, (generic_error_handler) handleEvent, 0);
+		xcb_set_error_handler(evenths, i, (xcb_generic_error_handler_t) handleEvent, 0);
 	set_button_press_event_handler(evenths, handleButtonPressEvent, 0);
 	set_button_release_event_handler(evenths, handleButtonReleaseEvent, 0);
 	set_unmap_notify_event_handler(evenths, handle_unmap_notify_event, 0);
 	set_expose_event_handler(evenths, handleExposeEvent, 0);
 
-	prophs = alloc_property_handlers(evenths);
+	prophs = xcb_alloc_property_handlers(evenths);
 	set_map_notify_event_handler(evenths, handle_map_notify_event, prophs);
-	watch_wm_name(prophs, 40, handleWMNameChange, 0);
+	xcb_watch_wm_name(prophs, 40, handleWMNameChange, 0);
 
 	if(TEST_THREADS)
 	{
-		pthread_create(&event_thread, 0, (void *(*)(void *))event_loop, evenths);
+		pthread_create(&event_thread, 0, (void *(*)(void *))xcb_event_loop, evenths);
 	}
 
 	root = xcb_aux_get_screen(c, screen_nbr)->root;
@@ -223,7 +223,7 @@ int main(int argc, char **argv)
 	if(TEST_THREADS)
 		pthread_join(event_thread, 0);
 	else
-		event_loop(evenths);
+		xcb_event_loop(evenths);
 
 	exit(0);
 	/*NOTREACHED*/

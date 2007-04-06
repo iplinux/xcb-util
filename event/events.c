@@ -3,37 +3,37 @@
 
 #include "xcb_event.h"
 
-typedef struct event_handler event_handler_t;
-struct event_handler {
-	generic_event_handler handler;
-	void *data;
+typedef struct xcb_event_handler_t xcb_event_handler_t;
+struct xcb_event_handler_t {
+	xcb_generic_event_handler_t handler;
+	void                       *data;
 };
 
-struct event_handlers {
-	event_handler_t event[126];
-	event_handler_t error[256];
-	xcb_connection_t *c;
+struct xcb_event_handlers_t {
+	xcb_event_handler_t event[126];
+	xcb_event_handler_t error[256];
+	xcb_connection_t   *c;
 };
 
-event_handlers_t *alloc_event_handlers(xcb_connection_t *c)
+xcb_event_handlers_t *xcb_alloc_event_handlers(xcb_connection_t *c)
 {
-	event_handlers_t *ret = calloc(1, sizeof(event_handlers_t));
+	xcb_event_handlers_t *ret = calloc(1, sizeof(xcb_event_handlers_t));
 	if(ret)
 		ret->c = c;
 	return ret;
 }
 
-void free_event_handlers(event_handlers_t *evenths)
+void xcb_free_event_handlers(xcb_event_handlers_t *evenths)
 {
 	free(evenths);
 }
 
-xcb_connection_t *get_xcb_connection(event_handlers_t *evenths)
+xcb_connection_t *xcb_get_xcb_connection(xcb_event_handlers_t *evenths)
 {
 	return evenths->c;
 }
 
-static event_handler_t *get_event_handler(event_handlers_t *evenths, int event)
+static xcb_event_handler_t *get_event_handler(xcb_event_handlers_t *evenths, int event)
 {
 	assert(event < 256);
 	event &= 0x7f;
@@ -41,15 +41,15 @@ static event_handler_t *get_event_handler(event_handlers_t *evenths, int event)
 	return &evenths->event[event - 2];
 }
 
-static event_handler_t *get_error_handler(event_handlers_t *evenths, int error)
+static xcb_event_handler_t *get_error_handler(xcb_event_handlers_t *evenths, int error)
 {
 	assert(error >= 0 && error < 256);
 	return &evenths->error[error];
 }
 
-static int handle_event(event_handlers_t *evenths, xcb_generic_event_t *event)
+static int handle_event(xcb_event_handlers_t *evenths, xcb_generic_event_t *event)
 {
-	event_handler_t *eventh = 0;
+	xcb_event_handler_t *eventh = 0;
 	assert(event->response_type != 1);
 
 	if(event->response_type == 0)
@@ -62,7 +62,7 @@ static int handle_event(event_handlers_t *evenths, xcb_generic_event_t *event)
 	return 0;
 }
 
-void event_loop(event_handlers_t *evenths)
+void xcb_event_loop(xcb_event_handlers_t *evenths)
 {
 	xcb_generic_event_t *event;
 	while((event = xcb_wait_for_event(evenths->c)))
@@ -72,18 +72,18 @@ void event_loop(event_handlers_t *evenths)
 	}
 }
 
-static void set_handler(generic_event_handler handler, void *data, event_handler_t *place)
+static void set_handler(xcb_generic_event_handler_t handler, void *data, xcb_event_handler_t *place)
 {
-	event_handler_t eventh = { handler, data };
+	xcb_event_handler_t eventh = { handler, data };
 	*place = eventh;
 }
 
-void set_event_handler(event_handlers_t *evenths, int event, generic_event_handler handler, void *data)
+void xcb_set_event_handler(xcb_event_handlers_t *evenths, int event, xcb_generic_event_handler_t handler, void *data)
 {
 	set_handler(handler, data, get_event_handler(evenths, event));
 }
 
-void set_error_handler(event_handlers_t *evenths, int error, generic_error_handler handler, void *data)
+void xcb_set_error_handler(xcb_event_handlers_t *evenths, int error, xcb_generic_error_handler_t handler, void *data)
 {
-	set_handler((generic_event_handler) handler, data, get_error_handler(evenths, error));
+	set_handler((xcb_generic_event_handler_t) handler, data, get_error_handler(evenths, error));
 }

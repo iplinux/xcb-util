@@ -31,10 +31,10 @@ typedef struct {
 	} u;
 } window_attributes_t;
 
-void manage_window(property_handlers_t *prophs, xcb_connection_t *c, xcb_window_t window, window_attributes_t wa);
+void manage_window(xcb_property_handlers_t *prophs, xcb_connection_t *c, xcb_window_t window, window_attributes_t wa);
 int handle_map_notify_event(void *prophs, xcb_connection_t *c, xcb_map_notify_event_t *e);
 int handle_unmap_notify_event(void *data, xcb_connection_t *c, xcb_unmap_notify_event_t *e);
-void manage_existing_windows(xcb_connection_t *c, property_handlers_t *prophs, xcb_window_t root);
+void manage_existing_windows(xcb_connection_t *c, xcb_property_handlers_t *prophs, xcb_window_t root);
 
 typedef struct table_t table_t;
 
