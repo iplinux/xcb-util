@@ -195,7 +195,7 @@ typedef enum {
     XCB_WM_ICONIC_STATE    = 3
 } xcb_wm_state_t;
 
-xcb_wm_hints_t *alloc_wm_hints();
+xcb_wm_hints_t *xcb_alloc_wm_hints();
 
 uint8_t      xcb_wm_hints_get_input        (xcb_wm_hints_t *hints);
 xcb_pixmap_t xcb_wm_hints_get_icon_pixmap  (xcb_wm_hints_t *hints);
