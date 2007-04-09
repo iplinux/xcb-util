@@ -12,6 +12,12 @@ extern "C" {
 
 /* WM_NAME */
 
+void xcb_set_wm_name_checked (xcb_connection_t *c,
+                              xcb_window_t      window,
+                              xcb_atom_t        encoding,
+                              uint32_t          name_len,
+                              const char       *name);
+
 void xcb_set_wm_name (xcb_connection_t *c,
                       xcb_window_t      window,
                       xcb_atom_t        encoding,
@@ -32,6 +38,12 @@ void xcb_watch_wm_name (xcb_property_handlers_t        *prophs,
 
 /* WM_ICON_NAME */
 
+void xcb_set_wm_icon_name_checked (xcb_connection_t *c,
+                                   xcb_window_t      window,
+                                   xcb_atom_t        encoding,
+                                   uint32_t          name_len,
+                                   const char       *name);
+
 void xcb_set_wm_icon_name (xcb_connection_t *c,
                            xcb_window_t      window,
                            xcb_atom_t        encoding,
@@ -51,6 +63,12 @@ void xcb_watch_wm_icon_name (xcb_property_handlers_t        *prophs,
                              void                          *data);
 
 /* WM_CLIENT_MACHINE */
+
+void xcb_set_wm_client_machine_checked (xcb_connection_t *c,
+                                        xcb_window_t      window,
+                                        xcb_atom_t        encoding,
+                                        uint32_t          name_len,
+                                        const char       *name);
 
 void xcb_set_wm_client_machine (xcb_connection_t *c,
                                 xcb_window_t      window,
@@ -162,6 +180,11 @@ void       xcb_size_hints_set_base_size   (xcb_size_hints_t *hints,
 void       xcb_size_hints_set_win_gravity (xcb_size_hints_t *hints,
                                            uint8_t           win_gravity);
 
+void       xcb_set_wm_size_hints_checked (xcb_connection_t     *c,
+                                          xcb_window_t          window,
+                                          xcb_atom_t            property,
+                                          xcb_size_hints_t     *hints);
+
 void       xcb_set_wm_size_hints         (xcb_connection_t     *c,
                                           xcb_window_t          window,
                                           xcb_atom_t            property,
@@ -174,6 +197,10 @@ int        xcb_get_wm_size_hints         (xcb_connection_t     *c,
                                           long                 *supplied);
 
 /* WM_NORMAL_HINTS */
+
+void xcb_set_wm_normal_hints_checked (xcb_connection_t *c,
+                                      xcb_window_t      window,
+                                      xcb_size_hints_t *hints);
 
 void xcb_set_wm_normal_hints (xcb_connection_t *c,
                               xcb_window_t      window,
@@ -227,6 +254,10 @@ void xcb_wm_hints_set_icon_mask    (xcb_wm_hints_t *hints, xcb_pixmap_t icon_mas
 void xcb_wm_hints_set_icon_window  (xcb_wm_hints_t *hints, xcb_window_t icon_window);
 void xcb_wm_hints_set_window_group (xcb_wm_hints_t *hints, xcb_window_t window_group);
 
+void xcb_set_wm_hints_checked (xcb_connection_t *c,
+                               xcb_window_t      window,
+                               xcb_wm_hints_t   *hints);
+
 void xcb_set_wm_hints (xcb_connection_t *c,
                        xcb_window_t      window,
                        xcb_wm_hints_t   *hints);
@@ -236,10 +267,16 @@ xcb_wm_hints_t *xcb_get_wm_hints (xcb_connection_t *c,
 
 /* WM_PROTOCOLS */
 
+void xcb_set_wm_protocols_checked (xcb_connection_t *c,
+                                   xcb_window_t      window,
+                                   uint32_t          list_len,
+                                   xcb_atom_t       *list);
+
 void xcb_set_wm_protocols (xcb_connection_t *c,
                            xcb_window_t      window,
                            uint32_t          list_len,
                            xcb_atom_t       *list);
+
 int  xcb_get_wm_protocols (xcb_connection_t *c,
                            xcb_window_t      window,
                            uint32_t         *list_len,
