@@ -18,6 +18,7 @@ include(atomlist.m4)`'dnl
 %struct-type
 struct atom_map { int name; xcb_atom_t value; };
 %%
+define(`COUNT', 0)dnl
 define(`DO', `$1,define(`COUNT', incr(COUNT))COUNT')dnl
 include(atomlist.m4)`'dnl
 %%
