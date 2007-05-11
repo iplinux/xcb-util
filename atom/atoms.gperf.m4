@@ -22,8 +22,14 @@ define(`COUNT', 0)dnl
 define(`DO', `$1,define(`COUNT', incr(COUNT))COUNT')dnl
 include(atomlist.m4)`'dnl
 %%
-static const char *const atom_names[] = {
-define(`DO', `	"$1",')dnl
+
+static const char atom_names[] =
+define(`DO', `	"$1\0"')dnl
+include(atomlist.m4);
+
+static const uint16_t atom_name_offsets[] = {
+define(`OFFSET', 0)dnl
+define(`DO', `	OFFSET,define(`OFFSET', eval(OFFSET+1+len($1)))')dnl
 include(atomlist.m4)`'dnl
 };
 
@@ -76,9 +82,9 @@ xcb_atom_t intern_atom_fast_reply(xcb_connection_t *c, intern_atom_fast_cookie_t
 
 const char *get_atom_name_predefined(xcb_atom_t atom)
 {
-	if(atom <= 0 || atom > (sizeof(atom_names) / sizeof(*atom_names)))
+	if(atom <= 0 || atom > (sizeof(atom_name_offsets) / sizeof(*atom_name_offsets)))
 		return 0;
-	return atom_names[atom - 1];
+	return atom_names + atom_name_offsets[atom - 1];
 }
 
 int get_atom_name(xcb_connection_t *c, xcb_atom_t atom, const char **namep, int *lengthp)
