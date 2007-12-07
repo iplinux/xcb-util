@@ -33,6 +33,13 @@ void           xcb_aux_sync              (xcb_connection_t *c);
 
 /* less error prone to use structs instead of value lists */
 
+#define _XCB_AUX_OFFSETOF(paramsp, param) \
+    ((void*)(&((paramsp)->param))-(void*)(paramsp))
+    
+#define XCB_AUX_ADD_PARAM(maskp, paramsp, param, value) \
+    ((*(maskp)|=1<<(_XCB_AUX_OFFSETOF((paramsp),param)/sizeof(uint32_t))), \
+     ((paramsp)->param=(value)))
+
 typedef struct {
     uint32_t back_pixmap;
     uint32_t back_pixel;
