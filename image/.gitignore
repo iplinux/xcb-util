@@ -1,0 +1,5 @@
+test_xcb_image
+test_xcb_image_shm
+test_formats
+test_bitmap
+test.xbm
