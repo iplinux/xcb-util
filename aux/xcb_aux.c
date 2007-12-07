@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include <xcb/xcb.h>
 #include "xcb_aux.h"
@@ -254,4 +255,50 @@ xcb_aux_change_keyboard_control (xcb_connection_t            *c,
 	uint32_t value_list[16];
 	pack_list(mask, (const uint32_t *)params, value_list);
 	return xcb_change_keyboard_control( c, mask, value_list );
+}
+
+/* Color related functions */
+
+/* Return true if the given color name can be translated locally,
+   in which case load the components.  Otherwise, a lookup_color request
+   will be needed, so return false. */
+int
+xcb_aux_parse_color(char *color_name,
+		    uint16_t *red,  uint16_t *green,  uint16_t *blue)
+{
+    int n, r, g, b, i;
+    if (!color_name || *color_name != '#')
+	return 0;
+    /*
+     * Excitingly weird RGB parsing code from Xlib.
+     */
+    n = strlen (color_name);
+    color_name++;
+    n--;
+    if (n != 3 && n != 6 && n != 9 && n != 12)
+	return 0;
+    n /= 3;
+    g = b = 0;
+    do {
+	r = g;
+	g = b;
+	b = 0;
+	for (i = n; --i >= 0; ) {
+	    char c = *color_name++;
+	    b <<= 4;
+	    if (c >= '0' && c <= '9')
+		b |= c - '0';
+	    else if (c >= 'A' && c <= 'F')
+		b |= c - ('A' - 10);
+	    else if (c >= 'a' && c <= 'f')
+		b |= c - ('a' - 10);
+	    else return 0;
+	}
+    } while (*color_name != '\0');
+    n <<= 2;
+    n = 16 - n;
+    *red = r << n;
+    *green = g << n;
+    *blue = b << n;
+    return 1;
 }
