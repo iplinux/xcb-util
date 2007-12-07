@@ -67,6 +67,21 @@ xcb_aux_create_window (xcb_connection_t      *c,
                        const xcb_params_cw_t *params);
 
 xcb_void_cookie_t
+xcb_aux_create_window_checked (xcb_connection_t       *c,
+			       uint8_t                depth,
+			       xcb_window_t           wid,
+			       xcb_window_t           parent,
+			       int16_t                x,
+			       int16_t                y,
+			       uint16_t               width,
+			       uint16_t               height,
+			       uint16_t               border_width,
+			       uint16_t               _class,
+			       xcb_visualid_t         visual,
+			       uint32_t               mask,
+			       const xcb_params_cw_t *params);
+
+xcb_void_cookie_t
 xcb_aux_change_window_attributes (xcb_connection_t      *c,
                                   xcb_window_t           window,
                                   uint32_t               mask,
@@ -121,6 +136,12 @@ xcb_aux_create_gc (xcb_connection_t      *c,
                    uint32_t               mask,
                    const xcb_params_gc_t *params);
 
+xcb_void_cookie_t
+xcb_aux_create_gc_checked (xcb_connection_t      *c,
+			   xcb_gcontext_t         gid,
+			   xcb_drawable_t         drawable,
+			   uint32_t               mask,
+			   const xcb_params_gc_t *params);
 xcb_void_cookie_t
 xcb_aux_change_gc (xcb_connection_t      *c,
                    xcb_gcontext_t         gc,
