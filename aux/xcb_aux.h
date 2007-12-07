@@ -148,6 +148,11 @@ xcb_aux_change_gc (xcb_connection_t      *c,
                    uint32_t               mask,
                    const xcb_params_gc_t *params);
 
+xcb_void_cookie_t
+xcb_aux_change_gc_checked (xcb_connection_t     *c,
+			   xcb_gcontext_t        gc,
+			   uint32_t              mask,
+			   const xcb_params_gc_t *params);
 typedef struct {
     uint32_t key_click_percent;
     uint32_t bell_percent;

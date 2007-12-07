@@ -236,6 +236,17 @@ xcb_aux_change_gc (xcb_connection_t     *c,
 }
 
 xcb_void_cookie_t
+xcb_aux_change_gc_checked (xcb_connection_t     *c,
+			   xcb_gcontext_t        gc,
+			   uint32_t              mask,
+			   const xcb_params_gc_t *params)
+{
+	uint32_t value_list[32];
+	pack_list(mask, (const uint32_t *)params, value_list);
+	return xcb_change_gc_checked( c, gc, mask, value_list );
+}
+
+xcb_void_cookie_t
 xcb_aux_change_keyboard_control (xcb_connection_t            *c,
                                  uint32_t                     mask,
                                  const xcb_params_keyboard_t *params)
