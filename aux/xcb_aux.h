@@ -180,6 +180,15 @@ int
 xcb_aux_parse_color(char *color_name,
 		    uint16_t *red,  uint16_t *green,  uint16_t *blue);
 
+xcb_void_cookie_t
+xcb_aux_set_line_attributes_checked (xcb_connection_t *dpy,
+				     xcb_gcontext_t gc,
+				     uint16_t linewidth,
+				     int32_t linestyle,
+				     int32_t capstyle,
+				     int32_t joinstyle);
+
+
 #ifdef __cplusplus
 }
 #endif

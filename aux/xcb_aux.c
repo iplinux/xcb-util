@@ -302,3 +302,24 @@ xcb_aux_parse_color(char *color_name,
     *blue = b << n;
     return 1;
 }
+
+/* Drawing related functions */
+
+/* Adapted from Xlib */
+xcb_void_cookie_t
+xcb_aux_set_line_attributes_checked (xcb_connection_t *dpy,
+				     xcb_gcontext_t gc,
+				     uint16_t linewidth,
+				     int32_t linestyle,
+				     int32_t capstyle,
+				     int32_t joinstyle)
+{
+    uint32_t mask = 0;
+    xcb_params_gc_t gv;
+
+    XCB_AUX_ADD_PARAM(&mask, &gv, line_width, linewidth);
+    XCB_AUX_ADD_PARAM(&mask, &gv, line_style, linestyle);
+    XCB_AUX_ADD_PARAM(&mask, &gv, cap_style, capstyle);
+    XCB_AUX_ADD_PARAM(&mask, &gv, join_style, joinstyle);
+    return xcb_aux_change_gc_checked(dpy, gc, mask, &gv);
+}
