@@ -123,8 +123,8 @@ typedef struct {
     uint32_t fill_rule;
     uint32_t tile;
     uint32_t stipple;
-    uint32_t tile_stipple_originX;
-    uint32_t tile_stipple_originY;
+    uint32_t tile_stipple_origin_x;
+    uint32_t tile_stipple_origin_y;
     uint32_t font;
     uint32_t subwindow_mode;
     uint32_t graphics_exposures;
