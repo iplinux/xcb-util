@@ -31,8 +31,8 @@ PKG_CHECK_MODULES(XCB, xcb >= 1.0)
 PKG_CHECK_MODULES(XCB_SHM, xcb-shm)
 PKG_CHECK_MODULES(XCB_RENDER, xcb-render)
 
-XCB_AUX_CFLAGS='-I$(top_srcdir)/convenient'
-XCB_AUX_LIBS='$(top_builddir)/convenient/libxcb-aux.la'
+XCB_AUX_CFLAGS='-I$(top_srcdir)/aux'
+XCB_AUX_LIBS='$(top_builddir)/aux/libxcb-aux.la'
 XCB_ATOM_CFLAGS='-I$(top_srcdir)/atom -I$(top_builddir)/atom'
 XCB_ATOM_LIBS='$(top_builddir)/atom/libxcb-atom.la'
 XCB_EVENT_CFLAGS='-I$(top_srcdir)/event'
@@ -53,7 +53,7 @@ AC_SUBST(XCB_ICCCM_CFLAGS)
 AC_SUBST(XCB_ICCCM_LIBS)
 
 AC_OUTPUT([Makefile
-	convenient/Makefile convenient/xcb-aux.pc
+	aux/Makefile aux/xcb-aux.pc
 	reply/Makefile reply/xcb-reply.pc
 	image/Makefile image/xcb-image.pc
 	atom/Makefile atom/xcb-atom.pc

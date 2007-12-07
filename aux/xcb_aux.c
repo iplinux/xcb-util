@@ -28,6 +28,21 @@ xcb_aux_get_depth (xcb_connection_t *c,
   return depth;
 }
 
+uint8_t
+xcb_aux_get_depth_of_visual (xcb_screen_t *screen,
+			     xcb_visualid_t id)
+{
+    xcb_depth_iterator_t i;
+    xcb_visualtype_iterator_t j;
+    for (i = xcb_screen_allowed_depths_iterator(screen);
+	 i.rem; xcb_depth_next(&i))
+	for (j = xcb_depth_visuals_iterator(i.data);
+	     j.rem; xcb_visualtype_next(&j))
+	    if (j.data->visual_id == id)
+		return i.data->depth;
+    return 0;
+}
+
 xcb_screen_t *
 xcb_aux_get_screen (xcb_connection_t *c,
                     int               screen)

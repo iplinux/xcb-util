@@ -10,6 +10,9 @@ extern "C" {
 uint8_t          xcb_aux_get_depth       (xcb_connection_t *c,
                                           xcb_screen_t     *screen);
 
+uint8_t xcb_aux_get_depth_of_visual      (xcb_screen_t *screen,
+					  xcb_visualid_t id);
+
 xcb_screen_t     *xcb_aux_get_screen     (xcb_connection_t *c,
                                           int               screen);
 
