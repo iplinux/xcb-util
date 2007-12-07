@@ -3,7 +3,7 @@ MAINTAINERCLEANFILES = Makefile.in
 
 lib_LTLIBRARIES = libxcb-aux.la
 
-xcbinclude_HEADERS = xcb_aux.h
+xcbinclude_HEADERS = xcb_aux.h xcb_bitops.h
 
 AM_CFLAGS = $(CWARNFLAGS)
 
