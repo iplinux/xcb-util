@@ -78,6 +78,40 @@ xcb_aux_get_visualtype (xcb_connection_t *c,
    return NULL;
 }
 
+xcb_visualtype_t *
+xcb_aux_find_visual_by_id (xcb_screen_t *screen,
+			   xcb_visualid_t id)
+{
+    xcb_depth_iterator_t i;
+    xcb_visualtype_iterator_t j;
+    for (i = xcb_screen_allowed_depths_iterator(screen);
+	 i.rem; xcb_depth_next(&i))
+	for (j = xcb_depth_visuals_iterator(i.data);
+	     j.rem; xcb_visualtype_next(&j))
+	    if (j.data->visual_id == id)
+		return j.data;
+    return 0;
+}
+
+xcb_visualtype_t *
+xcb_aux_find_visual_by_attrs (xcb_screen_t *screen,
+			      int8_t class,
+			      int8_t depth)
+{
+    xcb_depth_iterator_t i;
+    xcb_visualtype_iterator_t j;
+    for (i = xcb_screen_allowed_depths_iterator(screen);
+	 i.rem; xcb_depth_next(&i)) {
+	if (depth != -1 && i.data->depth != depth)
+	    continue;
+	for (j = xcb_depth_visuals_iterator(i.data);
+	     j.rem; xcb_visualtype_next(&j))
+	    if (class == -1 || j.data->visual_class == class)
+		return j.data;
+    }
+    return 0;
+}
+
 void
 xcb_aux_sync (xcb_connection_t *c)
 {

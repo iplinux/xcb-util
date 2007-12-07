@@ -20,6 +20,15 @@ xcb_visualtype_t *xcb_aux_get_visualtype (xcb_connection_t *c,
                                           int               screen,
                                           xcb_visualid_t    vid);
 
+xcb_visualtype_t *
+xcb_aux_find_visual_by_id (xcb_screen_t *screen,
+			   xcb_visualid_t id);
+
+xcb_visualtype_t *
+xcb_aux_find_visual_by_attrs (xcb_screen_t *screen,
+			      int8_t class,
+			      int8_t depth);
+
 void           xcb_aux_sync              (xcb_connection_t *c);
 
 /* less error prone to use structs instead of value lists */
