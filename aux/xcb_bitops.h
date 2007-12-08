@@ -91,14 +91,30 @@ xcb_popcount(uint32_t x)
  *
  * Rounds @p base up to a multiple of @p pad, where @p pad
  * is a power of two.  The more general case is handled by
- * xcb_roundup_2().
+ * xcb_roundup().
  * @ingroup xcb__bitops
  */
 _X_INLINE static uint32_t
 xcb_roundup_2 (uint32_t base, uint32_t pad)
 {
-    uint32_t b = base + pad - 1;
-    return b & ~(pad - 1);
+    return (base + pad - 1) & -pad;
+}
+
+/**
+ * Round down to the next power-of-two unit size.
+ * @param base Number to be rounded down.
+ * @param pad Multiple to be rounded to; must be a power of two.
+ * @return Rounded-down number.
+ *
+ * Rounds @p base down to a multiple of @p pad, where @p pad
+ * is a power of two.  The more general case is handled by
+ * xcb_rounddown().
+ * @ingroup xcb__bitops
+ */
+_X_INLINE static uint32_t
+xcb_rounddown_2 (uint32_t base, uint32_t pad)
+{
+    return base & -pad;
 }
 
 /**
@@ -119,8 +135,30 @@ xcb_roundup (uint32_t base, uint32_t pad)
     uint32_t b = base + pad - 1;
     /* faster if pad is a power of two */
     if (((pad - 1) & pad) == 0)
-	return b & ~(pad - 1);
-    return b % pad;
+	return b & -pad;
+    return b - b % pad;
+}
+
+
+/**
+ * Round down to the next unit size.
+ * @param base Number to be rounded down.
+ * @param pad Multiple to be rounded to.
+ * @return Rounded-down number.
+ *
+ * This is a general routine for rounding @p base down
+ * to a multiple of @p pad.  If you know that @p pad
+ * is a power of two, you should probably call xcb_rounddown_2()
+ * instead.
+ * @ingroup xcb__bitops
+ */
+_X_INLINE static uint32_t
+xcb_rounddown (uint32_t base, uint32_t pad)
+{
+    /* faster if pad is a power of two */
+    if (((pad - 1) & pad) == 0)
+	return base & -pad;
+    return base - base % pad;
 }
 
 
