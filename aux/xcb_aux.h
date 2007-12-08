@@ -188,6 +188,9 @@ xcb_aux_set_line_attributes_checked (xcb_connection_t *dpy,
 				     int32_t capstyle,
 				     int32_t joinstyle);
 
+xcb_void_cookie_t
+xcb_aux_clear_window(xcb_connection_t *  dpy,
+		     xcb_window_t        w);
 
 #ifdef __cplusplus
 }

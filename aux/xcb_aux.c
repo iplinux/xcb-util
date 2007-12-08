@@ -323,3 +323,13 @@ xcb_aux_set_line_attributes_checked (xcb_connection_t *dpy,
     XCB_AUX_ADD_PARAM(&mask, &gv, join_style, joinstyle);
     return xcb_aux_change_gc_checked(dpy, gc, mask, &gv);
 }
+
+/* Adapted from Xlib */
+/* XXX It would be wiser for apps just to call
+   clear_area() directly. */
+xcb_void_cookie_t
+xcb_aux_clear_window(xcb_connection_t *  dpy,
+		     xcb_window_t        w)
+{
+    return xcb_clear_area(dpy, 0, w, 0, 0, 0, 0);
+}
