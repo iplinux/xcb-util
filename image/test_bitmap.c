@@ -76,11 +76,12 @@ void process_events(xcb_connection_t *c,
     }
 }
 		       
-#define INSET 18
+#define INSET_X 31
+#define INSET_Y 32
 
 int main(int argc, char **argv) {
-    uint32_t width = test_width - 2 * INSET;
-    uint32_t height = test_height - 2 * INSET;
+    uint32_t width = test_width - 2 * INSET_X;
+    uint32_t height = test_height - 2 * INSET_Y;
     int snum;
     xcb_void_cookie_t check_cookie;
     xcb_window_t w;
@@ -100,7 +101,6 @@ int main(int argc, char **argv) {
 	xcb_alloc_named_color_reply(c, fg_cookie, 0);
     uint32_t fg, bg;
     xcb_image_t *image, *native_image, *subimage;
-    uint32_t left_pad = 0;
     uint32_t mask = 0;
     xcb_params_gc_t gcv;
 
@@ -119,9 +119,9 @@ int main(int argc, char **argv) {
     assert(native_image);
     if (native_image != image)
 	xcb_image_destroy(image);
-    subimage = xcb_image_subimage(native_image, INSET, INSET,
+    subimage = xcb_image_subimage(native_image, INSET_X, INSET_Y,
 				  width, height,
-				  0, 0, 0, &left_pad);
+				  0, 0, 0);
     assert(subimage);
     xcb_image_destroy(native_image);
     subimage->format = XCB_IMAGE_FORMAT_XY_BITMAP;
@@ -132,7 +132,7 @@ int main(int argc, char **argv) {
     XCB_AUX_ADD_PARAM(&mask, &gcv, foreground, fg);
     XCB_AUX_ADD_PARAM(&mask, &gcv, background, bg);
     xcb_aux_create_gc(c, gc, pix, mask, &gcv);
-    xcb_image_put(c, pix, gc, subimage, 0, 0, left_pad);
+    xcb_image_put(c, pix, gc, subimage, 0, 0, 0);
     process_events(c, gc, w, pix, width, height);
     xcb_disconnect(c);
     return 1;
