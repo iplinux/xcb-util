@@ -11,7 +11,9 @@
 static xcb_window_t make_window(xcb_connection_t *c,
 				xcb_screen_t *s,
 				uint32_t bg,
-				uint32_t fg) {
+				uint32_t fg,
+				uint32_t width,
+				uint32_t height) {
     uint32_t mask = 0;
     xcb_params_cw_t cwa;
     xcb_window_t w;
@@ -27,7 +29,7 @@ static xcb_window_t make_window(xcb_connection_t *c,
 		      XCB_EVENT_MASK_EXPOSURE);
     w = xcb_generate_id(c);
     check_cookie = xcb_aux_create_window_checked(c,
-      s->root_depth, w, s->root, 0, 0, test_width, test_height, 1,
+      s->root_depth, w, s->root, 0, 0, width, height, 1,
       XCB_WINDOW_CLASS_INPUT_OUTPUT, v->visual_id, mask, &cwa);
     error = xcb_request_check(c, check_cookie);
     assert(!error);
@@ -40,7 +42,9 @@ static xcb_window_t make_window(xcb_connection_t *c,
 void process_events(xcb_connection_t *c,
 		    xcb_gcontext_t g,
 		    xcb_window_t w,
-		    xcb_pixmap_t p) {
+		    xcb_pixmap_t p,
+		    uint32_t width,
+		    uint32_t height) {
     xcb_generic_event_t *e;
     xcb_void_cookie_t cookie;
 
@@ -54,7 +58,7 @@ void process_events(xcb_connection_t *c,
 	case XCB_MAP_NOTIFY:
 	    cookie = xcb_copy_area_checked(c, p, w, g,
 					   0, 0, 0, 0,
-					   test_width, test_height);
+					   width, height);
 	    assert(!xcb_request_check(c, cookie));
 	    break;
 	case XCB_BUTTON_PRESS:
@@ -72,12 +76,16 @@ void process_events(xcb_connection_t *c,
     }
 }
 		       
+#define INSET 18
+
 int main(int argc, char **argv) {
+    uint32_t width = test_width - 2 * INSET;
+    uint32_t height = test_height - 2 * INSET;
     int snum;
     xcb_void_cookie_t check_cookie;
     xcb_window_t w;
     xcb_gcontext_t gc;
-    xcb_pixmap_t p;
+    xcb_pixmap_t pix;
     xcb_connection_t *c = xcb_connect(0, &snum);
     xcb_screen_t *s = xcb_aux_get_screen(c, snum);
     xcb_alloc_named_color_cookie_t bg_cookie =
@@ -91,20 +99,41 @@ int main(int argc, char **argv) {
     xcb_alloc_named_color_reply_t *fg_reply =
 	xcb_alloc_named_color_reply(c, fg_cookie, 0);
     uint32_t fg, bg;
+    xcb_image_t *image, *native_image, *subimage;
+    uint32_t left_pad = 0;
+    uint32_t mask = 0;
+    xcb_params_gc_t gcv;
+
     assert(bg_reply && fg_reply);
     bg = bg_reply->pixel;
     fg = fg_reply->pixel;
     free(bg_reply);
     free(fg_reply);
-    w = make_window(c, s, bg, fg);
+    w = make_window(c, s, bg, fg, width, height);
     gc = xcb_generate_id(c);
     check_cookie = xcb_create_gc_checked(c, gc, w, 0, 0);
     assert(!xcb_request_check(c, check_cookie));
-    p = xcb_create_pixmap_from_bitmap_data(c, w,
-          (uint8_t *)test_bits, test_width, test_height,
-	  s->root_depth, fg, bg, 0);
-    assert(p);
-    process_events(c, gc, w, p);
+    image = xcb_image_create_from_bitmap_data((uint8_t *)test_bits,
+					      test_width, test_height);
+    native_image = xcb_image_native(c, image, 1);
+    assert(native_image);
+    if (native_image != image)
+	xcb_image_destroy(image);
+    subimage = xcb_image_subimage(native_image, INSET, INSET,
+				  width, height,
+				  0, 0, 0, &left_pad);
+    assert(subimage);
+    xcb_image_destroy(native_image);
+    subimage->format = XCB_IMAGE_FORMAT_XY_BITMAP;
+    pix = xcb_generate_id(c);
+    xcb_create_pixmap(c, s->root_depth, pix, w,
+		      subimage->width, subimage->height);
+    gc = xcb_generate_id(c);
+    XCB_AUX_ADD_PARAM(&mask, &gcv, foreground, fg);
+    XCB_AUX_ADD_PARAM(&mask, &gcv, background, bg);
+    xcb_aux_create_gc(c, gc, pix, mask, &gcv);
+    xcb_image_put(c, pix, gc, subimage, 0, 0, left_pad);
+    process_events(c, gc, w, pix, width, height);
     xcb_disconnect(c);
     return 1;
 }
