@@ -745,6 +745,19 @@ xcb_image_get_pixel (xcb_image_t *image,
 }
 
 
+xcb_image_t *
+xcb_image_create_from_bitmap_data (uint8_t *           data,
+				   uint32_t            width,
+				   uint32_t            height)
+{
+  return xcb_image_create(width, height, XCB_IMAGE_FORMAT_XY_PIXMAP,
+			  8, 1, 1, 8,
+			  XCB_IMAGE_ORDER_LSB_FIRST,
+			  XCB_IMAGE_ORDER_LSB_FIRST,
+			  0, 0, data);
+}
+
+
 /*
  * (Adapted from libX11.)
  *
@@ -775,20 +788,15 @@ xcb_create_pixmap_from_bitmap_data (xcb_connection_t *  display,
   xcb_pixmap_t        pix;
   xcb_image_t *       image;
   xcb_image_t *       final_image;
-  xcb_image_format_t  format = XCB_IMAGE_FORMAT_XY_PIXMAP;
   xcb_gcontext_t gc;
   uint32_t mask = 0;
   xcb_params_gc_t gcv;
 
-  if (depth > 1)
-      format = XCB_IMAGE_FORMAT_XY_BITMAP;
-  image = xcb_image_create(width, height, format,
-			   8, 1, 1, 8,
-			   XCB_IMAGE_ORDER_LSB_FIRST,
-			   XCB_IMAGE_ORDER_LSB_FIRST,
-			   0, 0, data);
+  image = xcb_image_create_from_bitmap_data(data, width, height);
   if (!image)
       return 0;
+  if (depth > 1)
+      image->format = XCB_IMAGE_FORMAT_XY_BITMAP;
   final_image = xcb_image_native(display, image, 1);
   if (!final_image) {
       xcb_image_destroy(image);

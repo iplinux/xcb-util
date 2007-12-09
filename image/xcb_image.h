@@ -574,6 +574,23 @@ int xcb_image_shm_get (xcb_connection_t *      conn,
 
 
 /**
+ * Create an image from user-supplied bitmap data.
+ * @param data Image data in packed bitmap format.
+ * @param width Width in bits of image data.
+ * @param height Height in bits of image data.
+ * @return The image constructed from the image data, or 0 on error.
+ *
+ * This function creates an image from the user-supplied
+ * bitmap @p data.  The bitmap data is assumed to be in
+ * xbm format (i.e., 8-bit scanline unit, LSB-first, 8-bit pad).
+ * @ingroup xcb__image_t
+ */
+xcb_image_t *
+xcb_image_create_from_bitmap_data (uint8_t *           data,
+				   uint32_t            width,
+				   uint32_t            height);
+
+/**
  * Create a pixmap from user-supplied bitmap data.
  * @param display The connection to the X server.
  * @param d The parent drawable for the pixmap.
