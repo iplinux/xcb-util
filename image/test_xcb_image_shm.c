@@ -31,6 +31,7 @@ main (int argc, char *argv[])
   int              depth;
   int              screen_nbr;
   xcb_generic_event_t *e;
+  uint8_t format;
   
   /* Open the connexion to the X server and get the first screen */
   c = xcb_connect (NULL, &screen_nbr);
@@ -61,42 +62,37 @@ main (int argc, char *argv[])
   rep = xcb_shm_query_version_reply (c,
 				 xcb_shm_query_version (c),
 				 NULL);
-  if (rep)
-    {
-      uint8_t format;
-      
-      if (!rep->shared_pixmaps ||
-	  rep->major_version < 1 ||
-	  (rep->major_version == 1 && rep->minor_version == 0))
-	{
+  if (!rep || !rep->shared_pixmaps ||
+      rep->major_version < 1 ||
+      (rep->major_version == 1 && rep->minor_version == 0))
+      {
 	  printf ("No or insufficient shm support...\n");
 	  exit (0);
-	}
-      format = rep->pixmap_format;
-      img = xcb_image_create_native (c, W_W, W_H, format, depth,
+      }
+  format = rep->pixmap_format;
+  img = xcb_image_create_native (c, W_W, W_H, format, depth,
 				     0, ~0, 0);
 
-      if (!img)
-	{
+  if (!img)
+      {
 	  printf ("Can't create image...\n");
 	  exit (0);
-	}
+      }
 
-      printf ("Create image summary:\n");
-      printf (" * format..........: %d\n", img->format);
-      printf (" * byte order......: %d\n", img->byte_order);
-      printf (" * bitmap unit.....: %d\n", img->bpp);
-      printf (" * bitmap order....: %d\n", img->bit_order);
-      printf (" * bitmap pad......: %d\n", img->scanline_pad);
+  printf ("Create image summary:\n");
+  printf (" * format..........: %d\n", img->format);
+  printf (" * byte order......: %d\n", img->byte_order);
+  printf (" * bitmap unit.....: %d\n", img->bpp);
+  printf (" * bitmap order....: %d\n", img->bit_order);
+  printf (" * bitmap pad......: %d\n", img->scanline_pad);
 
-      shminfo.shmid = shmget (IPC_PRIVATE, img->size, IPC_CREAT|0777);
-      shminfo.shmaddr = shmat(shminfo.shmid, 0, 0);
-      img->data = shminfo.shmaddr;
+  shminfo.shmid = shmget (IPC_PRIVATE, img->size, IPC_CREAT|0777);
+  shminfo.shmaddr = shmat(shminfo.shmid, 0, 0);
+  img->data = shminfo.shmaddr;
 
-      shminfo.shmseg = xcb_generate_id (c);
-      xcb_shm_attach(c, shminfo.shmseg, shminfo.shmid, 0);
-      shmctl(shminfo.shmid, IPC_RMID, 0);
-    }
+  shminfo.shmseg = xcb_generate_id (c);
+  xcb_shm_attach(c, shminfo.shmseg, shminfo.shmid, 0);
+  shmctl(shminfo.shmid, IPC_RMID, 0);
 
   /* Draw in the image */
   printf ("put the pixel\n");
@@ -134,12 +130,6 @@ main (int argc, char *argv[])
   points[1].x = 1;
   points[1].y = 1;
   xcb_poly_line(c, XCB_COORD_MODE_ORIGIN, rect, fgcolor, 2, points);
-/*   points[0].x = 10; */
-/*   points[0].y = 10; */
-/*   points[1].x = 10; */
-/*   points[1].y = 40; */
-/*   xcb_poly_line(c, XCB_COORD_MODE_ORIGIN, rect, fgcolor, 2, points); */
-
 
   xcb_flush (c); 
 
