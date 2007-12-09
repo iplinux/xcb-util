@@ -453,7 +453,6 @@ xcb_image_convert (xcb_image_t *  src,
  * @param base Base of memory allocation.
  * @param bytes Size of base allocation.
  * @param data Memory allocation.
- * @param left_pad If non-null, any left-shift will be put here---otherwise, the resulting image will be properly justified.
  * @return The subimage, or null on error.
  *
  * Given an image, this function extracts the subimage at the
@@ -463,13 +462,6 @@ xcb_image_convert (xcb_image_t *  src,
  * and @p data arguments are passed to @ref xcb_create_image() unaltered
  * to create the destination image---see its documentation for details.
  *
- * Normally, extracting a subimage of a bitmap when the @p x coordinate
- * of the subimage is not aligned to an @p image scanline unit boundary
- * will require rotation of each scanline unit during the copy.  To
- * avoid this, pass an integer pointer as the @p left_pad argument, and
- * this routine will create a slightly-larger image to retain alignment,
- * and report the left pad through the supplied pointer.  For images
- * stored in Z format, any left_pad parameter is ignored.
  * @ingroup xcb__image_t
  */
 xcb_image_t *
@@ -480,8 +472,7 @@ xcb_image_subimage(xcb_image_t *  image,
 		   uint32_t       height,
 		   void *         base,
 		   uint32_t       bytes,
-		   uint8_t *      data,
-		   uint32_t *     left_pad);
+		   uint8_t *      data);
 
 
 /*
