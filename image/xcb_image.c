@@ -991,3 +991,74 @@ xcb_image_convert (xcb_image_t *  src,
   }
   return dst;
 }
+
+xcb_image_t *
+xcb_image_subimage(xcb_image_t *  image,
+		   uint32_t       x,
+		   uint32_t       y,
+		   uint32_t       width,
+		   uint32_t       height,
+		   void *         base,
+		   uint32_t       bytes,
+		   uint8_t *      data,
+		   uint32_t *     left_pad)
+{
+    int            i, j;
+    xcb_image_t *  result;
+    uint8_t *      imagep;
+    uint8_t *      resultp;
+    uint32_t       left_x;
+    uint8_t        planes = 1;
+    uint32_t       realign = 0;
+    
+    if (x + width > image->width)
+	return 0;
+    if (y + height > image->height)
+	return 0;
+    switch (image->format) {
+    case XCB_IMAGE_FORMAT_Z_PIXMAP:
+	if (image->bpp == 4) {
+	    realign = (x & 1) << 2;
+	    break;
+	}
+	if (image->bpp != 1)
+	    break;
+	/* fall through */
+    case XCB_IMAGE_FORMAT_XY_BITMAP:
+    case XCB_IMAGE_FORMAT_XY_PIXMAP:
+	planes = image->bpp;
+	left_x = xcb_rounddown_2(x, image->unit);
+	width += x - left_x;
+	if (left_pad)
+	    *left_pad = x - left_x;
+	else
+	    realign = x - left_x;
+    }
+    result = xcb_image_create(width, height, image->format,
+			      image->scanline_pad, image->depth,
+			      image->bpp, image->unit, image->byte_order,
+			      image->bit_order,
+			      base, bytes, data);
+    if (!result)
+	return 0;
+    resultp = result->data;
+    imagep = image->data;
+    if (realign > 0) {
+	/* XXX FIXME  For now, lose on performance. Sorry. */
+	for (j = 0; j < height; j++) {
+	    for (i = 0; i < width; i++) {
+		uint32_t pixel = xcb_image_get_pixel(image, x + i, y + j);
+		xcb_image_put_pixel(result, i, j, pixel);
+	    }
+	}
+	return result;
+    }
+    for (j = 0; j < planes; j++) {
+	for (i = 0; i < height; i++) {
+	    memcpy(resultp, imagep, result->stride);
+	    resultp += result->stride;
+	    imagep += image->stride;
+	}
+    }
+    return result;
+}

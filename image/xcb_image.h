@@ -434,12 +434,54 @@ xcb_image_get_pixel (xcb_image_t *image,
  * when the destination has the same bits-per-pixel/scanline-unit
  * as the source, an optimized copy routine (thanks to Keith Packard)
  * is used for the conversion.  Otherwise, the copy is done the
- * slow, slow way with xcb_get_pixel() and xcb_put_pixel() calls.
+ * slow, slow way with @ref xcb_image_get_pixel() and
+ * @ref xcb_image_put_pixel() calls.
  * @ingroup xcb__image_t
  */
 xcb_image_t *
 xcb_image_convert (xcb_image_t *  src,
 		   xcb_image_t *  dst);
+
+
+/**
+ * Extract a subimage of an image.
+ * @param image Source image.
+ * @param x X coordinate of subimage.
+ * @param y Y coordinate of subimage.
+ * @param width Width of subimage.
+ * @param height Height of subimage.
+ * @param base Base of memory allocation.
+ * @param bytes Size of base allocation.
+ * @param data Memory allocation.
+ * @param left_pad If non-null, any left-shift will be put here---otherwise, the resulting image will be properly justified.
+ * @return The subimage, or null on error.
+ *
+ * Given an image, this function extracts the subimage at the
+ * given coordinates.  The requested subimage must be entirely
+ * contained in the source @p image.  The resulting image will have the same
+ * general image parameters as the source image.  The @p base, @p bytes,
+ * and @p data arguments are passed to @ref xcb_create_image() unaltered
+ * to create the destination image---see its documentation for details.
+ *
+ * Normally, extracting a subimage of a bitmap when the @p x coordinate
+ * of the subimage is not aligned to an @p image scanline unit boundary
+ * will require rotation of each scanline unit during the copy.  To
+ * avoid this, pass an integer pointer as the @p left_pad argument, and
+ * this routine will create a slightly-larger image to retain alignment,
+ * and report the left pad through the supplied pointer.  For images
+ * stored in Z format, any left_pad parameter is ignored.
+ * @ingroup xcb__image_t
+ */
+xcb_image_t *
+xcb_image_subimage(xcb_image_t *  image,
+		   uint32_t       x,
+		   uint32_t       y,
+		   uint32_t       width,
+		   uint32_t       height,
+		   void *         base,
+		   uint32_t       bytes,
+		   uint8_t *      data,
+		   uint32_t *     left_pad);
 
 
 /*
