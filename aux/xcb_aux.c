@@ -107,7 +107,7 @@ xcb_aux_find_visual_by_attrs (xcb_screen_t *screen,
 	    continue;
 	for (j = xcb_depth_visuals_iterator(i.data);
 	     j.rem; xcb_visualtype_next(&j))
-	    if (class == -1 || j.data->visual_class == class)
+	    if (class == -1 || j.data->_class == class)
 		return j.data;
     }
     return 0;
