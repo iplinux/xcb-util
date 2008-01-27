@@ -28,8 +28,10 @@
 
 #include <inttypes.h>
 #include <X11/Xfuncproto.h>
+#ifndef BUILD
 #include <xcb/xcb_bitops.h>
 #include <xcb/xcb_image.h>
+#endif
 
 /**
  * XCB Image fast pixel ops.

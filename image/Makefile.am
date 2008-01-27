@@ -1,4 +1,3 @@
-
 MAINTAINERCLEANFILES = Makefile.in
 
 lib_LTLIBRARIES = libxcb-image.la
