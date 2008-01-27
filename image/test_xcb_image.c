@@ -5,7 +5,7 @@
 
 #include <xcb/xcb.h>
 
-#include "xcb_aux.h"
+#include "../aux/xcb_aux.h"
 #include "xcb_image.h"
 
 #define W_W 64

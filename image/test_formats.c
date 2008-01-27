@@ -1,10 +1,10 @@
-#include <xcb/xcb.h>
-#include "xcb_image.h"
-#include "xcb_aux.h"
-#include "xcb_bitops.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <xcb/xcb.h>
+#include "../aux/xcb_aux.h"
+#include "../aux/xcb_bitops.h"
+#include "xcb_image.h"
 
 #define WIDTH 50
 #define HEIGHT 50
@@ -123,7 +123,7 @@ int main(int argc, char **argv)
 	if(argc > 1)
 		format = parse_format(argv[1]);
 	if (root->root_depth != 24 ||
-	    visual->visual_class != XCB_VISUAL_CLASS_TRUE_COLOR)
+	    visual->_class != XCB_VISUAL_CLASS_TRUE_COLOR)
 	{
 		printf("Only 24 bit TrueColor visuals for now\n");
 		exit(1);

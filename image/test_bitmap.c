@@ -3,7 +3,7 @@
 #include <string.h>
 #include <assert.h>
 #include <xcb/xcb.h>
-#include <xcb/xcb_aux.h>
+#include "../aux/xcb_aux.h"
 #include "xcb_image.h"
 
 #include "test.xbm"
