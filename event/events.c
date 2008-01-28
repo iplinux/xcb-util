@@ -62,10 +62,20 @@ static int handle_event(xcb_event_handlers_t *evenths, xcb_generic_event_t *even
 	return 0;
 }
 
-void xcb_event_loop(xcb_event_handlers_t *evenths)
+void xcb_wait_for_event_loop(xcb_event_handlers_t *evenths)
 {
 	xcb_generic_event_t *event;
 	while((event = xcb_wait_for_event(evenths->c)))
+	{
+		handle_event(evenths, event);
+		free(event);
+	}
+}
+
+void xcb_poll_for_event_loop(xcb_event_handlers_t *evenths)
+{
+	xcb_generic_event_t *event;
+	while ((event = xcb_poll_for_event(evenths->c)))
 	{
 		handle_event(evenths, event);
 		free(event);
