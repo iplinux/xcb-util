@@ -77,7 +77,7 @@ void xcb_poll_for_event_loop(xcb_event_handlers_t *evenths)
 	xcb_generic_event_t *event;
 	while ((event = xcb_poll_for_event(evenths->c)))
 	{
-		handle_event(evenths, event);
+		xcb_handle_event(evenths, event);
 		free(event);
 	}
 }
