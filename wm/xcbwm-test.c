@@ -205,7 +205,7 @@ int main(int argc, char **argv)
 
 	if(TEST_THREADS)
 	{
-		pthread_create(&event_thread, 0, (void *(*)(void *))xcb_event_loop, evenths);
+		pthread_create(&event_thread, 0, (void *(*)(void *))xcb_wait_for_event_loop, evenths);
 	}
 
 	root = xcb_aux_get_screen(c, screen_nbr)->root;
@@ -223,7 +223,7 @@ int main(int argc, char **argv)
 	if(TEST_THREADS)
 		pthread_join(event_thread, 0);
 	else
-		xcb_event_loop(evenths);
+		xcb_wait_for_event_loop(evenths);
 
 	exit(0);
 	/*NOTREACHED*/
