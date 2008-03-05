@@ -47,7 +47,7 @@ static xcb_event_handler_t *get_error_handler(xcb_event_handlers_t *evenths, int
 	return &evenths->error[error];
 }
 
-static int handle_event(xcb_event_handlers_t *evenths, xcb_generic_event_t *event)
+int xcb_handle_event(xcb_event_handlers_t *evenths, xcb_generic_event_t *event)
 {
 	xcb_event_handler_t *eventh = 0;
 	assert(event->response_type != 1);
@@ -67,7 +67,7 @@ void xcb_event_loop(xcb_event_handlers_t *evenths)
 	xcb_generic_event_t *event;
 	while((event = xcb_wait_for_event(evenths->c)))
 	{
-		handle_event(evenths, event);
+		xcb_handle_event(evenths, event);
 		free(event);
 	}
 }

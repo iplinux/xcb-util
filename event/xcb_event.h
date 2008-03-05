@@ -15,6 +15,7 @@ void xcb_free_event_handlers(xcb_event_handlers_t *evenths);
 xcb_connection_t *xcb_get_xcb_connection(xcb_event_handlers_t *evenths);
 
 void xcb_event_loop(xcb_event_handlers_t *evenths);
+int xcb_handle_event(xcb_event_handlers_t *evenths, xcb_generic_event_t *event);
 
 typedef int (*xcb_generic_event_handler_t)(void *data, xcb_connection_t *c, xcb_generic_event_t *event);
 typedef int (*xcb_generic_error_handler_t)(void *data, xcb_connection_t *c, xcb_generic_error_t *error);
