@@ -263,8 +263,11 @@ xcb_image_create (uint16_t           width,
    * bytes == ~0 we just return the image structure and let
    * the caller deal with getting the allocation right.
    */
-  if (!base && !data && bytes == ~0)
+  if (!base && !data && bytes == ~0) {
+      image->base = 0;
+      image->data = 0;
       return image;
+  }
   if (!base && data && bytes == 0)
       bytes = image->size;
   image->base = base;
