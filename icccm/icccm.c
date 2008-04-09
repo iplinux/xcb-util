@@ -515,45 +515,46 @@ xcb_set_wm_size_hints (xcb_connection_t *c,
 	xcb_change_property(c, XCB_PROP_MODE_REPLACE, window, property, WM_SIZE_HINTS, 32, sizeof(*hints) / 4, hints);
 }
 
-int
+xcb_size_hints_t *
 xcb_get_wm_size_hints (xcb_connection_t *c,
                        xcb_window_t      window,
                        xcb_atom_t        property,
-                       xcb_size_hints_t *hints,
                        long             *supplied)
 {
         xcb_get_property_cookie_t cookie;
-	xcb_get_property_reply_t *rep;
+	xcb_get_property_reply_t  *rep;
+	xcb_size_hints_t          *hints = NULL;
+	long                      length;
 
 	cookie = xcb_get_property (c, 0, window,
 				 property, WM_SIZE_HINTS,
 				 0L, 18); /* NumPropSizeElements = 18 (ICCCM version 1) */
 	rep = xcb_get_property_reply (c, cookie, 0);
 	if (!rep)
-	        return 0;
+		return NULL;
 
+	length = xcb_get_property_value_length (rep);
 	if ((rep->type == WM_SIZE_HINTS) &&
 	    ((rep->format == 8)  ||
 	     (rep->format == 16) ||
 	     (rep->format == 32)) &&
-	    (rep->value_len >= 15)) /* OldNumPropSizeElements = 15 (pre-ICCCM) */
+	    (length >= 15)) /* OldNumPropSizeElements = 15 (pre-ICCCM) */
 	{
-                char *prop;
-	        long  length;
+		hints = xcb_alloc_size_hints();
+		if (!hints)
+		{
+		    free (rep);
+		    return NULL;
+		}
 
-		length = xcb_get_property_value_length (rep);
-		/* FIXME: in GetProp.c of xcl, one move the memory.
-		 * Should we do that too ? */
-		prop = (char *)malloc(sizeof(char)*length);
-		memcpy(prop, xcb_get_property_value (rep), length);
-		prop[length] = '\0';
-		hints = (xcb_size_hints_t *)strdup (prop);
+		memcpy (hints, (xcb_size_hints_t *) xcb_get_property_value (rep),
+			length * rep->format >> 3);
 
 		*supplied = (USPosition | USSize   |
 			     PPosition  | PSize    |
 			     PMinSize   | PMaxSize |
 			     PResizeInc | PAspect);
-		if (rep->value_len >= 18) /* NumPropSizeElements = 18 (ICCCM version 1) */
+		if (length >= 18) /* NumPropSizeElements = 18 (ICCCM version 1) */
 		        *supplied |= (PBaseSize | PWinGravity);
 		else
 		{
@@ -562,16 +563,11 @@ xcb_get_wm_size_hints (xcb_connection_t *c,
 			hints->win_gravity = 0;
 		}
 		hints->flags &= (*supplied);	/* get rid of unwanted bits */
-
-		free (rep);
-
-		return 1;
 	}
 
-	hints = NULL;
 	free (rep);
 
-	return 0;
+	return hints;
 }
 
 /* WM_NORMAL_HINTS */
@@ -592,13 +588,12 @@ xcb_set_wm_normal_hints (xcb_connection_t *c,
 	xcb_set_wm_size_hints(c, window, WM_NORMAL_HINTS, hints);
 }
 
-int
+xcb_size_hints_t *
 xcb_get_wm_normal_hints (xcb_connection_t *c,
                          xcb_window_t      window,
-                         xcb_size_hints_t *hints,
                          long             *supplied)
 {
-	return (xcb_get_wm_size_hints (c, window, WM_NORMAL_HINTS, hints, supplied));
+	return (xcb_get_wm_size_hints (c, window, WM_NORMAL_HINTS, supplied));
 }
 
 /* WM_HINTS */
@@ -636,6 +631,12 @@ xcb_wm_hints_t *
 xcb_alloc_wm_hints()
 {
 	return calloc(1, sizeof(xcb_wm_hints_t));
+}
+
+void
+xcb_free_wm_hints(xcb_wm_hints_t *hints)
+{
+	free(hints);
 }
 
 uint8_t
@@ -826,7 +827,6 @@ xcb_get_wm_hints (xcb_connection_t *c,
 	xcb_get_property_cookie_t cookie;
 	xcb_get_property_reply_t *rep;
 	xcb_wm_hints_t           *hints;
-        char                     *prop;
 	long                      length;
 
 	cookie = xcb_get_property (c, 0, window,
@@ -836,25 +836,24 @@ xcb_get_wm_hints (xcb_connection_t *c,
 	if (!rep)
 		return NULL;
 
+	length = xcb_get_property_value_length (rep);
 	if ((rep->type != WM_HINTS) ||
-	    (rep->value_len < (XCB_NUM_WM_HINTS_ELEMENTS - 1)) ||
+	    (length < (XCB_NUM_WM_HINTS_ELEMENTS - 1)) ||
 	    (rep->format != 32))
 	{
 		free (rep);
 		return NULL;
 	}
-	hints = (xcb_wm_hints_t *)calloc (1, (unsigned)sizeof (xcb_wm_hints_t));
+	hints = xcb_alloc_wm_hints();
 	if (!hints)
 	{
 		free (rep);
 		return NULL;
 	}
 
-	length = xcb_get_property_value_length (rep);
-	prop = (char *) xcb_get_property_value (rep);
-	prop[length] = '\0';
-	hints = (xcb_wm_hints_t *)strdup (prop);
-	if (rep->value_len < XCB_NUM_WM_HINTS_ELEMENTS)
+	memcpy(hints, (xcb_size_hints_t *) xcb_get_property_value (rep),
+	       length * rep->format >> 3);
+	if (length < XCB_NUM_WM_HINTS_ELEMENTS)
 		hints->window_group = XCB_NONE;
 
 	return hints;
