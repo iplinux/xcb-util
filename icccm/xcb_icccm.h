@@ -190,10 +190,9 @@ void       xcb_set_wm_size_hints         (xcb_connection_t     *c,
                                           xcb_atom_t            property,
                                           xcb_size_hints_t     *hints);
 
-int        xcb_get_wm_size_hints         (xcb_connection_t     *c,
+xcb_size_hints_t  *xcb_get_wm_size_hints (xcb_connection_t     *c,
                                           xcb_window_t          window,
                                           xcb_atom_t            property,
-                                          xcb_size_hints_t     *hints,
                                           long                 *supplied);
 
 /* WM_NORMAL_HINTS */
@@ -206,10 +205,9 @@ void xcb_set_wm_normal_hints (xcb_connection_t *c,
                               xcb_window_t      window,
                               xcb_size_hints_t *hints);
 
-int  xcb_get_wm_normal_hints (xcb_connection_t *c,
-                              xcb_window_t      window,
-                              xcb_size_hints_t *hints,
-                              long             *supplied);
+xcb_size_hints_t *xcb_get_wm_normal_hints (xcb_connection_t *c,
+					   xcb_window_t	     window,
+					   long		    *supplied);
 
 /* WM_HINTS */
 
@@ -223,6 +221,7 @@ typedef enum {
 } xcb_wm_state_t;
 
 xcb_wm_hints_t *xcb_alloc_wm_hints();
+void            xcb_free_wm_hints          (xcb_wm_hints_t *hints);
 
 uint8_t      xcb_wm_hints_get_input        (xcb_wm_hints_t *hints);
 xcb_pixmap_t xcb_wm_hints_get_icon_pixmap  (xcb_wm_hints_t *hints);
