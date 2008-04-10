@@ -925,10 +925,11 @@ xcb_get_wm_protocols (xcb_connection_t *c,
 		        free(rep);
 			return 0;
 		}
-		memcpy(*list, xcb_get_property_value(rep), length);
+		memcpy(*list, xcb_get_property_value(rep), length * rep->format >> 3);
 		free(rep);
 		return 1;
 	}
+	free(rep);
 	return 0;
 }
 
