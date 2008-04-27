@@ -164,19 +164,6 @@ xcb_watch_wm_client_machine (xcb_property_handlers_t        *prophs,
 
 /* WM_SIZE_HINTS */
 
-typedef enum {
-	USPosition = 1 << 0,
-	USSize = 1 << 1,
-	PPosition = 1 << 2,
-	PSize = 1 << 3,
-	PMinSize = 1 << 4,
-	PMaxSize = 1 << 5,
-	PResizeInc = 1 << 6,
-	PAspect = 1 << 7,
-	PBaseSize = 1 << 8,
-	PWinGravity = 1 << 9
-} xcb_size_hints_flags_t;
-
 struct xcb_size_hints_t {
 	uint32_t flags;
 	int32_t x, y, width, height;
@@ -279,130 +266,17 @@ xcb_size_hints_get_win_gravity (xcb_size_hints_t *hints)
         return hints->win_gravity;
 }
 
-uint8_t
-xcb_size_hints_is_us_position (xcb_size_hints_t *hints)
+uint32_t
+xcb_size_hints_get_flags (xcb_size_hints_t *hints)
 {
-        return (hints->flags & USPosition);
-}
-
-uint8_t
-xcb_size_hints_is_us_size (xcb_size_hints_t *hints)
-{
-        return (hints->flags & USSize);
-}
-
-uint8_t
-xcb_size_hints_is_p_position (xcb_size_hints_t *hints)
-{
-        return (hints->flags & PPosition);
-}
-
-uint8_t
-xcb_size_hints_is_p_size (xcb_size_hints_t *hints)
-{
-        return (hints->flags & PSize);
-}
-
-uint8_t
-xcb_size_hints_is_p_min_size (xcb_size_hints_t *hints)
-{
-        return (hints->flags & PMinSize);
-}
-
-uint8_t
-xcb_size_hints_is_p_max_size (xcb_size_hints_t *hints)
-{
-        return (hints->flags & PMaxSize);
-}
-
-uint8_t
-xcb_size_hints_is_p_resize_inc (xcb_size_hints_t *hints)
-{
-        return (hints->flags & PResizeInc);
-}
-
-uint8_t
-xcb_size_hints_is_p_aspect (xcb_size_hints_t *hints)
-{
-        return (hints->flags & PAspect);
-}
-
-uint8_t
-xcb_size_hints_is_p_base_size (xcb_size_hints_t *hints)
-{
-        return (hints->flags & PBaseSize);
-}
-
-uint8_t
-xcb_size_hints_is_p_win_gravity (xcb_size_hints_t *hints)
-{
-        return (hints->flags & PWinGravity);
+	return hints->flags;
 }
 
 void
-xcb_size_hints_set_flag_none (xcb_size_hints_t *hints)
+xcb_size_hints_set_flags (xcb_size_hints_t *hints,
+                          uint32_t flags)
 {
-        hints->flags = 0;
-}
-
-void
-xcb_size_hints_set_flag_us_position (xcb_size_hints_t *hints)
-{
-        hints->flags = USPosition;
-}
-
-void
-xcb_size_hints_set_flag_us_size (xcb_size_hints_t *hints)
-{
-        hints->flags = USSize;
-}
-
-void
-xcb_size_hints_set_flag_p_position (xcb_size_hints_t *hints)
-{
-        hints->flags = PPosition;
-}
-
-void
-xcb_size_hints_set_flag_p_size (xcb_size_hints_t *hints)
-{
-        hints->flags = PSize;
-}
-
-void
-xcb_size_hints_set_flag_p_min_size (xcb_size_hints_t *hints)
-{
-        hints->flags = PMinSize;
-}
-
-void
-xcb_size_hints_set_flag_p_max_size (xcb_size_hints_t *hints)
-{
-        hints->flags = PMaxSize;
-}
-
-void
-xcb_size_hints_set_flag_p_resize_inc (xcb_size_hints_t *hints)
-{
-        hints->flags = PResizeInc;
-}
-
-void
-xcb_size_hints_set_flag_p_aspect (xcb_size_hints_t *hints)
-{
-        hints->flags = PAspect;
-}
-
-void
-xcb_size_hints_set_flag_p_base_size (xcb_size_hints_t *hints)
-{
-        hints->flags = PBaseSize;
-}
-
-void
-xcb_size_hints_set_flag_p_win_gravity (xcb_size_hints_t *hints)
-{
-        hints->flags = PWinGravity;
+	hints->flags = flags;
 }
 
 void
@@ -411,11 +285,11 @@ xcb_size_hints_set_position (xcb_size_hints_t *hints,
                              int32_t           x,
                              int32_t           y)
 {
-	hints->flags &= ~(USPosition | PPosition);
+	hints->flags &= ~(XCB_SIZE_US_POSITION_HINT | XCB_SIZE_P_POSITION_HINT);
 	if (user_specified)
-		hints->flags |= USPosition;
+		hints->flags |= XCB_SIZE_US_POSITION_HINT;
 	else
-		hints->flags |= PPosition;
+		hints->flags |= XCB_SIZE_P_POSITION_HINT;
 	hints->x = x;
 	hints->y = y;
 }
@@ -426,11 +300,11 @@ xcb_size_hints_set_size (xcb_size_hints_t *hints,
                          int32_t           width,
                          int32_t           height)
 {
-	hints->flags &= ~(USSize | PSize);
+	hints->flags &= ~(XCB_SIZE_US_SIZE_HINT | XCB_SIZE_P_SIZE_HINT);
 	if (user_specified)
-		hints->flags |= USSize;
+		hints->flags |= XCB_SIZE_US_SIZE_HINT;
 	else
-		hints->flags |= PSize;
+		hints->flags |= XCB_SIZE_P_SIZE_HINT;
 	hints->width = width;
 	hints->height = height;
 }
@@ -440,7 +314,7 @@ xcb_size_hints_set_min_size (xcb_size_hints_t *hints,
                              int32_t           min_width,
                              int32_t           min_height)
 {
-	hints->flags |= PMinSize;
+	hints->flags |= XCB_SIZE_P_MIN_SIZE_HINT;
 	hints->min_width = min_width;
 	hints->min_height = min_height;
 }
@@ -450,7 +324,7 @@ xcb_size_hints_set_max_size (xcb_size_hints_t *hints,
                              int32_t           max_width,
                              int32_t           max_height)
 {
-	hints->flags |= PMaxSize;
+	hints->flags |= XCB_SIZE_P_MAX_SIZE_HINT;
 	hints->max_width = max_width;
 	hints->max_height = max_height;
 }
@@ -460,7 +334,7 @@ xcb_size_hints_set_resize_inc (xcb_size_hints_t *hints,
                                int32_t           width_inc,
                                int32_t           height_inc)
 {
-	hints->flags |= PResizeInc;
+	hints->flags |= XCB_SIZE_P_RESIZE_INC_HINT;
 	hints->width_inc = width_inc;
 	hints->height_inc = height_inc;
 }
@@ -472,7 +346,7 @@ xcb_size_hints_set_aspect (xcb_size_hints_t *hints,
                            int32_t           max_aspect_num,
                            int32_t           max_aspect_den)
 {
-	hints->flags |= PAspect;
+	hints->flags |= XCB_SIZE_P_ASPECT_HINT;
 	hints->min_aspect_num = min_aspect_num;
 	hints->min_aspect_den = min_aspect_den;
 	hints->max_aspect_num = max_aspect_num;
@@ -484,7 +358,7 @@ xcb_size_hints_set_base_size (xcb_size_hints_t *hints,
                               int32_t           base_width,
                               int32_t           base_height)
 {
-	hints->flags |= PBaseSize;
+	hints->flags |= XCB_SIZE_BASE_SIZE_HINT;
 	hints->base_width = base_width;
 	hints->base_height = base_height;
 }
@@ -493,7 +367,7 @@ void
 xcb_size_hints_set_win_gravity (xcb_size_hints_t *hints,
                                 uint8_t           win_gravity)
 {
-	hints->flags |= PWinGravity;
+	hints->flags |= XCB_SIZE_P_WIN_GRAVITY_HINT;
 	hints->win_gravity = win_gravity;
 }
 
@@ -550,12 +424,12 @@ xcb_get_wm_size_hints (xcb_connection_t *c,
 		memcpy (hints, (xcb_size_hints_t *) xcb_get_property_value (rep),
 			length * rep->format >> 3);
 
-		*supplied = (USPosition | USSize   |
-			     PPosition  | PSize    |
-			     PMinSize   | PMaxSize |
-			     PResizeInc | PAspect);
+		*supplied = (XCB_SIZE_US_POSITION_HINT | XCB_SIZE_US_SIZE_HINT |
+			     XCB_SIZE_P_POSITION_HINT  | XCB_SIZE_P_SIZE_HINT  |
+			     XCB_SIZE_P_MIN_SIZE_HINT  | XCB_SIZE_P_MAX_SIZE_HINT |
+			     XCB_SIZE_P_RESIZE_INC_HINT | XCB_SIZE_P_ASPECT_HINT);
 		if (length >= 18) /* NumPropSizeElements = 18 (ICCCM version 1) */
-		        *supplied |= (PBaseSize | PWinGravity);
+		        *supplied |= (XCB_SIZE_BASE_SIZE_HINT | XCB_SIZE_P_WIN_GRAVITY_HINT);
 		else
 		{
 		        hints->base_width  = 0;
@@ -612,21 +486,6 @@ struct xcb_wm_hints_t {
 	/* this structure may be extended in the future */
 };
 
-typedef enum {
-        XCB_WM_INPUT_HINT         = (1L << 0),
-	XCB_WM_STATE_HINT         = (1L << 1),
-	XCB_WM_ICON_PIXMAP_HINT   = (1L << 2),
-	XCB_WM_ICON_WINDOW_HINT   = (1L << 3),
-	XCB_WM_ICON_POSITION_HINT = (1L << 4),
-	XCB_WM_ICON_MASK_HINT     = (1L << 5),
-	XCB_WM_WINDOW_GROUP_HINT  = (1L << 6),
-	XCB_WM_X_URGENCY_HINT     = (1L << 8)
-} xcb_wm_t;
-
-#define XCB_WM_ALL_HINTS (XCB_WM_INPUT_HINT       | XCB_WM_STATE_HINT         | XCB_WM_ICON_PIXMAP_HINT | \
-                          XCB_WM_ICON_WINDOW_HINT | XCB_WM_ICON_POSITION_HINT | XCB_WM_ICON_MASK_HINT   | \
-                          XCB_WM_WINDOW_GROUP_HINT)
-
 xcb_wm_hints_t *
 xcb_alloc_wm_hints()
 {
@@ -669,71 +528,23 @@ xcb_wm_hints_get_window_group(xcb_wm_hints_t *hints)
         return hints->window_group;
 }
 
-
-uint8_t
-xcb_wm_hints_is_input_hint(xcb_wm_hints_t *hints)
+uint32_t
+xcb_wm_hints_get_flags(xcb_wm_hints_t *hints)
 {
-        return (hints->flags & XCB_WM_INPUT_HINT);
+        return hints->flags;
 }
 
-uint8_t
-xcb_wm_hints_is_state_hint(xcb_wm_hints_t *hints)
+void
+xcb_wm_hints_set_flags(xcb_wm_hints_t *hints,
+                       uint32_t flags)
 {
-        return (hints->flags & XCB_WM_STATE_HINT);
+        hints->flags = flags;
 }
 
-uint8_t
-xcb_wm_hints_is_icon_pixmap_hint(xcb_wm_hints_t *hints)
+uint32_t
+xcb_wm_hints_get_initial_state(xcb_wm_hints_t *hints)
 {
-        return (hints->flags & XCB_WM_ICON_PIXMAP_HINT);
-}
-
-uint8_t
-xcb_wm_hints_is_icon_window_hint(xcb_wm_hints_t *hints)
-{
-        return (hints->flags & XCB_WM_ICON_WINDOW_HINT);
-}
-
-uint8_t
-xcb_wm_hints_is_icon_position_hint(xcb_wm_hints_t *hints)
-{
-        return (hints->flags & XCB_WM_ICON_POSITION_HINT);
-}
-
-uint8_t
-xcb_wm_hints_is_icon_mask_hint(xcb_wm_hints_t *hints)
-{
-        return (hints->flags & XCB_WM_ICON_MASK_HINT);
-}
-
-uint8_t
-xcb_wm_hints_is_window_group_hint(xcb_wm_hints_t *hints)
-{
-        return (hints->flags & XCB_WM_WINDOW_GROUP_HINT);
-}
-
-uint8_t
-xcb_wm_hints_is_x_urgency_hint(xcb_wm_hints_t *hints)
-{
-        return (hints->flags & XCB_WM_X_URGENCY_HINT);
-}
-
-uint8_t
-xcb_wm_hints_state_is_withdrawn(xcb_wm_hints_t *hints)
-{
-        return (hints->initial_state == XCB_WM_WITHDRAWN_STATE);
-}
-
-uint8_t
-xcb_wm_hints_state_is_normal(xcb_wm_hints_t *hints)
-{
-        return (hints->initial_state == XCB_WM_NORMAL_STATE);
-}
-
-uint8_t
-xcb_wm_hints_state_is_iconic(xcb_wm_hints_t *hints)
-{
-        return (hints->initial_state == XCB_WM_ICONIC_STATE);
+        return hints->initial_state;
 }
 
 void
@@ -768,12 +579,6 @@ void
 xcb_wm_hints_set_none(xcb_wm_hints_t *hints)
 {
         hints->flags &= ~XCB_WM_STATE_HINT;
-}
-
-void
-xcb_wm_hints_set_urgent(xcb_wm_hints_t *hints)
-{
-        hints->flags |= XCB_WM_X_URGENCY_HINT;
 }
 
 void
