@@ -1,0 +1,4 @@
+usr/include/xcb/xcb_property.h
+usr/lib/libxcb-property.a
+usr/lib/libxcb-property.so
+usr/lib/pkgconfig/xcb-property.pc

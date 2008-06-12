@@ -1,0 +1,4 @@
+usr/include/xcb/xcb_event.h
+usr/lib/libxcb-event.a
+usr/lib/libxcb-event.so
+usr/lib/pkgconfig/xcb-event.pc

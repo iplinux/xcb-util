@@ -1,0 +1,320 @@
+Source: xcb-util
+Section: libdevel
+Priority: extra
+Maintainer: Julien Danjou <acid@debian.org>
+Uploaders: Arnaud Fontaine <arnau@debian.org>
+Build-Depends: cdbs,
+               debhelper (>= 5),
+               autotools-dev,
+               libxcb-render0-dev,
+               libxcb1-dev,
+               gperf,
+               pkg-config,
+               libxcb-shm0-dev,
+               m4
+Standards-Version: 3.7.3
+Homepage: http://xcb.freedesktop.org
+
+Package: libxcb-atom0
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: utility libraries for X C Binding -- atom
+ This package contains the library files needed to run software using
+ libxcb-atom, providing standard core X atom constants and atom caching.
+ .
+ The xcb-util module provides a number of libraries which sit on top of
+ libxcb, the core X protocol library, and some of the extension
+ libraries. These experimental libraries provide convenience functions
+ and interfaces which make the raw X protocol more usable. Some of the
+ libraries also provide client-side code which is not strictly part of
+ the X protocol but which have traditionally been provided by Xlib.
+
+Package: libxcb-atom0-dev
+Architecture: any
+Depends: libxcb-atom0 (= ${binary:Version}),
+         libxcb1-dev
+Description: utility libraries for X C Binding -- atom
+ This package contains the header and library files needed to build software
+ using libxcb-atom, providing standard core X atom constants and atom caching.
+ .
+ The xcb-util module provides a number of libraries which sit on top of
+ libxcb, the core X protocol library, and some of the extension
+ libraries. These experimental libraries provide convenience functions
+ and interfaces which make the raw X protocol more usable. Some of the
+ libraries also provide client-side code which is not strictly part of
+ the X protocol but which have traditionally been provided by Xlib.
+
+Package: libxcb-aux0
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: utility libraries for X C Binding -- aux
+ This package contains the library files needed to run software using
+ libxcb-aux, providing convenient access to connection setup and some
+ core requests.
+ .
+ The xcb-util module provides a number of libraries which sit on top of
+ libxcb, the core X protocol library, and some of the extension
+ libraries. These experimental libraries provide convenience functions
+ and interfaces which make the raw X protocol more usable. Some of the
+ libraries also provide client-side code which is not strictly part of
+ the X protocol but which have traditionally been provided by Xlib.
+
+Package: libxcb-aux0-dev
+Architecture: any
+Depends: libxcb-aux0 (= ${binary:Version}),
+         libxcb1-dev
+Description: utility libraries for X C Binding -- aux
+ This package contains the header and library files needed to build software
+ using libxcb-aux, providing convenient access to connection setup and some
+ core requests.
+ .
+ The xcb-util module provides a number of libraries which sit on top of
+ libxcb, the core X protocol library, and some of the extension
+ libraries. These experimental libraries provide convenience functions
+ and interfaces which make the raw X protocol more usable. Some of the
+ libraries also provide client-side code which is not strictly part of
+ the X protocol but which have traditionally been provided by Xlib.
+
+Package: libxcb-event0
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: utility libraries for X C Binding -- event
+ This package contains the library files needed to run software using
+ libxcb-event, providing X callback event handling.
+ .
+ The xcb-util module provides a number of libraries which sit on top of
+ libxcb, the core X protocol library, and some of the extension
+ libraries. These experimental libraries provide convenience functions
+ and interfaces which make the raw X protocol more usable. Some of the
+ libraries also provide client-side code which is not strictly part of
+ the X protocol but which have traditionally been provided by Xlib.
+
+Package: libxcb-event0-dev
+Architecture: any
+Depends: libxcb-event0 (= ${binary:Version}),
+         libxcb1-dev
+Description: utility libraries for X C Binding -- event
+ This package contains the header and library files needed to build software
+ using libxcb-event, providing X callback event handling.
+ .
+ The xcb-util module provides a number of libraries which sit on top of
+ libxcb, the core X protocol library, and some of the extension
+ libraries. These experimental libraries provide convenience functions
+ and interfaces which make the raw X protocol more usable. Some of the
+ libraries also provide client-side code which is not strictly part of
+ the X protocol but which have traditionally been provided by Xlib.
+
+Package: libxcb-image0
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: utility libraries for X C Binding -- image
+ This package contains the library files needed to run software using
+ libxcb-image, providing port of Xlib's XImage and XShmImage functions.
+ .
+ The xcb-util module provides a number of libraries which sit on top of
+ libxcb, the core X protocol library, and some of the extension
+ libraries. These experimental libraries provide convenience functions
+ and interfaces which make the raw X protocol more usable. Some of the
+ libraries also provide client-side code which is not strictly part of
+ the X protocol but which have traditionally been provided by Xlib.
+
+Package: libxcb-image0-dev
+Architecture: any
+Depends: libxcb-image0 (= ${binary:Version}),
+         libxcb1-dev,
+         libxcb-shm0-dev
+Description: utility libraries for X C Binding -- image
+ This package contains the header and library files needed to build software
+ using libxcb-image, providing port of Xlib's XImage and XShmImage functions.
+ .
+ The xcb-util module provides a number of libraries which sit on top of
+ libxcb, the core X protocol library, and some of the extension
+ libraries. These experimental libraries provide convenience functions
+ and interfaces which make the raw X protocol more usable. Some of the
+ libraries also provide client-side code which is not strictly part of
+ the X protocol but which have traditionally been provided by Xlib.
+
+Package: libxcb-keysyms0
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: utility libraries for X C Binding -- keysyms
+ This package contains the library files needed to run software using
+ libxcb-keysyms, providing standard X key constants and conversion to/from
+ keycodes.
+ .
+ The xcb-util module provides a number of libraries which sit on top of
+ libxcb, the core X protocol library, and some of the extension
+ libraries. These experimental libraries provide convenience functions
+ and interfaces which make the raw X protocol more usable. Some of the
+ libraries also provide client-side code which is not strictly part of
+ the X protocol but which have traditionally been provided by Xlib.
+
+Package: libxcb-keysyms0-dev
+Architecture: any
+Depends: libxcb-keysyms0 (= ${binary:Version}),
+         libxcb1-dev
+Description: utility libraries for X C Binding -- keysyms
+ This package contains the header and library files needed to build software
+ using libxcb-keysyms, providing standard X key constants and conversion to/from
+ keycodes.
+ .
+ The xcb-util module provides a number of libraries which sit on top of
+ libxcb, the core X protocol library, and some of the extension
+ libraries. These experimental libraries provide convenience functions
+ and interfaces which make the raw X protocol more usable. Some of the
+ libraries also provide client-side code which is not strictly part of
+ the X protocol but which have traditionally been provided by Xlib.
+
+Package: libxcb-property0
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: utility libraries for X C Binding -- property
+ This package contains the library files needed to run software using
+ libxcb-property, providing callback X property-change handling.
+ .
+ The xcb-util module provides a number of libraries which sit on top of
+ libxcb, the core X protocol library, and some of the extension
+ libraries. These experimental libraries provide convenience functions
+ and interfaces which make the raw X protocol more usable. Some of the
+ libraries also provide client-side code which is not strictly part of
+ the X protocol but which have traditionally been provided by Xlib.
+
+Package: libxcb-property0-dev
+Architecture: any
+Depends: libxcb-property0 (= ${binary:Version}),
+         libxcb1-dev,
+         libxcb-event0-dev
+Description: utility libraries for X C Binding -- property
+ This package contains the header and library files needed to build software
+ using libxcb-property, providing callback X property-change handling.
+ .
+ The xcb-util module provides a number of libraries which sit on top of
+ libxcb, the core X protocol library, and some of the extension
+ libraries. These experimental libraries provide convenience functions
+ and interfaces which make the raw X protocol more usable. Some of the
+ libraries also provide client-side code which is not strictly part of
+ the X protocol but which have traditionally been provided by Xlib.
+
+Package: libxcb-render-util0
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: utility libraries for X C Binding -- render-util
+ This package contains the library files needed to run software using
+ libxcb-render-util, providing convenience functions for the Render extension.
+ .
+ The xcb-util module provides a number of libraries which sit on top of
+ libxcb, the core X protocol library, and some of the extension
+ libraries. These experimental libraries provide convenience functions
+ and interfaces which make the raw X protocol more usable. Some of the
+ libraries also provide client-side code which is not strictly part of
+ the X protocol but which have traditionally been provided by Xlib.
+
+Package: libxcb-render-util0-dev
+Architecture: any
+Depends: libxcb-render-util0 (= ${binary:Version}),
+         libxcb1-dev,
+         libxcb-render0-dev
+Description: utility libraries for X C Binding -- render-util
+ This package contains the header and library files needed to build software
+ using libxcb-render-util, providing convenience functions for the Render
+ extension.
+ .
+ The xcb-util module provides a number of libraries which sit on top of
+ libxcb, the core X protocol library, and some of the extension
+ libraries. These experimental libraries provide convenience functions
+ and interfaces which make the raw X protocol more usable. Some of the
+ libraries also provide client-side code which is not strictly part of
+ the X protocol but which have traditionally been provided by Xlib.
+
+Package: libxcb-reply0
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: utility libraries for X C Binding -- reply
+ This package contains the library files needed to run software using
+ libxcb-reply.
+ .
+ The xcb-util module provides a number of libraries which sit on top of
+ libxcb, the core X protocol library, and some of the extension
+ libraries. These experimental libraries provide convenience functions
+ and interfaces which make the raw X protocol more usable. Some of the
+ libraries also provide client-side code which is not strictly part of
+ the X protocol but which have traditionally been provided by Xlib.
+
+Package: libxcb-reply0-dev
+Architecture: any
+Depends: libxcb-reply0 (= ${binary:Version}),
+         libxcb1-dev
+Description: utility libraries for X C Binding -- reply
+ This package contains the header and library files needed to build software
+ using libxcb-reply.
+ .
+ The xcb-util module provides a number of libraries which sit on top of
+ libxcb, the core X protocol library, and some of the extension
+ libraries. These experimental libraries provide convenience functions
+ and interfaces which make the raw X protocol more usable. Some of the
+ libraries also provide client-side code which is not strictly part of
+ the X protocol but which have traditionally been provided by Xlib.
+
+Package: libxcb-wm0
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: utility libraries for X C Binding -- wm
+ This package contains the library files needed to run software using
+ libxcb-wm, providing a framework for window manager implementation.
+ .
+ The xcb-util module provides a number of libraries which sit on top of
+ libxcb, the core X protocol library, and some of the extension
+ libraries. These experimental libraries provide convenience functions
+ and interfaces which make the raw X protocol more usable. Some of the
+ libraries also provide client-side code which is not strictly part of
+ the X protocol but which have traditionally been provided by Xlib.
+
+Package: libxcb-wm0-dev
+Architecture: any
+Depends: libxcb-wm0 (= ${binary:Version}),
+         libxcb1-dev,
+         libxcb-atom0-dev,
+         libxcb-event0-dev,
+         libxcb-property0-dev,
+         libxcb-icccm0-dev
+Description: utility libraries for X C Binding -- wm
+ This package contains the header and library files needed to build software
+ using libxcb-wm, providing a framework for window manager implementation.
+ .
+ The xcb-util module provides a number of libraries which sit on top of
+ libxcb, the core X protocol library, and some of the extension
+ libraries. These experimental libraries provide convenience functions
+ and interfaces which make the raw X protocol more usable. Some of the
+ libraries also provide client-side code which is not strictly part of
+ the X protocol but which have traditionally been provided by Xlib.
+
+Package: libxcb-icccm0
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: utility libraries for X C Binding -- icccm
+ This package contains the library files needed to run software using
+ libxcb-icccm, providing client and window-manager helpers for ICCCM.
+ .
+ The xcb-util module provides a number of libraries which sit on top of
+ libxcb, the core X protocol library, and some of the extension
+ libraries. These experimental libraries provide convenience functions
+ and interfaces which make the raw X protocol more usable. Some of the
+ libraries also provide client-side code which is not strictly part of
+ the X protocol but which have traditionally been provided by Xlib.
+
+Package: libxcb-icccm0-dev
+Architecture: any
+Depends: libxcb-icccm0 (= ${binary:Version}),
+         libxcb1-dev,
+         libxcb-atom0-dev,
+         libxcb-property0-dev
+Description: utility libraries for X C Binding -- icccm
+ This package contains the header and library files needed to build software
+ using libxcb-icccm, providing client and window-manager helpers for ICCCM.
+ .
+ The xcb-util module provides a number of libraries which sit on top of
+ libxcb, the core X protocol library, and some of the extension
+ libraries. These experimental libraries provide convenience functions
+ and interfaces which make the raw X protocol more usable. Some of the
+ libraries also provide client-side code which is not strictly part of
+ the X protocol but which have traditionally been provided by Xlib.

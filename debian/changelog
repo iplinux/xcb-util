@@ -1,0 +1,27 @@
+xcb-util (0.2+git2008030901-1) unstable; urgency=low
+
+  [ Arnaud Fontaine ]
+  * debian/control:
+    + Add missing dependencies to libxcb*-dev packages. Closes: #480524.
+  * patches:
+    + Add icccm_remove_useless_functions patch which removes useless
+      function for accessing 'flags' which were also buggy because they
+      were returning a 'uint8_t' whereas 'flags' is a 'uint32_t'.
+    + Add icccm_fix_incorrect_copy which correctly copies the
+      reply value according to its format.
+    + Add icccm_fix_incorrect_pointer_usage which fixes
+      incorrect pointer usage.
+  * debian/copyright:
+    + Update copyright years.
+
+  [ Julien Danjou ]
+  * Switch to git based packaging
+
+ -- Julien Danjou <acid@debian.org>  Thu, 12 Jun 2008 08:44:29 +0200
+
+xcb-util (0.2-1) experimental; urgency=low
+
+  * Initial release (Closes: #437681)
+
+ -- Julien Danjou <acid@debian.org>  Tue, 25 Mar 2008 19:14:42 +0100
+

@@ -1,0 +1,4 @@
+usr/include/xcb/xcb_reply.h
+usr/lib/libxcb-reply.a
+usr/lib/libxcb-reply.so
+usr/lib/pkgconfig/xcb-reply.pc

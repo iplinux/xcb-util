@@ -1,0 +1,4 @@
+usr/include/xcb/xcb_aux.h
+usr/lib/libxcb-aux.a
+usr/lib/libxcb-aux.so
+usr/lib/pkgconfig/xcb-aux.pc
