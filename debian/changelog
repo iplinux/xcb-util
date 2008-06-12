@@ -18,8 +18,9 @@ xcb-util (0.2+git36-1) unstable; urgency=low
   * Switch to git based packaging
   * Tweak get-orig-source
   * Add autoconf as build dependency
+  * Bump standard version
 
- -- Julien Danjou <acid@debian.org>  Thu, 12 Jun 2008 09:31:29 +0200
+ -- Julien Danjou <acid@debian.org>  Thu, 12 Jun 2008 10:17:53 +0200
 
 xcb-util (0.2-1) experimental; urgency=low
 

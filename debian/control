@@ -15,7 +15,7 @@ Build-Depends: cdbs,
                autoconf,
                automake,
                libtool
-Standards-Version: 3.7.3
+Standards-Version: 3.8.0
 Homepage: http://xcb.freedesktop.org
 
 Package: libxcb-atom0
