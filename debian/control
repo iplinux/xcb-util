@@ -17,6 +17,8 @@ Build-Depends: cdbs,
                libtool
 Standards-Version: 3.8.0
 Homepage: http://xcb.freedesktop.org
+Vcs-Git: git://git.debian.org/git/collab-maint/xcb-util.git
+Vcs-Browser: http://git.debian.org/?p=collab-maint/xcb-util.git
 
 Package: libxcb-atom0
 Architecture: any
