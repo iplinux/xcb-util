@@ -11,7 +11,10 @@ Build-Depends: cdbs,
                gperf,
                pkg-config,
                libxcb-shm0-dev,
-               m4
+               m4,
+               autoconf,
+               automake,
+               libtool
 Standards-Version: 3.7.3
 Homepage: http://xcb.freedesktop.org
 
