@@ -162,6 +162,34 @@ xcb_watch_wm_client_machine (xcb_property_handlers_t        *prophs,
 	xcb_set_property_handler(prophs, WM_CLIENT_MACHINE, long_len, handler, data);
 }
 
+/* WM_TRANSIENT_FOR */
+int
+xcb_get_wm_transient_for (xcb_connection_t *c,
+                          xcb_window_t      window,
+                          xcb_window_t      *prop_win)
+{
+    xcb_get_property_cookie_t prop_q;
+    xcb_get_property_reply_t *prop_r;
+
+    prop_q = xcb_get_property(c, 0, window, WM_TRANSIENT_FOR, WINDOW, 0, 1);
+    prop_r = xcb_get_property_reply(c, prop_q, NULL);
+
+    if(!prop_r)
+        return 0;
+
+    if(prop_r->type != WINDOW || prop_r->format != 32 || !prop_r->length)
+    {
+        *prop_win = XCB_NONE;
+        free(prop_r);
+        return 0;
+    }
+
+    *prop_win = *((xcb_window_t *) xcb_get_property_value(prop_r));
+    free(prop_r);
+
+    return 1;
+}
+
 /* WM_SIZE_HINTS */
 
 struct xcb_size_hints_t {

@@ -88,6 +88,11 @@ void xcb_watch_wm_client_machine (xcb_property_handlers_t        *prophs,
                                   xcb_generic_property_handler_t handler,
                                   void                          *data);
 
+/* WM_TRANSIENT_FOR */
+int xcb_get_wm_transient_for (xcb_connection_t *c,
+                              xcb_window_t      window,
+                              xcb_window_t      *prop_win);
+
 /* WM_SIZE_HINTS */
 
 typedef enum {
