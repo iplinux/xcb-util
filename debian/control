@@ -21,6 +21,7 @@ Vcs-Git: git://git.debian.org/git/collab-maint/xcb-util.git
 Vcs-Browser: http://git.debian.org/?p=collab-maint/xcb-util.git
 
 Package: libxcb-atom0
+Section: libs
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: utility libraries for X C Binding -- atom
@@ -50,6 +51,7 @@ Description: utility libraries for X C Binding -- atom
  the X protocol but which have traditionally been provided by Xlib.
 
 Package: libxcb-aux0
+Section: libs
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: utility libraries for X C Binding -- aux
@@ -81,6 +83,7 @@ Description: utility libraries for X C Binding -- aux
  the X protocol but which have traditionally been provided by Xlib.
 
 Package: libxcb-event0
+Section: libs
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: utility libraries for X C Binding -- event
@@ -110,6 +113,7 @@ Description: utility libraries for X C Binding -- event
  the X protocol but which have traditionally been provided by Xlib.
 
 Package: libxcb-image0
+Section: libs
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: utility libraries for X C Binding -- image
@@ -140,6 +144,7 @@ Description: utility libraries for X C Binding -- image
  the X protocol but which have traditionally been provided by Xlib.
 
 Package: libxcb-keysyms0
+Section: libs
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: utility libraries for X C Binding -- keysyms
@@ -171,6 +176,7 @@ Description: utility libraries for X C Binding -- keysyms
  the X protocol but which have traditionally been provided by Xlib.
 
 Package: libxcb-property0
+Section: libs
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: utility libraries for X C Binding -- property
@@ -201,6 +207,7 @@ Description: utility libraries for X C Binding -- property
  the X protocol but which have traditionally been provided by Xlib.
 
 Package: libxcb-render-util0
+Section: libs
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: utility libraries for X C Binding -- render-util
@@ -232,6 +239,7 @@ Description: utility libraries for X C Binding -- render-util
  the X protocol but which have traditionally been provided by Xlib.
 
 Package: libxcb-reply0
+Section: libs
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: utility libraries for X C Binding -- reply
@@ -261,6 +269,7 @@ Description: utility libraries for X C Binding -- reply
  the X protocol but which have traditionally been provided by Xlib.
 
 Package: libxcb-wm0
+Section: libs
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: utility libraries for X C Binding -- wm
@@ -294,6 +303,7 @@ Description: utility libraries for X C Binding -- wm
  the X protocol but which have traditionally been provided by Xlib.
 
 Package: libxcb-icccm0
+Section: libs
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: utility libraries for X C Binding -- icccm
