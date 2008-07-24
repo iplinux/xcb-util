@@ -557,6 +557,12 @@ xcb_wm_hints_get_window_group(xcb_wm_hints_t *hints)
 }
 
 uint32_t
+xcb_wm_hints_get_urgency(xcb_wm_hints_t *hints)
+{
+       return (hints->flags & XCB_WM_X_URGENCY_HINT);
+}
+
+uint32_t
 xcb_wm_hints_get_flags(xcb_wm_hints_t *hints)
 {
         return hints->flags;
@@ -635,6 +641,12 @@ xcb_wm_hints_set_window_group(xcb_wm_hints_t *hints, xcb_window_t window_group)
 {
         hints->window_group = window_group;
         hints->flags |= XCB_WM_WINDOW_GROUP_HINT;
+}
+
+void
+xcb_wm_hints_set_urgency(xcb_wm_hints_t *hints)
+{
+        hints->flags |= XCB_WM_X_URGENCY_HINT;
 }
 
 void
