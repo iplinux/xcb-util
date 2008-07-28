@@ -1,5 +1,6 @@
-xcb-util (0.2+git36-2) UNRELEASED; urgency=low
+xcb-util (0.2+git41-1) unstable; urgency=low
 
+  * New git snapshot
   * Fix sections, set libs for libs packages and libdevel for
     -dev packages (Closes: #491534)
 
