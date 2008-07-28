@@ -88,6 +88,11 @@ void xcb_watch_wm_client_machine (xcb_property_handlers_t        *prophs,
                                   xcb_generic_property_handler_t handler,
                                   void                          *data);
 
+/* WM_TRANSIENT_FOR */
+int xcb_get_wm_transient_for (xcb_connection_t *c,
+                              xcb_window_t      window,
+                              xcb_window_t      *prop_win);
+
 /* WM_SIZE_HINTS */
 
 typedef enum {
@@ -238,6 +243,7 @@ xcb_pixmap_t xcb_wm_hints_get_icon_pixmap  (xcb_wm_hints_t *hints);
 xcb_pixmap_t xcb_wm_hints_get_icon_mask    (xcb_wm_hints_t *hints);
 xcb_window_t xcb_wm_hints_get_icon_window  (xcb_wm_hints_t *hints);
 xcb_window_t xcb_wm_hints_get_window_group (xcb_wm_hints_t *hints);
+uint32_t     xcb_wm_hints_get_urgency      (xcb_wm_hints_t *hints);
 
 uint32_t xcb_wm_hints_get_flags(xcb_wm_hints_t *hints);
 void xcb_wm_hints_set_flags(xcb_wm_hints_t *hints, uint32_t flags);
@@ -252,6 +258,7 @@ void xcb_wm_hints_set_icon_pixmap  (xcb_wm_hints_t *hints, xcb_pixmap_t icon_pix
 void xcb_wm_hints_set_icon_mask    (xcb_wm_hints_t *hints, xcb_pixmap_t icon_mask);
 void xcb_wm_hints_set_icon_window  (xcb_wm_hints_t *hints, xcb_window_t icon_window);
 void xcb_wm_hints_set_window_group (xcb_wm_hints_t *hints, xcb_window_t window_group);
+void xcb_wm_hints_set_urgency      (xcb_wm_hints_t *hints);
 
 void xcb_set_wm_hints_checked (xcb_connection_t *c,
                                xcb_window_t      window,
