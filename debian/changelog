@@ -1,8 +1,9 @@
 xcb-util (0.2.1+git1-1) unstable; urgency=low
 
   * New git snapshot
+  * dh_makeshlibs get a -V
 
- -- Julien Danjou <acid@debian.org>  Wed, 06 Aug 2008 17:43:31 +0200
+ -- Julien Danjou <acid@debian.org>  Wed, 06 Aug 2008 17:44:13 +0200
 
 xcb-util (0.2+git41-1) unstable; urgency=low
 
