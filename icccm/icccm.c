@@ -670,7 +670,7 @@ xcb_get_wm_hints (xcb_connection_t *c,
                   xcb_window_t      window)
 {
 	xcb_get_property_cookie_t cookie;
-	xcb_get_property_reply_t *rep;
+	xcb_get_property_reply_t *rep = NULL;
 	xcb_wm_hints_t           *hints;
 	long                      length;
 
@@ -685,22 +685,19 @@ xcb_get_wm_hints (xcb_connection_t *c,
 	if ((rep->type != WM_HINTS) ||
 	    (length < (XCB_NUM_WM_HINTS_ELEMENTS - 1)) ||
 	    (rep->format != 32))
-	{
-		free (rep);
-		return NULL;
-	}
+            goto bailout;
+
 	hints = xcb_alloc_wm_hints();
 	if (!hints)
-	{
-		free (rep);
-		return NULL;
-	}
+            goto bailout;
 
 	memcpy(hints, (xcb_size_hints_t *) xcb_get_property_value (rep),
 	       length * rep->format >> 3);
 	if (length < XCB_NUM_WM_HINTS_ELEMENTS)
 		hints->window_group = XCB_NONE;
 
+    bailout:
+        free(rep);
 	return hints;
 }
 
