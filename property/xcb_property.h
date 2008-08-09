@@ -10,6 +10,11 @@ extern "C" {
 
 
 xcb_get_property_cookie_t xcb_get_any_property(xcb_connection_t *c, uint8_t del, xcb_window_t window, xcb_atom_t name, uint32_t long_len);
+xcb_get_property_cookie_t xcb_get_any_property_unchecked(xcb_connection_t *c,
+                                                         uint8_t del,
+                                                         xcb_window_t window,
+                                                         xcb_atom_t name,
+                                                         uint32_t long_len);
 
 typedef struct xcb_property_handlers xcb_property_handlers_t;
 

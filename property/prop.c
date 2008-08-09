@@ -29,6 +29,18 @@ xcb_get_property_cookie_t xcb_get_any_property(xcb_connection_t *c, uint8_t del,
 	return xcb_get_property(c, del, window, name, type, 0, long_len);
 }
 
+xcb_get_property_cookie_t xcb_get_any_property_unchecked(xcb_connection_t *c,
+                                                         uint8_t del,
+                                                         xcb_window_t window,
+                                                         xcb_atom_t name,
+                                                         uint32_t long_len)
+{
+	static const xcb_atom_t type = XCB_GET_PROPERTY_TYPE_ANY;
+
+	return xcb_get_property_unchecked(c, del, window, name, type, 0,
+                                          long_len);
+}
+
 static int call_handler(xcb_connection_t *c, uint8_t state, xcb_window_t window, xcb_atom_t atom, prop_handler_t *h)
 {
 	xcb_get_property_reply_t *propr = 0;
