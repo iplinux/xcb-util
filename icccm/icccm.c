@@ -4,7 +4,7 @@
 #include "xcb_atom.h"
 
 
-static int
+int
 xcb_get_text_property(xcb_connection_t *c,
                       xcb_window_t      window,
                       xcb_atom_t        property,
