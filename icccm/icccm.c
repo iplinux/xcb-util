@@ -236,6 +236,49 @@ xcb_watch_wm_client_machine (xcb_property_handlers_t        *prophs,
 	xcb_set_property_handler(prophs, WM_CLIENT_MACHINE, long_len, handler, data);
 }
 
+/* WM_CLASS */
+
+xcb_get_property_cookie_t
+xcb_get_wm_class(xcb_connection_t *c, xcb_window_t window)
+{
+  return xcb_get_property(c, 0, window, WM_CLASS, STRING, 0L, 2048L);
+}
+
+xcb_get_property_cookie_t
+xcb_get_wm_class_unchecked(xcb_connection_t *c, xcb_window_t window)
+{
+  return xcb_get_property_unchecked(c, 0, window, WM_CLASS, STRING, 0L, 2048L);
+}
+
+uint8_t
+xcb_get_wm_class_reply(xcb_connection_t *c, xcb_get_property_cookie_t cookie,
+                       xcb_get_wm_class_reply_t *prop, xcb_generic_error_t **e)
+{
+  xcb_get_property_reply_t *reply = xcb_get_property_reply(c, cookie, e);
+
+  if(!reply || reply->type != STRING || reply->format != 8)
+  {
+    free(reply);
+    return 0;
+  }
+
+  prop->_reply = reply;
+  prop->name = (char *) xcb_get_property_value(prop->_reply);
+
+  int name_len = strlen(prop->name);
+  if(name_len == xcb_get_property_value_length(prop->_reply))
+    name_len--;
+
+  prop->class = prop->name + name_len + 1;
+
+  return 1;
+}
+
+void xcb_get_wm_class_reply_wipe(xcb_get_wm_class_reply_t *prop)
+{
+  free(prop->_reply);
+}
+
 /* WM_TRANSIENT_FOR */
 
 xcb_get_property_cookie_t

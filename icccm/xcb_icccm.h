@@ -244,6 +244,61 @@ void xcb_watch_wm_client_machine (xcb_property_handlers_t        *prophs,
                                   xcb_generic_property_handler_t handler,
                                   void                          *data);
 
+/* WM_CLASS */
+
+/**
+ * @brief WM_CLASS hint structure
+ */
+typedef struct {
+  /** Instance name */
+  char *name;
+  /** Class of application */
+  char *class;
+  /** Store reply to avoid memory allocation, should normally not be
+      used directly */
+  xcb_get_property_reply_t *_reply;
+} xcb_get_wm_class_reply_t;
+
+/**
+ * @brief Deliver a GetProperty request to the X server for WM_CLASS.
+ * @param c: The connection to the X server.
+ * @param window: Window X identifier.
+ * @return The request cookie.
+ */
+xcb_get_property_cookie_t xcb_get_wm_class(xcb_connection_t *c,
+                                           xcb_window_t window);
+
+/**
+ * @see xcb_get_wm_class()
+ */
+xcb_get_property_cookie_t xcb_get_wm_class_unchecked(xcb_connection_t *c,
+                                                     xcb_window_t window);
+
+/**
+ * @brief Fill given structure with the WM_CLASS property of a window.
+ * @param c: The connection to the X server.
+ * @param cookie: Request cookie.
+ * @param prop: WM_CLASS property value.
+ * @param e: Error if any.
+ * @return Return 1 on success, 0 otherwise.
+ *
+ * The parameter e supplied to this function must be NULL if
+ * xcb_get_wm_class_unchecked() is used.  Otherwise, it stores the
+ * error if any. prop structure members should be freed by
+ * xcb_get_wm_class_reply_wipe().
+ */
+uint8_t xcb_get_wm_class_reply(xcb_connection_t *c,
+                               xcb_get_property_cookie_t cookie,
+                               xcb_get_wm_class_reply_t *prop,
+                               xcb_generic_error_t **e);
+
+/**
+ * @brief Wipe prop structure members previously allocated by
+ *        xcb_get_wm_class_reply().
+ * @param prop: prop structure whose members is going to be freed.
+ */
+void xcb_get_wm_class_reply_wipe(xcb_get_wm_class_reply_t *prop);
+
 /* WM_TRANSIENT_FOR */
 
 /**
