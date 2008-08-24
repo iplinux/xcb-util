@@ -1,4 +1,4 @@
-xcb-util (0.2.1+git1-1.oi1) unstable; urgency=low
+xcb-util (0.2.1+git2-0.oi1) unstable; urgency=low
 
   * OpenInkpot build:
     - Updated Maintainer field.
