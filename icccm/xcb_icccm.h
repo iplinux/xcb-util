@@ -216,9 +216,38 @@ void xcb_watch_wm_client_machine (xcb_property_handlers_t        *prophs,
                                   void                          *data);
 
 /* WM_TRANSIENT_FOR */
-int xcb_get_wm_transient_for (xcb_connection_t *c,
-                              xcb_window_t      window,
-                              xcb_window_t      *prop_win);
+
+/**
+ * @brief Send request to get WM_TRANSIENT_FOR property of a window.
+ * @param c: The connection to the X server
+ * @param window: Window X identifier.
+ * @return The request cookie.
+ */
+xcb_get_property_cookie_t xcb_get_wm_transient_for(xcb_connection_t *c,
+                                                   xcb_window_t window);
+
+/**
+ * @see xcb_get_wm_transient_for_unchecked()
+ */
+xcb_get_property_cookie_t xcb_get_wm_transient_for_unchecked(xcb_connection_t *c,
+                                                             xcb_window_t window);
+
+/**
+ * @brief Fill given structure with the WM_TRANSIENT_FOR property of a window.
+ * @param c: The connection to the X server.
+ * @param cookie: Request cookie.
+ * @param prop: WM_TRANSIENT_FOR property value.
+ * @param e: Error if any.
+ * @return Return 1 on success, 0 otherwise.
+ *
+ * The parameter e supplied to this function must be NULL if
+ * xcb_get_wm_transient_for_unchecked() is used.  Otherwise, it stores
+ * the error if any.
+ */
+uint8_t xcb_get_wm_transient_for_reply(xcb_connection_t *c,
+                                       xcb_get_property_cookie_t cookie,
+                                       xcb_window_t *prop,
+                                       xcb_generic_error_t **e);
 
 /* WM_SIZE_HINTS */
 

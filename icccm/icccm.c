@@ -208,31 +208,37 @@ xcb_watch_wm_client_machine (xcb_property_handlers_t        *prophs,
 }
 
 /* WM_TRANSIENT_FOR */
-int
-xcb_get_wm_transient_for (xcb_connection_t *c,
-                          xcb_window_t      window,
-                          xcb_window_t      *prop_win)
+
+xcb_get_property_cookie_t
+xcb_get_wm_transient_for(xcb_connection_t *c, xcb_window_t window)
 {
-    xcb_get_property_cookie_t prop_q;
-    xcb_get_property_reply_t *prop_r;
+  return xcb_get_property(c, 0, window, WM_TRANSIENT_FOR, WINDOW, 0, 1);
+}
 
-    prop_q = xcb_get_property(c, 0, window, WM_TRANSIENT_FOR, WINDOW, 0, 1);
-    prop_r = xcb_get_property_reply(c, prop_q, NULL);
+xcb_get_property_cookie_t
+xcb_get_wm_transient_for_unchecked(xcb_connection_t *c, xcb_window_t window)
+{
+  return xcb_get_property_unchecked(c, 0, window, WM_TRANSIENT_FOR, WINDOW, 0, 1);
+}
 
-    if(!prop_r)
-        return 0;
+uint8_t
+xcb_get_wm_transient_for_reply(xcb_connection_t *c,
+                               xcb_get_property_cookie_t cookie,
+                               xcb_window_t *prop,
+                               xcb_generic_error_t **e)
+{
+  xcb_get_property_reply_t *reply = xcb_get_property_reply(c, cookie, e);
 
-    if(prop_r->type != WINDOW || prop_r->format != 32 || !prop_r->length)
-    {
-        *prop_win = XCB_NONE;
-        free(prop_r);
-        return 0;
-    }
+  if(!reply || reply->type != WINDOW || reply->format != 32 || !reply->length)
+  {
+    free(reply);
+    return 0;
+  }
 
-    *prop_win = *((xcb_window_t *) xcb_get_property_value(prop_r));
-    free(prop_r);
+  *prop = *((xcb_window_t *) xcb_get_property_value(reply));
 
-    return 1;
+  free(reply);
+  return 1;
 }
 
 /* WM_SIZE_HINTS */
