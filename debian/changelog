@@ -1,3 +1,11 @@
+xcb-util (0.2.1+git1-1.oi1) unstable; urgency=low
+
+  * OpenInkpot build:
+    - Updated Maintainer field.
+    - Updated sections.
+
+ -- Mikhail Gusarov <dottedmag@dottedmag.net>  Mon, 25 Aug 2008 04:26:20 +0700
+
 xcb-util (0.2.1+git1-1) unstable; urgency=low
 
   * New git snapshot
