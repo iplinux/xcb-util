@@ -4,18 +4,72 @@
 #include <xcb/xcb.h>
 #include "xcb_property.h"
 
-
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-int  xcb_get_text_property (xcb_connection_t *c,
-                            xcb_window_t     window,
-                            xcb_atom_t       property,
-                            uint8_t          *format,
-                            xcb_atom_t       *encoding,
-                            uint32_t         *name_len,
-                            char             **name);
+/**
+ * @brief TextProperty reply structure.
+ */
+typedef struct {
+  /** Store reply to avoid memory allocation, should normally not be
+      used directly */
+  xcb_get_property_reply_t *_reply;
+  /** Encoding used */
+  xcb_atom_t encoding;
+  /** Length of the name field above */
+  uint32_t name_len;
+  /** Property value */
+  char *name;
+  /** Format, may be 8, 16 or 32 */
+  uint8_t format;
+} xcb_get_text_property_reply_t;
+
+/**
+ * @brief Deliver a GetProperty request to the X server.
+ * @param c: The connection to the X server.
+ * @param window: Window X identifier.
+ * @param property: Property atom to get.
+ * @return The request cookie.
+ *
+ * Allow to get a window property, in most case you might want to use
+ * above functions to get an ICCCM property for a given window.
+ */
+xcb_get_property_cookie_t xcb_get_text_property(xcb_connection_t *c,
+                                                xcb_window_t window,
+                                                xcb_atom_t property);
+
+/**
+ * @see xcb_get_text_property()
+ */
+xcb_get_property_cookie_t xcb_get_text_property_unchecked(xcb_connection_t *c,
+                                                          xcb_window_t window,
+                                                          xcb_atom_t property);
+
+/**
+ * @brief Fill given structure with the property value of a window.
+ * @param c: The connection to the X server.
+ * @param cookie: TextProperty request cookie.
+ * @param prop: TextProperty reply which is to be filled.
+ * @param e: Error if any.
+ * @return Return 1 on success, 0 otherwise.
+ *
+ * The parameter e supplied to this function must be NULL if
+ * xcb_get_text_property_unchecked() is used.  Otherwise, it stores
+ * the error if any.  prop structure members should be freed by
+ * xcb_get_text_property_reply_wipe().
+ */
+uint8_t xcb_get_text_property_reply(xcb_connection_t *c,
+                                    xcb_get_property_cookie_t cookie,
+                                    xcb_get_text_property_reply_t *prop,
+                                    xcb_generic_error_t **e);
+
+/**
+ * @brief Wipe prop structure members previously allocated by
+ *        xcb_get_text_property_reply().
+ * @param prop: prop structure whose members is going to be freed.
+ */
+void xcb_get_text_property_reply_wipe(xcb_get_text_property_reply_t *prop);
 
 /* WM_NAME */
 
@@ -31,12 +85,34 @@ void xcb_set_wm_name (xcb_connection_t *c,
                       uint32_t          name_len,
                       const char       *name);
 
-int  xcb_get_wm_name (xcb_connection_t *c,
-                      xcb_window_t      window,
-                      uint8_t          *format,
-                      xcb_atom_t       *encoding,
-                      uint32_t         *name_len,
-                      char            **name);
+/**
+ * @brief Deliver a GetProperty request to the X server for WM_NAME.
+ * @param c: The connection to the X server.
+ * @param window: Window X identifier.
+ * @return The request cookie.
+ */
+xcb_get_property_cookie_t xcb_get_wm_name(xcb_connection_t *c,
+                                          xcb_window_t window);
+
+/**
+ * @see xcb_get_wm_name()
+ */
+xcb_get_property_cookie_t xcb_get_wm_name_unchecked(xcb_connection_t *c,
+                                                    xcb_window_t window);
+
+/**
+ * @brief Fill given structure with the WM_NAME property of a window.
+ * @param c: The connection to the X server.
+ * @param cookie: Request cookie.
+ * @param prop: WM_NAME property value.
+ * @param e: Error if any.
+ * @see xcb_get_text_property_reply()
+ * @return Return 1 on success, 0 otherwise.
+ */
+uint8_t xcb_get_wm_name_reply(xcb_connection_t *c,
+                              xcb_get_property_cookie_t cookie,
+                              xcb_get_text_property_reply_t *prop,
+                              xcb_generic_error_t **e);
 
 void xcb_watch_wm_name (xcb_property_handlers_t        *prophs,
                         uint32_t                       long_len,
@@ -57,12 +133,34 @@ void xcb_set_wm_icon_name (xcb_connection_t *c,
                            uint32_t          name_len,
                            const char       *name);
 
-int  xcb_get_wm_icon_name (xcb_connection_t *c,
-                           xcb_window_t      window,
-                           uint8_t          *format,
-                           xcb_atom_t       *encoding,
-                           uint32_t         *name_len,
-                           char            **name);
+/**
+ * @brief Send request to get WM_ICON_NAME property of a window.
+ * @param c: The connection to the X server.
+ * @param window: Window X identifier.
+ * @return The request cookie.
+ */
+xcb_get_property_cookie_t xcb_get_wm_icon_name(xcb_connection_t *c,
+                                               xcb_window_t window);
+
+/**
+  * @see xcb_get_wm_icon_name()
+  */
+xcb_get_property_cookie_t xcb_get_wm_icon_name_unchecked(xcb_connection_t *c,
+                                                         xcb_window_t window);
+
+/**
+ * @brief Fill given structure with the WM_ICON_NAME property of a window.
+ * @param c: The connection to the X server.
+ * @param cookie: Request cookie.
+ * @param prop: WM_ICON_NAME property value.
+ * @param e: Error if any.
+ * @see xcb_get_text_property_reply()
+ * @return Return 1 on success, 0 otherwise.
+ */
+uint8_t xcb_get_wm_icon_name_reply(xcb_connection_t *c,
+                                   xcb_get_property_cookie_t cookie,
+                                   xcb_get_text_property_reply_t *prop,
+                                   xcb_generic_error_t **e);
 
 void xcb_watch_wm_icon_name (xcb_property_handlers_t        *prophs,
                              uint32_t                       long_len,
@@ -83,12 +181,34 @@ void xcb_set_wm_client_machine (xcb_connection_t *c,
                                 uint32_t          name_len,
                                 const char       *name);
 
-int  xcb_get_wm_client_machine (xcb_connection_t *c,
-                                xcb_window_t      window,
-                                uint8_t          *format,
-                                xcb_atom_t       *encoding,
-                                uint32_t         *name_len,
-                                char            **name);
+/**
+ * @brief Send request to get WM_CLIENT_MACHINE property of a window.
+ * @param c: The connection to the X server.
+ * @param window: Window X identifier.
+ * @return The request cookie.
+ */
+xcb_get_property_cookie_t xcb_get_wm_client_machine(xcb_connection_t *c,
+                                                    xcb_window_t window);
+
+/**
+ * @see xcb_get_wm_client_machine()
+ */
+xcb_get_property_cookie_t xcb_get_wm_client_machine_unchecked(xcb_connection_t *c,
+                                                              xcb_window_t window);
+
+/**
+ * @brief Fill given structure with the WM_CLIENT_MACHINE property of a window.
+ * @param c: The connection to the X server.
+ * @param cookie: Request cookie.
+ * @param prop: WM_CLIENT_MACHINE property value.
+ * @param e: Error if any.
+ * @see xcb_get_text_property_reply()
+ * @return Return 1 on success, 0 otherwise.
+ */
+uint8_t xcb_get_wm_client_machine_reply(xcb_connection_t *c,
+                                        xcb_get_property_cookie_t cookie,
+                                        xcb_get_text_property_reply_t *prop,
+                                        xcb_generic_error_t **e);
 
 void xcb_watch_wm_client_machine (xcb_property_handlers_t        *prophs,
                                   uint32_t                       long_len,

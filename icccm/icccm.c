@@ -1,39 +1,48 @@
 #include <stdlib.h>
+#include <limits.h>
 #include <string.h>
+
 #include "xcb_icccm.h"
 #include "xcb_atom.h"
 
-
-int
+xcb_get_property_cookie_t
 xcb_get_text_property(xcb_connection_t *c,
-                      xcb_window_t      window,
-                      xcb_atom_t        property,
-                      uint8_t          *format,
-                      xcb_atom_t       *encoding,
-                      uint32_t         *name_len,
-                      char            **name)
+                      xcb_window_t window,
+                      xcb_atom_t property)
 {
-	xcb_get_property_cookie_t cookie;
-	xcb_get_property_reply_t *reply;
+  return xcb_get_any_property(c, 0, window, property, UINT_MAX);
+}
 
-	cookie = xcb_get_any_property(c, 0, window, property, 128);
-	reply = xcb_get_property_reply(c, cookie, 0);
-	if(!reply)
-		return 0;
-	*format = reply->format;
-	*encoding = reply->type;
-	*name_len = xcb_get_property_value_length(reply) * *format / 8;
-	if(reply->bytes_after)
-	{
-		cookie = xcb_get_property(c, 0, window, property, reply->type, 0, *name_len);
-		free(reply);
-		reply = xcb_get_property_reply(c, cookie, 0);
-		if(!reply)
-			return 0;
-	}
-	memmove(reply, xcb_get_property_value(reply), *name_len);
-	*name = (char *) reply;
-	return 1;
+xcb_get_property_cookie_t
+xcb_get_text_property_unchecked(xcb_connection_t *c,
+                                xcb_window_t window,
+                                xcb_atom_t property)
+{
+  return xcb_get_any_property_unchecked(c, 0, window, property, UINT_MAX);
+}
+
+uint8_t
+xcb_get_text_property_reply(xcb_connection_t *c,
+                            xcb_get_property_cookie_t cookie,
+                            xcb_get_text_property_reply_t *prop,
+                            xcb_generic_error_t **e)
+{
+  xcb_get_property_reply_t *reply = xcb_get_property_reply(c, cookie, e);
+  if(!reply)
+    return 0;
+
+  prop->_reply = reply;
+  prop->encoding = prop->_reply->type;
+  prop->format = prop->_reply->format;
+  prop->name_len = xcb_get_property_value_length(prop->_reply) * prop->format >> 3;
+  prop->name = xcb_get_property_value(prop->_reply);
+
+  return 1;
+}
+
+void xcb_get_text_property_reply_wipe(xcb_get_text_property_reply_t *prop)
+{
+  free(prop->_reply);
 }
 
 /* WM_NAME */
@@ -58,15 +67,27 @@ xcb_set_wm_name (xcb_connection_t *c,
 	xcb_change_property(c, XCB_PROP_MODE_REPLACE, window, WM_NAME, encoding, 8, name_len, name);
 }
 
-int
-xcb_get_wm_name (xcb_connection_t *c,
-                 xcb_window_t      window,
-                 uint8_t          *format,
-                 xcb_atom_t       *encoding,
-                 uint32_t         *name_len,
-                 char            **name)
+xcb_get_property_cookie_t
+xcb_get_wm_name(xcb_connection_t *c,
+                xcb_window_t window)
 {
-	return xcb_get_text_property(c, window, WM_NAME, format, encoding, name_len, name);
+  return xcb_get_text_property(c, window, WM_NAME);
+}
+
+xcb_get_property_cookie_t
+xcb_get_wm_name_unchecked(xcb_connection_t *c,
+                          xcb_window_t window)
+{
+  return xcb_get_text_property_unchecked(c, window, WM_NAME);
+}
+
+uint8_t
+xcb_get_wm_name_reply(xcb_connection_t *c,
+                      xcb_get_property_cookie_t cookie,
+                      xcb_get_text_property_reply_t *prop,
+                      xcb_generic_error_t **e)
+{
+  return xcb_get_text_property_reply(c, cookie, prop, e);
 }
 
 void
@@ -100,15 +121,27 @@ xcb_set_wm_icon_name (xcb_connection_t *c,
 	xcb_change_property(c, XCB_PROP_MODE_REPLACE, window, WM_ICON_NAME, encoding, 8, name_len, name);
 }
 
-int
-xcb_get_wm_icon_name (xcb_connection_t *c,
-                      xcb_window_t      window,
-                      uint8_t          *format,
-                      xcb_atom_t       *encoding,
-                      uint32_t         *name_len,
-                      char            **name)
+xcb_get_property_cookie_t
+xcb_get_wm_icon_name(xcb_connection_t *c,
+                     xcb_window_t window)
 {
-	return xcb_get_text_property(c, window, WM_ICON_NAME, format, encoding, name_len, name);
+  return xcb_get_text_property(c, window, WM_ICON_NAME);
+}
+
+xcb_get_property_cookie_t
+xcb_get_wm_icon_name_unchecked(xcb_connection_t *c,
+                               xcb_window_t window)
+{
+  return xcb_get_text_property_unchecked(c, window, WM_ICON_NAME);
+}
+
+uint8_t
+xcb_get_wm_icon_name_reply(xcb_connection_t *c,
+                           xcb_get_property_cookie_t cookie,
+                           xcb_get_text_property_reply_t *prop,
+                           xcb_generic_error_t **e)
+{
+  return xcb_get_text_property_reply(c, cookie, prop, e);
 }
 
 void
@@ -142,15 +175,27 @@ xcb_set_wm_client_machine (xcb_connection_t *c,
 	xcb_change_property(c, XCB_PROP_MODE_REPLACE, window, WM_CLIENT_MACHINE, encoding, 8, name_len, name);
 }
 
-int
-xcb_get_wm_client_machine (xcb_connection_t *c,
-                           xcb_window_t      window,
-                           uint8_t          *format,
-                           xcb_atom_t       *encoding,
-                           uint32_t         *name_len,
-                           char            **name)
+xcb_get_property_cookie_t
+xcb_get_wm_client_machine(xcb_connection_t *c,
+                          xcb_window_t window)
 {
-	return xcb_get_text_property(c, window, WM_CLIENT_MACHINE, format, encoding, name_len, name);
+  return xcb_get_text_property(c, window, WM_CLIENT_MACHINE);
+}
+
+xcb_get_property_cookie_t
+xcb_get_wm_client_machine_unchecked(xcb_connection_t *c,
+                                    xcb_window_t window)
+{
+  return xcb_get_text_property_unchecked(c, window, WM_CLIENT_MACHINE);
+}
+
+uint8_t
+xcb_get_wm_client_machine_reply(xcb_connection_t *c,
+                                xcb_get_property_cookie_t cookie,
+                                xcb_get_text_property_reply_t *prop,
+                                xcb_generic_error_t **e)
+{
+  return xcb_get_text_property_reply(c, cookie, prop, e);
 }
 
 void
