@@ -252,16 +252,16 @@ uint8_t xcb_get_wm_transient_for_reply(xcb_connection_t *c,
 /* WM_SIZE_HINTS */
 
 typedef enum {
-	XCB_SIZE_US_POSITION_HINT = 1 << 0,
-	XCB_SIZE_US_SIZE_HINT = 1 << 1,
-	XCB_SIZE_P_POSITION_HINT = 1 << 2,
-	XCB_SIZE_P_SIZE_HINT = 1 << 3,
-	XCB_SIZE_P_MIN_SIZE_HINT = 1 << 4,
-	XCB_SIZE_P_MAX_SIZE_HINT = 1 << 5,
-	XCB_SIZE_P_RESIZE_INC_HINT = 1 << 6,
-	XCB_SIZE_P_ASPECT_HINT = 1 << 7,
-	XCB_SIZE_BASE_SIZE_HINT = 1 << 8,
-	XCB_SIZE_P_WIN_GRAVITY_HINT = 1 << 9
+  XCB_SIZE_HINT_US_POSITION = 1 << 0,
+  XCB_SIZE_HINT_US_SIZE = 1 << 1,
+  XCB_SIZE_HINT_P_POSITION = 1 << 2,
+  XCB_SIZE_HINT_P_SIZE = 1 << 3,
+  XCB_SIZE_HINT_P_MIN_SIZE = 1 << 4,
+  XCB_SIZE_HINT_P_MAX_SIZE = 1 << 5,
+  XCB_SIZE_HINT_P_RESIZE_INC = 1 << 6,
+  XCB_SIZE_HINT_P_ASPECT = 1 << 7,
+  XCB_SIZE_HINT_BASE_SIZE = 1 << 8,
+  XCB_SIZE_HINT_P_WIN_GRAVITY = 1 << 9
 } xcb_size_hints_flags_t;
 
 /**
@@ -440,25 +440,25 @@ typedef struct {
 #define XCB_NUM_WM_HINTS_ELEMENTS 9 /* number of elements in this structure */
 
 typedef enum {
-    XCB_WM_WITHDRAWN_STATE = 0,
-    XCB_WM_NORMAL_STATE    = 1,
-    XCB_WM_ICONIC_STATE    = 3
+  XCB_WM_STATE_WITHDRAWN = 0,
+  XCB_WM_STATE_NORMAL = 1,
+  XCB_WM_STATE_ICONIC = 3
 } xcb_wm_state_t;
 
 typedef enum {
-        XCB_WM_INPUT_HINT         = (1L << 0),
-	XCB_WM_STATE_HINT         = (1L << 1),
-	XCB_WM_ICON_PIXMAP_HINT   = (1L << 2),
-	XCB_WM_ICON_WINDOW_HINT   = (1L << 3),
-	XCB_WM_ICON_POSITION_HINT = (1L << 4),
-	XCB_WM_ICON_MASK_HINT     = (1L << 5),
-	XCB_WM_WINDOW_GROUP_HINT  = (1L << 6),
-	XCB_WM_X_URGENCY_HINT     = (1L << 8)
+  XCB_WM_HINT_INPUT = (1L << 0),
+  XCB_WM_HINT_STATE = (1L << 1),
+  XCB_WM_HINT_ICON_PIXMAP = (1L << 2),
+  XCB_WM_HINT_ICON_WINDOW = (1L << 3),
+  XCB_WM_HINT_ICON_POSITION = (1L << 4),
+  XCB_WM_HINT_ICON_MASK = (1L << 5),
+  XCB_WM_HINT_WINDOW_GROUP = (1L << 6),
+  XCB_WM_HINT_X_URGENCY = (1L << 8)
 } xcb_wm_t;
 
-#define XCB_WM_ALL_HINTS (XCB_WM_INPUT_HINT       | XCB_WM_STATE_HINT         | XCB_WM_ICON_PIXMAP_HINT | \
-                          XCB_WM_ICON_WINDOW_HINT | XCB_WM_ICON_POSITION_HINT | XCB_WM_ICON_MASK_HINT   | \
-                          XCB_WM_WINDOW_GROUP_HINT)
+#define XCB_WM_ALL_HINTS (XCB_WM_HINT_INPUT | XCB_WM_HINT_STATE | XCB_WM_HINT_ICON_PIXMAP | \
+                          XCB_WM_HINT_ICON_WINDOW | XCB_WM_HINT_ICON_POSITION | XCB_WM_HINT_ICON_MASK | \
+                          XCB_WM_HINT_WINDOW_GROUP)
 
 uint32_t xcb_wm_hints_get_urgency(xcb_wm_hints_t *hints);
 
