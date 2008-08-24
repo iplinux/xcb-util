@@ -452,85 +452,10 @@ xcb_get_wm_normal_hints_reply(xcb_connection_t *c,
 
 /* WM_HINTS */
 
-struct xcb_wm_hints_t {
-	int32_t      flags;           /* marks which fields in this structure are defined */
-	uint8_t      input;           /* does this application rely on the window manager
-					 to get keyboard input? */
-	int32_t      initial_state;   /* see below */
-	xcb_pixmap_t icon_pixmap;     /* pixmap to be used as icon */
-	xcb_window_t icon_window;     /* window to be used as icon */
-	int32_t      icon_x;          /* initial position of icon */
-	int32_t      icon_y;
-	xcb_pixmap_t icon_mask;       /* icon mask bitmap */
-	xcb_window_t window_group;    /* id of related window group */
-	/* this structure may be extended in the future */
-};
-
-xcb_wm_hints_t *
-xcb_alloc_wm_hints()
-{
-	return calloc(1, sizeof(xcb_wm_hints_t));
-}
-
-void
-xcb_free_wm_hints(xcb_wm_hints_t *hints)
-{
-	free(hints);
-}
-
-uint8_t
-xcb_wm_hints_get_input(xcb_wm_hints_t *hints)
-{
-        return hints->input;
-}
-
-xcb_pixmap_t
-xcb_wm_hints_get_icon_pixmap(xcb_wm_hints_t *hints)
-{
-        return hints->icon_pixmap;
-}
-
-xcb_pixmap_t
-xcb_wm_hints_get_icon_mask(xcb_wm_hints_t *hints)
-{
-        return hints->icon_mask;
-}
-
-xcb_window_t
-xcb_wm_hints_get_icon_window(xcb_wm_hints_t *hints)
-{
-        return hints->icon_window;
-}
-
-xcb_window_t
-xcb_wm_hints_get_window_group(xcb_wm_hints_t *hints)
-{
-        return hints->window_group;
-}
-
 uint32_t
 xcb_wm_hints_get_urgency(xcb_wm_hints_t *hints)
 {
        return (hints->flags & XCB_WM_X_URGENCY_HINT);
-}
-
-uint32_t
-xcb_wm_hints_get_flags(xcb_wm_hints_t *hints)
-{
-        return hints->flags;
-}
-
-void
-xcb_wm_hints_set_flags(xcb_wm_hints_t *hints,
-                       uint32_t flags)
-{
-        hints->flags = flags;
-}
-
-uint32_t
-xcb_wm_hints_get_initial_state(xcb_wm_hints_t *hints)
-{
-        return hints->initial_state;
 }
 
 void
@@ -617,40 +542,47 @@ xcb_set_wm_hints (xcb_connection_t *c,
 	xcb_change_property(c, XCB_PROP_MODE_REPLACE, window, WM_HINTS, WM_HINTS, 32, sizeof(*hints) / 4, hints);
 }
 
-xcb_wm_hints_t *
-xcb_get_wm_hints (xcb_connection_t *c,
-                  xcb_window_t      window)
+xcb_get_property_cookie_t xcb_get_wm_hints(xcb_connection_t *c,
+                                           xcb_window_t window)
 {
-	xcb_get_property_cookie_t cookie;
-	xcb_get_property_reply_t *rep = NULL;
-	xcb_wm_hints_t           *hints = NULL;
-	long                      length;
+  return xcb_get_property(c, 0, window, WM_HINTS, WM_HINTS, 0L,
+                          XCB_NUM_WM_HINTS_ELEMENTS);
+}
 
-	cookie = xcb_get_property (c, 0, window,
-			WM_HINTS, WM_HINTS,
-			0L, XCB_NUM_WM_HINTS_ELEMENTS);
-	rep = xcb_get_property_reply (c, cookie, 0);
-	if (!rep)
-		return NULL;
+xcb_get_property_cookie_t xcb_get_wm_hints_unchecked(xcb_connection_t *c,
+                                                     xcb_window_t window)
+{
+  return xcb_get_property_unchecked(c, 0, window, WM_HINTS, WM_HINTS, 0L,
+                                    XCB_NUM_WM_HINTS_ELEMENTS);
+}
 
-	length = xcb_get_property_value_length (rep);
-	if ((rep->type != WM_HINTS) ||
-	    (length < (XCB_NUM_WM_HINTS_ELEMENTS - 1)) ||
-	    (rep->format != 32))
-            goto bailout;
+uint8_t
+xcb_get_wm_hints_reply(xcb_connection_t *c,
+                       xcb_get_property_cookie_t cookie,
+                       xcb_wm_hints_t *hints,
+                       xcb_generic_error_t **e)
+{
+  xcb_get_property_reply_t *reply = xcb_get_property_reply(c, cookie, e);
+  if(!reply)
+    return 0;
 
-	hints = xcb_alloc_wm_hints();
-	if (!hints)
-            goto bailout;
+  int length = xcb_get_property_value_length(reply);
 
-	memcpy(hints, (xcb_size_hints_t *) xcb_get_property_value (rep),
-	       length * rep->format >> 3);
-	if (length < XCB_NUM_WM_HINTS_ELEMENTS)
-		hints->window_group = XCB_NONE;
+  if ((reply->type != WM_HINTS) ||
+      (length < (XCB_NUM_WM_HINTS_ELEMENTS - 1)) ||
+      (reply->format != 32))
+  {
+    free(reply);
+    return 0;
+  }
 
-    bailout:
-        free(rep);
-	return hints;
+  memcpy(hints, (xcb_size_hints_t *) xcb_get_property_value(reply),
+         length * reply->format >> 3);
+
+  if(length < XCB_NUM_WM_HINTS_ELEMENTS)
+    hints->window_group = XCB_NONE;
+
+  return 1;
 }
 
 /* WM_PROTOCOLS */

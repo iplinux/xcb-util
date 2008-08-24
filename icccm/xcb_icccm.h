@@ -414,7 +414,29 @@ uint8_t xcb_get_wm_normal_hints_reply(xcb_connection_t *c,
 
 /* WM_HINTS */
 
-typedef struct xcb_wm_hints_t xcb_wm_hints_t;
+/**
+ * @brief WM hints structure (may be extended in the future).
+ */
+typedef struct {
+  /** Marks which fields in this structure are defined */
+  int32_t flags;
+  /** Does this application rely on the window manager to get keyboard
+      input? */
+  uint8_t input;
+  /** See below */
+  int32_t initial_state;
+  /** Pixmap to be used as icon */
+  xcb_pixmap_t icon_pixmap;
+  /** Window to be used as icon */
+  xcb_window_t icon_window;
+  /** Initial position of icon */
+  int32_t icon_x, icon_y;
+  /** Icon mask bitmap */
+  xcb_pixmap_t icon_mask;
+  /* Identifier of related window group */
+  xcb_window_t window_group;
+} xcb_wm_hints_t;
+
 #define XCB_NUM_WM_HINTS_ELEMENTS 9 /* number of elements in this structure */
 
 typedef enum {
@@ -438,19 +460,7 @@ typedef enum {
                           XCB_WM_ICON_WINDOW_HINT | XCB_WM_ICON_POSITION_HINT | XCB_WM_ICON_MASK_HINT   | \
                           XCB_WM_WINDOW_GROUP_HINT)
 
-xcb_wm_hints_t *xcb_alloc_wm_hints();
-void            xcb_free_wm_hints          (xcb_wm_hints_t *hints);
-
-uint8_t      xcb_wm_hints_get_input        (xcb_wm_hints_t *hints);
-xcb_pixmap_t xcb_wm_hints_get_icon_pixmap  (xcb_wm_hints_t *hints);
-xcb_pixmap_t xcb_wm_hints_get_icon_mask    (xcb_wm_hints_t *hints);
-xcb_window_t xcb_wm_hints_get_icon_window  (xcb_wm_hints_t *hints);
-xcb_window_t xcb_wm_hints_get_window_group (xcb_wm_hints_t *hints);
-uint32_t     xcb_wm_hints_get_urgency      (xcb_wm_hints_t *hints);
-
-uint32_t xcb_wm_hints_get_flags(xcb_wm_hints_t *hints);
-void xcb_wm_hints_set_flags(xcb_wm_hints_t *hints, uint32_t flags);
-uint32_t xcb_wm_hints_get_initial_state(xcb_wm_hints_t *hints);
+uint32_t xcb_wm_hints_get_urgency(xcb_wm_hints_t *hints);
 
 void xcb_wm_hints_set_input        (xcb_wm_hints_t *hints, uint8_t input);
 void xcb_wm_hints_set_iconic       (xcb_wm_hints_t *hints);
@@ -471,8 +481,37 @@ void xcb_set_wm_hints (xcb_connection_t *c,
                        xcb_window_t      window,
                        xcb_wm_hints_t   *hints);
 
-xcb_wm_hints_t *xcb_get_wm_hints (xcb_connection_t *c,
-                                  xcb_window_t      window);
+/**
+ * @brief Send request to get WM_HINTS property of a window.
+ * @param c: The connection to the X server.
+ * @param window: Window X identifier.
+ * @return The request cookie.
+ */
+xcb_get_property_cookie_t xcb_get_wm_hints(xcb_connection_t *c,
+                                           xcb_window_t window);
+
+/**
+ * @see xcb_get_wm_hints()
+ */
+xcb_get_property_cookie_t xcb_get_wm_hints_unchecked(xcb_connection_t *c,
+                                                     xcb_window_t window);
+
+/**
+ * @brief Fill given structure with the WM_HINTS property of a window.
+ * @param c: The connection to the X server.
+ * @param cookie: Request cookie.
+ * @param hints: WM_HINTS property value.
+ * @param e: Error if any.
+ * @return Return 1 on success, 0 otherwise.
+ *
+ * The parameter e supplied to this function must be NULL if
+ * xcb_get_wm_hints_unchecked() is used.  Otherwise, it stores the
+ * error if any. The returned pointer should be freed.
+ */
+uint8_t xcb_get_wm_hints_reply(xcb_connection_t *c,
+                               xcb_get_property_cookie_t cookie,
+                               xcb_wm_hints_t *hints,
+                               xcb_generic_error_t **e);
 
 /* WM_PROTOCOLS */
 
