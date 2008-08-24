@@ -243,121 +243,6 @@ xcb_get_wm_transient_for_reply(xcb_connection_t *c,
 
 /* WM_SIZE_HINTS */
 
-struct xcb_size_hints_t {
-	uint32_t flags;
-	int32_t x, y, width, height;
-	int32_t min_width, min_height;
-	int32_t max_width, max_height;
-	int32_t width_inc, height_inc;
-	int32_t min_aspect_num, min_aspect_den;
-	int32_t max_aspect_num, max_aspect_den;
-	int32_t base_width, base_height;
-	uint32_t win_gravity;
-};
-
-xcb_size_hints_t *
-xcb_alloc_size_hints()
-{
-	return calloc(1, sizeof(xcb_size_hints_t));
-}
-
-void
-xcb_free_size_hints(xcb_size_hints_t *hints)
-{
-	free(hints);
-}
-
-void
-xcb_size_hints_get_position (xcb_size_hints_t *hints,
-                             int32_t          *x,
-                             int32_t          *y)
-{
-        *x = hints->x;
-        *y = hints->y;
-}
-
-void
-xcb_size_hints_get_size (xcb_size_hints_t *hints,
-                         int32_t          *width,
-                         int32_t          *height)
-{
-        *width = hints->width;
-        *height = hints->height;
-}
-
-void
-xcb_size_hints_get_min_size (xcb_size_hints_t *hints,
-                             int32_t          *min_width,
-                             int32_t          *min_height)
-{
-        *min_width = hints->min_width;
-        *min_height = hints->min_height;
-}
-
-void
-xcb_size_hints_get_max_size (xcb_size_hints_t *hints,
-                             int32_t          *max_width,
-                             int32_t          *max_height)
-{
-        *max_width = hints->max_width;
-        *max_height = hints->max_height;
-}
-
-void
-xcb_size_hints_get_increase (xcb_size_hints_t *hints,
-                             int32_t          *width_inc,
-                             int32_t          *height_inc)
-{
-        *width_inc = hints->width_inc;
-        *height_inc = hints->height_inc;
-}
-
-void
-xcb_size_hints_get_min_aspect (xcb_size_hints_t *hints,
-                               int32_t          *min_aspect_num,
-                               int32_t          *min_aspect_den)
-{
-        *min_aspect_num = hints->min_aspect_num;
-        *min_aspect_den = hints->min_aspect_den;
-}
-
-void
-xcb_size_hints_get_max_aspect (xcb_size_hints_t *hints,
-                               int32_t          *max_aspect_num,
-                               int32_t          *max_aspect_den)
-{
-        *max_aspect_num = hints->max_aspect_num;
-        *max_aspect_den = hints->max_aspect_den;
-}
-
-void
-xcb_size_hints_get_base_size (xcb_size_hints_t *hints,
-                              int32_t          *base_width,
-                              int32_t          *base_height)
-{
-        *base_width = hints->base_width;
-        *base_height = hints->base_height;
-}
-
-uint32_t
-xcb_size_hints_get_win_gravity (xcb_size_hints_t *hints)
-{
-        return hints->win_gravity;
-}
-
-uint32_t
-xcb_size_hints_get_flags (xcb_size_hints_t *hints)
-{
-	return hints->flags;
-}
-
-void
-xcb_size_hints_set_flags (xcb_size_hints_t *hints,
-                          uint32_t flags)
-{
-	hints->flags = flags;
-}
-
 void
 xcb_size_hints_set_position (xcb_size_hints_t *hints,
                              int               user_specified,
@@ -468,59 +353,62 @@ xcb_set_wm_size_hints (xcb_connection_t *c,
 	xcb_change_property(c, XCB_PROP_MODE_REPLACE, window, property, WM_SIZE_HINTS, 32, sizeof(*hints) / 4, hints);
 }
 
-xcb_size_hints_t *
-xcb_get_wm_size_hints (xcb_connection_t *c,
-                       xcb_window_t      window,
-                       xcb_atom_t        property,
-                       long             *supplied)
+xcb_get_property_cookie_t
+xcb_get_wm_size_hints(xcb_connection_t *c, xcb_window_t window,
+                      xcb_atom_t property)
 {
-        xcb_get_property_cookie_t cookie;
-	xcb_get_property_reply_t  *rep;
-	xcb_size_hints_t          *hints = NULL;
-	long                      length;
+  /* NumPropSizeElements = 18 (ICCCM version 1). */
+  return xcb_get_property(c, 0, window, property, WM_SIZE_HINTS, 0L, 18);
+}
 
-	cookie = xcb_get_property (c, 0, window,
-				 property, WM_SIZE_HINTS,
-				 0L, 18); /* NumPropSizeElements = 18 (ICCCM version 1) */
-	rep = xcb_get_property_reply (c, cookie, 0);
-	if (!rep)
-		return NULL;
+xcb_get_property_cookie_t
+xcb_get_wm_size_hints_unchecked(xcb_connection_t *c, xcb_window_t window,
+                                xcb_atom_t property)
+{
+  return xcb_get_property_unchecked(c, 0, window, property, WM_SIZE_HINTS,
+                                    0L, 18);
+}
 
-	length = xcb_get_property_value_length (rep);
-	if ((rep->type == WM_SIZE_HINTS) &&
-	    ((rep->format == 8)  ||
-	     (rep->format == 16) ||
-	     (rep->format == 32)) &&
-	    (length >= 15)) /* OldNumPropSizeElements = 15 (pre-ICCCM) */
-	{
-		hints = xcb_alloc_size_hints();
-		if (!hints)
-		{
-		    free (rep);
-		    return NULL;
-		}
+uint8_t
+xcb_get_wm_size_hints_reply(xcb_connection_t *c, xcb_get_property_cookie_t cookie,
+                            xcb_size_hints_t *hints, xcb_generic_error_t **e)
+{
+  xcb_get_property_reply_t *reply = reply = xcb_get_property_reply(c, cookie, e);
+  if(!reply)
+    return 0;
 
-		memcpy (hints, (xcb_size_hints_t *) xcb_get_property_value (rep),
-			length * rep->format >> 3);
+  int length = xcb_get_property_value_length(reply);
 
-		*supplied = (XCB_SIZE_US_POSITION_HINT | XCB_SIZE_US_SIZE_HINT |
-			     XCB_SIZE_P_POSITION_HINT  | XCB_SIZE_P_SIZE_HINT  |
-			     XCB_SIZE_P_MIN_SIZE_HINT  | XCB_SIZE_P_MAX_SIZE_HINT |
-			     XCB_SIZE_P_RESIZE_INC_HINT | XCB_SIZE_P_ASPECT_HINT);
-		if (length >= 18) /* NumPropSizeElements = 18 (ICCCM version 1) */
-		        *supplied |= (XCB_SIZE_BASE_SIZE_HINT | XCB_SIZE_P_WIN_GRAVITY_HINT);
-		else
-		{
-		        hints->base_width  = 0;
-			hints->base_height = 0;
-			hints->win_gravity = 0;
-		}
-		hints->flags &= (*supplied);	/* get rid of unwanted bits */
-	}
+  if (!(reply->type == WM_SIZE_HINTS &&
+        (reply->format == 8  || reply->format == 16 ||
+         reply->format == 32) &&
+        /* OldNumPropSizeElements = 15 (pre-ICCCM) */
+        length >= 15))
+  {
+    free(reply);
+    return 0;
+  }
 
-	free (rep);
+  memcpy(hints, (xcb_size_hints_t *) xcb_get_property_value (reply),
+         length * reply->format >> 3);
 
-	return hints;
+  hints->flags = (XCB_SIZE_US_POSITION_HINT | XCB_SIZE_US_SIZE_HINT |
+                  XCB_SIZE_P_POSITION_HINT | XCB_SIZE_P_SIZE_HINT |
+                  XCB_SIZE_P_MIN_SIZE_HINT | XCB_SIZE_P_MAX_SIZE_HINT |
+                  XCB_SIZE_P_RESIZE_INC_HINT | XCB_SIZE_P_ASPECT_HINT);
+
+  /* NumPropSizeElements = 18 (ICCCM version 1) */
+  if(length >= 18)
+    hints->flags |= (XCB_SIZE_BASE_SIZE_HINT | XCB_SIZE_P_WIN_GRAVITY_HINT);
+  else
+  {
+    hints->base_width = 0;
+    hints->base_height = 0;
+    hints->win_gravity = 0;
+  }
+
+  free(reply);
+  return 1;
 }
 
 /* WM_NORMAL_HINTS */
@@ -541,12 +429,25 @@ xcb_set_wm_normal_hints (xcb_connection_t *c,
 	xcb_set_wm_size_hints(c, window, WM_NORMAL_HINTS, hints);
 }
 
-xcb_size_hints_t *
-xcb_get_wm_normal_hints (xcb_connection_t *c,
-                         xcb_window_t      window,
-                         long             *supplied)
+xcb_get_property_cookie_t
+xcb_get_wm_normal_hints(xcb_connection_t *c, xcb_window_t window)
 {
-	return (xcb_get_wm_size_hints (c, window, WM_NORMAL_HINTS, supplied));
+  return xcb_get_wm_size_hints(c, window, WM_NORMAL_HINTS);
+}
+
+xcb_get_property_cookie_t
+xcb_get_wm_normal_hints_unchecked(xcb_connection_t *c, xcb_window_t window)
+{
+  return xcb_get_wm_size_hints_unchecked(c, window, WM_NORMAL_HINTS);
+}
+
+uint8_t
+xcb_get_wm_normal_hints_reply(xcb_connection_t *c,
+                              xcb_get_property_cookie_t cookie,
+                              xcb_size_hints_t *hints,
+                              xcb_generic_error_t **e)
+{
+  return xcb_get_wm_size_hints_reply(c, cookie, hints, e);
 }
 
 /* WM_HINTS */

@@ -264,42 +264,31 @@ typedef enum {
 	XCB_SIZE_P_WIN_GRAVITY_HINT = 1 << 9
 } xcb_size_hints_flags_t;
 
-typedef struct xcb_size_hints_t xcb_size_hints_t;
-
-xcb_size_hints_t *xcb_alloc_size_hints   ();
-
-void       xcb_free_size_hints           (xcb_size_hints_t *hints);
-
-void       xcb_size_hints_get_position   (xcb_size_hints_t *hints,
-                                          int32_t          *x,
-                                          int32_t          *y);
-void       xcb_size_hints_get_size       (xcb_size_hints_t *hints,
-                                          int32_t          *width,
-                                          int32_t          *height);
-void       xcb_size_hints_get_min_size   (xcb_size_hints_t *hints,
-                                          int32_t          *min_width,
-                                          int32_t          *min_height);
-void       xcb_size_hints_get_max_size   (xcb_size_hints_t *hints,
-                                          int32_t          *max_width,
-                                          int32_t          *max_height);
-void       xcb_size_hints_get_increase   (xcb_size_hints_t *hints,
-                                          int32_t          *width_inc,
-                                          int32_t          *height_inc);
-void       xcb_size_hints_get_min_aspect (xcb_size_hints_t *hints,
-                                          int32_t          *min_aspect_num,
-                                          int32_t          *min_aspect_den);
-void       xcb_size_hints_get_max_aspect (xcb_size_hints_t *hints,
-                                          int32_t          *max_aspect_num,
-                                          int32_t          *max_aspect_den);
-void       xcb_size_hints_get_base_size  (xcb_size_hints_t *hints,
-                                          int32_t          *base_width,
-                                          int32_t          *base_height);
-uint32_t   xcb_size_hints_get_win_gravity (xcb_size_hints_t *hints);
-
-uint32_t   xcb_size_hints_get_flags	  (xcb_size_hints_t *hints);
-
-void	   xcb_size_hints_set_flags	  (xcb_size_hints_t *hints,
-					   uint32_t flags);
+/**
+ * @brief Size hints structure.
+ */
+typedef struct {
+  /** User specified flags */
+  uint32_t flags;
+  /** User-specified position */
+  int32_t x, y;
+  /** User-specified size */
+  int32_t width, height;
+  /** Program-specified minimum size */
+  int32_t min_width, min_height;
+  /** Program-specified maximum size */
+  int32_t max_width, max_height;
+  /** Program-specified resize increments */
+  int32_t width_inc, height_inc;
+  /** Program-specified minimum aspect ratios */
+  int32_t min_aspect_num, min_aspect_den;
+  /** Program-specified maximum aspect ratios */
+  int32_t max_aspect_num, max_aspect_den;
+  /** Program-specified base size */
+  int32_t base_width, base_height;
+  /** Program-specified window gravity */
+  uint32_t win_gravity;
+} xcb_size_hints_t;
 
 void       xcb_size_hints_set_position   (xcb_size_hints_t *hints,
                                           int               user_specified,
@@ -346,10 +335,40 @@ void       xcb_set_wm_size_hints         (xcb_connection_t     *c,
                                           xcb_atom_t            property,
                                           xcb_size_hints_t     *hints);
 
-xcb_size_hints_t  *xcb_get_wm_size_hints (xcb_connection_t     *c,
-                                          xcb_window_t          window,
-                                          xcb_atom_t            property,
-                                          long                 *supplied);
+/**
+ * @brief Send request to get size hints structure for the named property.
+ * @param c: The connection to the X server.
+ * @param window: Window X identifier.
+ * @param property: Specify the property name.
+ * @return The request cookie.
+ */
+xcb_get_property_cookie_t xcb_get_wm_size_hints(xcb_connection_t *c,
+                                                xcb_window_t window,
+                                                xcb_atom_t property);
+
+/**
+ * @see xcb_get_wm_size_hints()
+ */
+xcb_get_property_cookie_t xcb_get_wm_size_hints_unchecked(xcb_connection_t *c,
+                                                          xcb_window_t window,
+                                                          xcb_atom_t property);
+
+/**
+ * @brief Fill given structure with the size hints of the named property.
+ * @param c: The connection to the X server.
+ * @param cookie: Request cookie.
+ * @param hints: Size hints structure.
+ * @param e: Error if any.
+ * @return Return 1 on success, 0 otherwise.
+ *
+ * The parameter e supplied to this function must be NULL if
+ * xcb_get_wm_size_hints_unchecked() is used.  Otherwise, it stores
+ * the error if any. The returned pointer should be freed.
+ */
+uint8_t xcb_get_wm_size_hints_reply(xcb_connection_t *c,
+                                    xcb_get_property_cookie_t cookie,
+                                    xcb_size_hints_t *hints,
+                                    xcb_generic_error_t **e);
 
 /* WM_NORMAL_HINTS */
 
@@ -361,9 +380,37 @@ void xcb_set_wm_normal_hints (xcb_connection_t *c,
                               xcb_window_t      window,
                               xcb_size_hints_t *hints);
 
-xcb_size_hints_t *xcb_get_wm_normal_hints (xcb_connection_t *c,
-					   xcb_window_t	     window,
-					   long		    *supplied);
+/**
+ * @brief Send request to get WM_NORMAL_HINTS property of a window.
+ * @param c: The connection to the X server.
+ * @param window: Window X identifier.
+ * @return The request cookie.
+ */
+xcb_get_property_cookie_t xcb_get_wm_normal_hints(xcb_connection_t *c,
+                                                  xcb_window_t window);
+
+/**
+ * @see xcb_get_wm_normal_hints()
+ */
+xcb_get_property_cookie_t xcb_get_wm_normal_hints_unchecked(xcb_connection_t *c,
+                                                            xcb_window_t window);
+
+/**
+ * @brief Fill given structure with the WM_NORMAL_HINTS property of a window.
+ * @param c: The connection to the X server.
+ * @param cookie: Request cookie.
+ * @param hints: WM_NORMAL_HINTS property value.
+ * @param e: Error if any.
+ * @return Return 1 on success, 0 otherwise.
+ *
+ * The parameter e supplied to this function must be NULL if
+ * xcb_get_wm_normal_hints_unchecked() is used.  Otherwise, it stores
+ * the error if any. The returned pointer should be freed.
+ */
+uint8_t xcb_get_wm_normal_hints_reply(xcb_connection_t *c,
+                                      xcb_get_property_cookie_t cookie,
+                                      xcb_size_hints_t *hints,
+                                      xcb_generic_error_t **e);
 
 /* WM_HINTS */
 
