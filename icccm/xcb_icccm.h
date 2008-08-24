@@ -525,10 +525,60 @@ void xcb_set_wm_protocols (xcb_connection_t *c,
                            uint32_t          list_len,
                            xcb_atom_t       *list);
 
-int  xcb_get_wm_protocols (xcb_connection_t *c,
-                           xcb_window_t      window,
-                           uint32_t         *list_len,
-                           xcb_atom_t      **list);
+/**
+ * @brief WM_PROTOCOLS structure.
+ */
+typedef struct {
+  /** Length of the atoms list */
+  uint32_t atoms_len;
+  /** Atoms list */
+  xcb_atom_t *atoms;
+  /** Store reply to avoid memory allocation, should normally not be
+      used directly */
+  xcb_get_property_reply_t *_reply;
+} xcb_get_wm_protocols_reply_t;
+
+/**
+ * @brief Send request to get WM_PROTOCOLS property of a given window.
+ * @param c: The connection to the X server.
+ * @param window: Window X identifier.
+ * @return The request cookie.
+ */
+xcb_get_property_cookie_t xcb_get_wm_protocols(xcb_connection_t *c,
+                                               xcb_window_t window,
+                                               xcb_atom_t wm_protocol_atom);
+
+/**
+ * @see xcb_get_wm_protocols()
+ */
+xcb_get_property_cookie_t xcb_get_wm_protocols_unchecked(xcb_connection_t *c,
+                                                         xcb_window_t window,
+                                                         xcb_atom_t wm_protocol_atom);
+
+/**
+ * @brief Fill the given structure with the WM_PROTOCOLS property of a window.
+ * @param c: The connection to the X server.
+ * @param cookie: Request cookie.
+ * @param protocols: WM_PROTOCOLS property value.
+ * @param e: Error if any.
+ * @return Return 1 on success, 0 otherwise.
+ *
+ * The parameter e supplied to this function must be NULL if
+ * xcb_get_wm_protocols_unchecked() is used.  Otherwise, it stores the
+ * error if any. protocols structure members should be freed by
+ * xcb_get_wm_protocols_reply_wipe().
+ */
+uint8_t xcb_get_wm_protocols_reply(xcb_connection_t *c,
+                                   xcb_get_property_cookie_t cookie,
+                                   xcb_get_wm_protocols_reply_t *protocols,
+                                   xcb_generic_error_t **e);
+
+/**
+ * @brief Wipe protocols structure members previously allocated by
+ *        xcb_get_wm_protocols_reply().
+ * @param protocols: protocols structure whose members is going to be freed.
+ */
+void xcb_get_wm_protocols_reply_wipe(xcb_get_wm_protocols_reply_t *protocols);
 
 #ifdef __cplusplus
 }

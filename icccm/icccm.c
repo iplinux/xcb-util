@@ -617,44 +617,46 @@ xcb_set_wm_protocols (xcb_connection_t *c,
 	xcb_change_property(c, XCB_PROP_MODE_REPLACE, window, WM_PROTOCOLS, ATOM, 32, list_len, list);
 }
 
-int
-xcb_get_wm_protocols (xcb_connection_t *c,
-                      xcb_window_t      window,
-                      uint32_t         *list_len,
-                      xcb_atom_t      **list)
+xcb_get_property_cookie_t
+xcb_get_wm_protocols(xcb_connection_t *c,
+                     xcb_window_t window,
+                     xcb_atom_t wm_protocol_atom)
 {
-        xcb_get_property_cookie_t cookie;
-	xcb_get_property_reply_t   *rep;
-	xcb_atom_t              property;
+  return xcb_get_property(c, 0, window, wm_protocol_atom, ATOM, 0, UINT_MAX);
+}
 
-	property = intern_atom_fast_reply(c,
-                                          intern_atom_fast(c,
-                                                           0,
-                                                           strlen("WM_PROTOCOLS"),
-                                                           "WM_PROTOCOLS"),
-                                          NULL);
-	cookie = xcb_get_property(c, 0, window,
-				property, ATOM, 0, 1000000L);
-	rep = xcb_get_property_reply(c, cookie, 0);
-	if (!rep)
-	        return 0;
-	if ((rep->type == ATOM) ||
-	    (rep->format == 32))
-	{
-	        int length;
+xcb_get_property_cookie_t
+xcb_get_wm_protocols_unchecked(xcb_connection_t *c,
+                               xcb_window_t window,
+                               xcb_atom_t wm_protocol_atom)
+{
+  return xcb_get_property_unchecked(c, 0, window, wm_protocol_atom, ATOM, 0,
+                                    UINT_MAX);
+}
 
-		length = xcb_get_property_value_length(rep);
-		*list_len = length;
-		*list = (xcb_atom_t *)malloc(sizeof(xcb_atom_t) * length);
-		if (!(*list))
-		{
-		        free(rep);
-			return 0;
-		}
-		memcpy(*list, xcb_get_property_value(rep), length * rep->format >> 3);
-		free(rep);
-		return 1;
-	}
-	free(rep);
-	return 0;
+uint8_t
+xcb_get_wm_protocols_reply(xcb_connection_t *c,
+                           xcb_get_property_cookie_t cookie,
+                           xcb_get_wm_protocols_reply_t *protocols,
+                           xcb_generic_error_t **e)
+{
+  xcb_get_property_reply_t *reply = xcb_get_property_reply(c, cookie, e);
+
+  if(!reply || reply->type != ATOM || reply->format != 32)
+  {
+    free(reply);
+    return 0;
+  }
+
+  protocols->_reply = reply;
+  protocols->atoms_len = xcb_get_property_value_length(protocols->_reply);
+  protocols->atoms = (xcb_atom_t *) xcb_get_property_value(protocols->_reply);
+
+  return 1;
+}
+
+void
+xcb_get_wm_protocols_reply_wipe(xcb_get_wm_protocols_reply_t *protocols)
+{
+  free(protocols->_reply);
 }
