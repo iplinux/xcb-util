@@ -671,7 +671,7 @@ xcb_get_wm_hints (xcb_connection_t *c,
 {
 	xcb_get_property_cookie_t cookie;
 	xcb_get_property_reply_t *rep = NULL;
-	xcb_wm_hints_t           *hints;
+	xcb_wm_hints_t           *hints = NULL;
 	long                      length;
 
 	cookie = xcb_get_property (c, 0, window,
