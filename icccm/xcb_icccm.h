@@ -102,17 +102,26 @@ void xcb_get_text_property_reply_wipe(xcb_get_text_property_reply_t *prop);
 
 /* WM_NAME */
 
-void xcb_set_wm_name_checked (xcb_connection_t *c,
-                              xcb_window_t      window,
-                              xcb_atom_t        encoding,
-                              uint32_t          name_len,
-                              const char       *name);
+/**
+ * @brief Deliver a SetProperty request to set WM_NAME property value.
+ * @param c: The connection to the X server.
+ * @param window: Window X identifier.
+ * @param encoding: Encoding used.
+ * @param name_len: Length of name value to set.
+ * @param name: Name value to set.
+ */
+void xcb_set_wm_name_checked(xcb_connection_t *c,
+                             xcb_window_t window,
+                             xcb_atom_t encoding,
+                             uint32_t name_len,
+                             const char *name);
 
-void xcb_set_wm_name (xcb_connection_t *c,
-                      xcb_window_t      window,
-                      xcb_atom_t        encoding,
-                      uint32_t          name_len,
-                      const char       *name);
+/**
+ * @see xcb_set_wm_name_checked()
+ */
+void xcb_set_wm_name(xcb_connection_t *c, xcb_window_t window,
+                     xcb_atom_t encoding, uint32_t name_len,
+                     const char *name);
 
 /**
  * @brief Deliver a GetProperty request to the X server for WM_NAME.
@@ -143,24 +152,36 @@ uint8_t xcb_get_wm_name_reply(xcb_connection_t *c,
                               xcb_get_text_property_reply_t *prop,
                               xcb_generic_error_t **e);
 
-void xcb_watch_wm_name (xcb_property_handlers_t        *prophs,
-                        uint32_t                       long_len,
-                        xcb_generic_property_handler_t handler,
-                        void                          *data);
+/**
+ * @brief Set a callback on WM_NAME property changes.
+ * @param prophs: Property handlers.
+ * @param long_len: Length of data.
+ * @param handler: The callback.
+ * @param data: data given to the callback.
+ */
+void xcb_watch_wm_name(xcb_property_handlers_t *prophs, uint32_t long_len,
+                       xcb_generic_property_handler_t handler, void *data);
 
 /* WM_ICON_NAME */
 
-void xcb_set_wm_icon_name_checked (xcb_connection_t *c,
-                                   xcb_window_t      window,
-                                   xcb_atom_t        encoding,
-                                   uint32_t          name_len,
-                                   const char       *name);
+/**
+ * @brief Deliver a SetProperty request to set WM_ICON_NAME property value.
+ * @param c: The connection to the X server.
+ * @param window: Window X identifier.
+ * @param encoding: Encoding used.
+ * @param name_len: Length of name value to set.
+ * @param name: Name value to set.
+ */
+void xcb_set_wm_icon_name_checked(xcb_connection_t *c, xcb_window_t window,
+                                  xcb_atom_t encoding, uint32_t name_len,
+                                  const char *name);
 
-void xcb_set_wm_icon_name (xcb_connection_t *c,
-                           xcb_window_t      window,
-                           xcb_atom_t        encoding,
-                           uint32_t          name_len,
-                           const char       *name);
+/**
+ * @see xcb_set_wm_icon_name_checked()
+ */
+void xcb_set_wm_icon_name(xcb_connection_t *c, xcb_window_t window,
+                          xcb_atom_t encoding, uint32_t name_len,
+                          const char *name);
 
 /**
  * @brief Send request to get WM_ICON_NAME property of a window.
@@ -191,24 +212,37 @@ uint8_t xcb_get_wm_icon_name_reply(xcb_connection_t *c,
                                    xcb_get_text_property_reply_t *prop,
                                    xcb_generic_error_t **e);
 
-void xcb_watch_wm_icon_name (xcb_property_handlers_t        *prophs,
-                             uint32_t                       long_len,
-                             xcb_generic_property_handler_t handler,
-                             void                          *data);
+/**
+ * @brief Set a callback on WM_ICON_NAME property changes.
+ * @param prophs: Property handlers.
+ * @param long_len: Length of data.
+ * @param handler: The callback.
+ * @param data: data given to the callback.
+ */
+void xcb_watch_wm_icon_name(xcb_property_handlers_t *prophs, uint32_t long_len,
+                            xcb_generic_property_handler_t handler,
+                            void *data);
 
 /* WM_CLIENT_MACHINE */
 
-void xcb_set_wm_client_machine_checked (xcb_connection_t *c,
-                                        xcb_window_t      window,
-                                        xcb_atom_t        encoding,
-                                        uint32_t          name_len,
-                                        const char       *name);
+/**
+ * @brief Deliver a SetProperty request to set WM_CLIENT_MACHINE property value.
+ * @param c: The connection to the X server.
+ * @param window: Window X identifier.
+ * @param encoding: Encoding used.
+ * @param name_len: Length of name value to set.
+ * @param name: Name value to set.
+ */
+void xcb_set_wm_client_machine_checked(xcb_connection_t *c, xcb_window_t window,
+                                       xcb_atom_t encoding, uint32_t name_len,
+                                       const char *name);
 
-void xcb_set_wm_client_machine (xcb_connection_t *c,
-                                xcb_window_t      window,
-                                xcb_atom_t        encoding,
-                                uint32_t          name_len,
-                                const char       *name);
+/**
+ * @see xcb_set_wm_client_machine_checked()
+ */
+void xcb_set_wm_client_machine(xcb_connection_t *c, xcb_window_t window,
+                               xcb_atom_t encoding, uint32_t name_len,
+                               const char *name);
 
 /**
  * @brief Send request to get WM_CLIENT_MACHINE property of a window.
@@ -239,10 +273,17 @@ uint8_t xcb_get_wm_client_machine_reply(xcb_connection_t *c,
                                         xcb_get_text_property_reply_t *prop,
                                         xcb_generic_error_t **e);
 
-void xcb_watch_wm_client_machine (xcb_property_handlers_t        *prophs,
-                                  uint32_t                       long_len,
-                                  xcb_generic_property_handler_t handler,
-                                  void                          *data);
+/**
+ * @brief Set a callback on WM_CLIENT_MACHINE property changes.
+ * @param prophs: Property handlers.
+ * @param long_len: Length of data.
+ * @param handler: The callback.
+ * @param data: data given to the callback.
+ */
+void xcb_watch_wm_client_machine(xcb_property_handlers_t *prophs,
+                                 uint32_t long_len,
+                                 xcb_generic_property_handler_t handler,
+                                 void *data);
 
 /* WM_CLASS */
 
@@ -374,50 +415,97 @@ typedef struct {
   uint32_t win_gravity;
 } xcb_size_hints_t;
 
-void       xcb_size_hints_set_position   (xcb_size_hints_t *hints,
-                                          int               user_specified,
-                                          int32_t           x,
-                                          int32_t           y);
+/**
+ * @brief Set size hints to a given position.
+ * @param hints: SIZE_HINTS structure.
+ * @param user_specified: Is the size user-specified?
+ * @param x: The X position.
+ * @param y: The Y position.
+ */
+void xcb_size_hints_set_position(xcb_size_hints_t *hints, int user_specified,
+                                 int32_t x, int32_t y);
 
-void       xcb_size_hints_set_size       (xcb_size_hints_t *hints,
-                                          int               user_specified,
-                                          int32_t           width,
-                                          int32_t           height);
+/**
+ * @brief Set size hints to a given size.
+ * @param hints: SIZE_HINTS structure.
+ * @param user_specified: is the size user-specified?
+ * @param width: The width.
+ * @param height: The height.
+ */
+void xcb_size_hints_set_size(xcb_size_hints_t *hints, int user_specified,
+                             int32_t width, int32_t height);
 
-void       xcb_size_hints_set_min_size    (xcb_size_hints_t *hints,
-                                           int32_t           min_width,
-                                           int32_t           min_height);
+/**
+ * @brief Set size hints to a given minimum size.
+ * @param hints: SIZE_HINTS structure.
+ * @param width: The minimum width.
+ * @param height: The minimum height.
+ */
+void xcb_size_hints_set_min_size(xcb_size_hints_t *hints, int32_t min_width,
+                                 int32_t min_height);
 
-void       xcb_size_hints_set_max_size    (xcb_size_hints_t *hints,
-                                           int32_t           max_width,
-                                           int32_t           max_height);
+/**
+ * @brief Set size hints to a given maximum size.
+ * @param hints: SIZE_HINTS structure.
+ * @param width: The maximum width.
+ * @param height: The maximum height.
+ */
+void xcb_size_hints_set_max_size(xcb_size_hints_t *hints, int32_t max_width,
+                                 int32_t max_height);
 
-void       xcb_size_hints_set_resize_inc  (xcb_size_hints_t *hints,
-                                           int32_t           width_inc,
-                                           int32_t           height_inc);
+/**
+ * @brief Set size hints to a given resize increments.
+ * @param hints: SIZE_HINTS structure.
+ * @param width: The resize increments width.
+ * @param height: The resize increments height.
+ */
+void xcb_size_hints_set_resize_inc(xcb_size_hints_t *hints, int32_t width_inc,
+                                   int32_t height_inc);
 
-void       xcb_size_hints_set_aspect     (xcb_size_hints_t *hints,
-                                          int32_t           min_aspect_num,
-                                          int32_t           min_aspect_den,
-                                          int32_t           max_aspect_num,
-                                          int32_t           max_aspect_den);
+/**
+ * @brief Set size hints to a given aspect ratios.
+ * @param hints: SIZE_HINTS structure.
+ * @param min_aspect_num: The minimum aspect ratios for the width.
+ * @param min_aspect_den: The minimum aspect ratios for the height.
+ * @param max_aspect_num: The maximum aspect ratios for the width.
+ * @param max_aspect_den: The maximum aspect ratios for the height.
+ */
+void xcb_size_hints_set_aspect(xcb_size_hints_t *hints, int32_t min_aspect_num,
+                               int32_t min_aspect_den, int32_t max_aspect_num,
+                               int32_t max_aspect_den);
 
-void       xcb_size_hints_set_base_size   (xcb_size_hints_t *hints,
-                                           int32_t           base_width,
-                                           int32_t           base_height);
+/**
+ * @brief Set size hints to a given base size.
+ * @param hints: SIZE_HINTS structure.
+ * @param base_width: Base width.
+ * @param base_height: Base height.
+ */
+void xcb_size_hints_set_base_size(xcb_size_hints_t *hints, int32_t base_width,
+                                  int32_t base_height);
 
-void       xcb_size_hints_set_win_gravity (xcb_size_hints_t *hints,
-                                           uint8_t           win_gravity);
+/**
+ * @brief Set size hints to a given window gravity.
+ * @param hints: SIZE_HINTS structure.
+ * @param win_gravity: Window gravity value.
+ */
+void xcb_size_hints_set_win_gravity(xcb_size_hints_t *hints,
+                                    uint8_t win_gravity);
 
-void       xcb_set_wm_size_hints_checked (xcb_connection_t     *c,
-                                          xcb_window_t          window,
-                                          xcb_atom_t            property,
-                                          xcb_size_hints_t     *hints);
+/**
+ * @brief Deliver a ChangeProperty request to set a value to a given property.
+ * @param c: The connection to the X server.
+ * @param window: Window X identifier.
+ * @param property: Property to set value for.
+ * @param hints: Hints value to set.
+ */
+void xcb_set_wm_size_hints_checked(xcb_connection_t *c, xcb_window_t window,
+                                   xcb_atom_t property, xcb_size_hints_t *hints);
 
-void       xcb_set_wm_size_hints         (xcb_connection_t     *c,
-                                          xcb_window_t          window,
-                                          xcb_atom_t            property,
-                                          xcb_size_hints_t     *hints);
+/**
+ * @see xcb_set_wm_size_hints_checked()
+ */
+void xcb_set_wm_size_hints(xcb_connection_t *c, xcb_window_t window,
+                           xcb_atom_t property, xcb_size_hints_t *hints);
 
 /**
  * @brief Send request to get size hints structure for the named property.
@@ -456,13 +544,20 @@ uint8_t xcb_get_wm_size_hints_reply(xcb_connection_t *c,
 
 /* WM_NORMAL_HINTS */
 
-void xcb_set_wm_normal_hints_checked (xcb_connection_t *c,
-                                      xcb_window_t      window,
-                                      xcb_size_hints_t *hints);
+/**
+ * @brief Deliver a ChangeProperty request to set WM_NORMAL_HINTS property value.
+ * @param c: The connection to the X server.
+ * @param window: Window X identifier.
+ * @param hints: Hints value to set.
+ */
+void xcb_set_wm_normal_hints_checked(xcb_connection_t *c, xcb_window_t window,
+                                     xcb_size_hints_t *hints);
 
-void xcb_set_wm_normal_hints (xcb_connection_t *c,
-                              xcb_window_t      window,
-                              xcb_size_hints_t *hints);
+/**
+ * @see xcb_set_wm_normal_hints_checked()
+ */
+void xcb_set_wm_normal_hints(xcb_connection_t *c, xcb_window_t window,
+                             xcb_size_hints_t *hints);
 
 /**
  * @brief Send request to get WM_NORMAL_HINTS property of a window.
@@ -521,8 +616,12 @@ typedef struct {
   xcb_window_t window_group;
 } xcb_wm_hints_t;
 
-#define XCB_NUM_WM_HINTS_ELEMENTS 9 /* number of elements in this structure */
+/** Number of elements in this structure */
+#define XCB_NUM_WM_HINTS_ELEMENTS 9
 
+/**
+ * @brief WM_HINTS window states.
+ */
 typedef enum {
   XCB_WM_STATE_WITHDRAWN = 0,
   XCB_WM_STATE_NORMAL = 1,
@@ -540,30 +639,100 @@ typedef enum {
   XCB_WM_HINT_X_URGENCY = (1L << 8)
 } xcb_wm_t;
 
-#define XCB_WM_ALL_HINTS (XCB_WM_HINT_INPUT | XCB_WM_HINT_STATE | XCB_WM_HINT_ICON_PIXMAP | \
-                          XCB_WM_HINT_ICON_WINDOW | XCB_WM_HINT_ICON_POSITION | XCB_WM_HINT_ICON_MASK | \
+#define XCB_WM_ALL_HINTS (XCB_WM_HINT_INPUT | XCB_WM_HINT_STATE |\
+                          XCB_WM_HINT_ICON_PIXMAP | XCB_WM_HINT_ICON_WINDOW |\
+                          XCB_WM_HINT_ICON_POSITION | XCB_WM_HINT_ICON_MASK |\
                           XCB_WM_HINT_WINDOW_GROUP)
 
+/**
+ * @brief Get urgency hint.
+ * @param hints: WM_HINTS structure.
+ * @return Urgency hint value.
+ */
 uint32_t xcb_wm_hints_get_urgency(xcb_wm_hints_t *hints);
 
-void xcb_wm_hints_set_input        (xcb_wm_hints_t *hints, uint8_t input);
-void xcb_wm_hints_set_iconic       (xcb_wm_hints_t *hints);
-void xcb_wm_hints_set_normal       (xcb_wm_hints_t *hints);
-void xcb_wm_hints_set_withdrawn    (xcb_wm_hints_t *hints);
-void xcb_wm_hints_set_none         (xcb_wm_hints_t *hints);
-void xcb_wm_hints_set_icon_pixmap  (xcb_wm_hints_t *hints, xcb_pixmap_t icon_pixmap);
-void xcb_wm_hints_set_icon_mask    (xcb_wm_hints_t *hints, xcb_pixmap_t icon_mask);
-void xcb_wm_hints_set_icon_window  (xcb_wm_hints_t *hints, xcb_window_t icon_window);
-void xcb_wm_hints_set_window_group (xcb_wm_hints_t *hints, xcb_window_t window_group);
-void xcb_wm_hints_set_urgency      (xcb_wm_hints_t *hints);
+/**
+ * @brief Set input focus.
+ * @param hints: WM_HINTS structure.
+ * @param input: Input focus.
+ */
+void xcb_wm_hints_set_input(xcb_wm_hints_t *hints, uint8_t input);
 
-void xcb_set_wm_hints_checked (xcb_connection_t *c,
-                               xcb_window_t      window,
-                               xcb_wm_hints_t   *hints);
+/**
+ * @brief Set hints state to 'iconic'.
+ * @param hints: WM_HINTS structure.
+ */
+void xcb_wm_hints_set_iconic(xcb_wm_hints_t *hints);
 
-void xcb_set_wm_hints (xcb_connection_t *c,
-                       xcb_window_t      window,
-                       xcb_wm_hints_t   *hints);
+/**
+ * @brief Set hints state to 'normal'.
+ * @param hints: WM_HINTS structure.
+ */
+void xcb_wm_hints_set_normal(xcb_wm_hints_t *hints);
+
+/**
+ * @brief Set hints state to 'withdrawn'.
+ * @param hints: WM_HINTS structure.
+ */
+void xcb_wm_hints_set_withdrawn(xcb_wm_hints_t *hints);
+
+/**
+ * @brief Set hints state to none.
+ * @param hints: WM_HINTS structure.
+ */
+void xcb_wm_hints_set_none(xcb_wm_hints_t *hints);
+
+/**
+ * @brief Set pixmap to be used as icon.
+ * @param hints: WM_HINTS structure.
+ * @param icon_pixmap: Pixmap.
+ */
+void xcb_wm_hints_set_icon_pixmap(xcb_wm_hints_t *hints,
+                                  xcb_pixmap_t icon_pixmap);
+
+/**
+ * @brief Set icon mask bitmap.
+ * @param hints: WM_HINTS structure.
+ * @param icon_mask: Pixmap.
+ */
+void xcb_wm_hints_set_icon_mask(xcb_wm_hints_t *hints, xcb_pixmap_t icon_mask);
+
+/**
+ * @brief Set window identifier to be used as icon.
+ * @param hints: WM_HINTS structure.
+ * @param icon_window: Window X identifier.
+ */
+void xcb_wm_hints_set_icon_window(xcb_wm_hints_t *hints,
+                                  xcb_window_t icon_window);
+
+/**
+ * @brief Set identifier of related window group.
+ * @param hints: WM_HINTS structure.
+ * @param window_group: Window X identifier.
+ */
+void xcb_wm_hints_set_window_group(xcb_wm_hints_t *hints,
+                                   xcb_window_t window_group);
+
+/**
+ * @brief Set urgency hints flag.
+ * @param hints: WM_HINTS structure.
+ */
+void xcb_wm_hints_set_urgency(xcb_wm_hints_t *hints);
+
+/**
+ * @brief Deliver a SetProperty request to set WM_HINTS property value.
+ * @param c: The connection to the X server.
+ * @param window: Window X identifier.
+ * @param hints: Hints value to set.
+ */
+void xcb_set_wm_hints_checked(xcb_connection_t *c, xcb_window_t window,
+                              xcb_wm_hints_t *hints);
+
+/**
+ * @see xcb_set_wm_hints_checked()
+ */
+void xcb_set_wm_hints(xcb_connection_t *c, xcb_window_t window,
+                      xcb_wm_hints_t *hints);
 
 /**
  * @brief Send request to get WM_HINTS property of a window.
