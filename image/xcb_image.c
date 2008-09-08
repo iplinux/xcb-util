@@ -62,7 +62,7 @@ format_valid (uint8_t depth, uint8_t bpp, uint8_t unit,
 	      xcb_image_format_t format, uint8_t xpad)
 {
   xcb_image_format_t  ef = effective_format(format, bpp);
-  if (depth > bpp || bpp > unit)
+  if (depth > bpp)
       return 0;
   switch(ef) {
   case XCB_IMAGE_FORMAT_XY_PIXMAP:
@@ -125,12 +125,10 @@ xcb_image_annotate (xcb_image_t *image)
   xcb_image_format_t  ef = effective_format(image->format, image->bpp);
   switch (ef) {
   case XCB_IMAGE_FORMAT_XY_PIXMAP:
-      image->plane_mask = xcb_mask(image->depth);
       image->stride = xcb_roundup(image->width, image->scanline_pad) >> 3;
       image->size = image->height * image->stride * image->depth;
       break;
   case XCB_IMAGE_FORMAT_Z_PIXMAP:
-      image->plane_mask = 0;
       image->stride = xcb_roundup((uint32_t)image->width *
 				  (uint32_t)image->bpp,
 				  image->scanline_pad) >> 3;
@@ -239,6 +237,7 @@ xcb_image_create (uint16_t           width,
   image->depth = depth;
   image->bpp = bpp;
   image->unit = unit;
+  image->plane_mask = xcb_mask(depth);
   image->byte_order = byte_order;
   image->bit_order = bit_order;
   xcb_image_annotate(image);
@@ -527,6 +526,32 @@ xcb_image_shm_get (xcb_connection_t *      conn,
 }
 
 
+static uint32_t
+xy_image_byte (xcb_image_t *image, uint32_t x)
+{
+    x >>= 3;
+    if (image->byte_order == XCB_IMAGE_ORDER_LSB_FIRST)
+	return x;
+    switch (image->unit) {
+    default:
+    case 8:
+	return x;
+    case 16:
+	return x ^ 1;
+    case 32:
+	return x ^ 3;
+    }
+}
+
+static uint32_t
+xy_image_bit (xcb_image_t *image, uint32_t x)
+{
+    x &= 7;
+    if (image->bit_order == XCB_IMAGE_ORDER_MSB_FIRST)
+	x = 7 - x;
+    return x;
+}
+
 /* GetPixel/PutPixel */
 
 /* XXX this is the most hideously done cut-and-paste
@@ -543,36 +568,24 @@ xcb_image_put_pixel (xcb_image_t *image,
   if (x > image->width || y > image->height)
       return;
   row = image->data + (y * image->stride);
-  switch (image->format) {
+  switch (effective_format(image->format, image->bpp)) {
   case XCB_IMAGE_FORMAT_XY_BITMAP:
   case XCB_IMAGE_FORMAT_XY_PIXMAP:
       /* block */ {
 	  int  p;
 	  uint32_t   plane_mask = image->plane_mask;
 	  uint8_t *  plane = row;
-	  uint32_t   ulog = image->bpp >> 4;
-	  uint32_t   unit = (x >> 3) & ~xcb_mask(ulog);
-	  uint32_t   byte = (x >> 3) & xcb_mask(ulog);
-	  uint32_t   bit = x & 7;
+	  uint32_t   byte = xy_image_byte(image, x);
+	  uint32_t   bit = xy_image_bit(image,x);
+	  uint8_t    mask = 1 << bit;
 
-	  if (image->byte_order == XCB_IMAGE_ORDER_MSB_FIRST)
-	      byte = xcb_mask(ulog) - byte;
-	  if (image->bit_order == XCB_IMAGE_ORDER_MSB_FIRST) {
-	      bit = 7 - bit;
-	  } else {
-	      pixel = xcb_bit_reverse(pixel, image->bpp);
-	      plane_mask = xcb_bit_reverse(plane_mask, image->bpp);
-	  }
-	  for (p = 0; p < image->bpp; p++) {
-	      if (plane_mask & 1) {
-		  uint8_t *  bp = plane + (unit | byte);
-		  uint8_t    m = 1 << bit;
-		  uint8_t    p = (pixel & 1) << bit;
-		  *bp = (*bp & ~m) | p;
+	  for (p = image->bpp - 1; p >= 0; p--) {
+	      if ((plane_mask >> p) & 1) {
+		  uint8_t *  bp = plane + byte;
+		  uint8_t    this_bit = ((pixel >> p) & 1) << bit;
+		  *bp = (*bp & ~mask) | this_bit;
 	      }
 	      plane += image->stride * image->height;
-	      pixel >>= 1;
-	      plane_mask >>= 1;
 	  }
       }
       break;
@@ -657,36 +670,24 @@ xcb_image_get_pixel (xcb_image_t *image,
 
   assert(x < image->width && y < image->height);
   row = image->data + (y * image->stride);
-  switch (image->format) {
+  switch (effective_format(image->format, image->bpp)) {
   case XCB_IMAGE_FORMAT_XY_BITMAP:
   case XCB_IMAGE_FORMAT_XY_PIXMAP:
       /* block */ {
 	  int  p;
 	  uint32_t   plane_mask = image->plane_mask;
 	  uint8_t *  plane = row;
-	  uint32_t   ulog = image->bpp >> 4;
-	  uint32_t   unit = (x >> 3) & ~xcb_mask(ulog);
-	  uint32_t   byte = (x >> 3) & xcb_mask(ulog);
-	  uint32_t   bit = x & 7;
+	  uint32_t   byte = xy_image_byte(image, x);
+	  uint32_t   bit = xy_image_bit(image,x);
 
-	  if (image->byte_order == XCB_IMAGE_ORDER_MSB_FIRST)
-	      byte = xcb_mask(ulog) - byte;
-	  if (image->bit_order == XCB_IMAGE_ORDER_MSB_FIRST) {
-	      bit = 7 - bit;
-	  } else {
-	      plane_mask = xcb_bit_reverse(plane_mask, image->bpp);
-	  }
-	  for (p = 0; p < image->bpp; p++) {
+	  for (p = image->bpp - 1; p >= 0; p--) {
 	      pixel <<= 1;
-	      if (plane_mask & 1) {
-		  uint8_t *  bp = plane + (unit | byte);
+	      if ((plane_mask >> p) & 1) {
+		  uint8_t *  bp = plane + byte;
 		  pixel |= (*bp >> bit) & 1;
 	      }
 	      plane += image->stride * image->height;
-	      plane_mask >>= 1;
 	  }
-	  if (image->bit_order == XCB_IMAGE_ORDER_LSB_FIRST)
-	      pixel = xcb_bit_reverse(pixel, image->bpp);
       }
       return pixel;
   case XCB_IMAGE_FORMAT_Z_PIXMAP:
@@ -830,20 +831,17 @@ swap_image(uint8_t *	     src,
            uint32_t 	     src_stride,
 	   uint8_t *	     dst,
 	   uint32_t 	     dst_stride,
-	   uint8_t const *   byte_order,
-	   int		     unit_bytes,
-	   uint16_t 	     height,
+	   uint32_t 	     height,
+	   uint32_t	     byteswap,
 	   int		     bitswap,
 	   int               nibbleswap)
 {
   while (height--) {
-      uint32_t    minor = 0;
-      uint32_t    major = 0;
       uint32_t    s;
 
       for (s = 0; s < src_stride; s++) {
 	  uint8_t   b;
-	  uint32_t  d = major + byte_order[minor];
+	  uint32_t  d = s ^ byteswap;
 
 	  if (d > dst_stride)
 	      continue;
@@ -854,77 +852,44 @@ swap_image(uint8_t *	     src,
 	  if (nibbleswap)
 	      b = (b << 4) | (b >> 4);
 	  dst[d] = b;
-
-	  if (++minor == unit_bytes) 
-	  {
-	      minor = 0; 
-	      major += unit_bytes;
-	  }
       }
       src += src_stride;
       dst += dst_stride;
   }
 }
 
-/* Note that all of these permutations are self-inverse.
-   Applying them twice yields the identity permutation, i.e p*p = i
-   This means that we only have to care about the
-   source and destination size and whether they mismatch, not
-   the actual endiannesses. */
-static uint8_t const forward_order[4] = {0, 1, 2, 3};
-static uint8_t const reverse_order[4] = {3, 2, 1, 0};
-static uint8_t const reverse_word_order[4] = {2, 3, 0, 1};
-
-static uint8_t const *
-conversion_byte_order(xcb_image_t *src, xcb_image_t *dst)
+/* Which order are bytes in (low two bits), given
+ * code which accesses an image one byte at a time
+ */
+static uint32_t
+byte_order(xcb_image_t *i)
 {
-    uint8_t  nbytes = src->unit >> 3;
-    
-    if (src->byte_order == dst->byte_order)
-	return forward_order;
-    if (nbytes >= 1 && nbytes <= 4)
-	return &reverse_order[4 - nbytes];
-    return forward_order;
+    uint32_t flip = i->byte_order == XCB_IMAGE_ORDER_MSB_FIRST;
+
+    switch (i->unit) {
+    default:
+    case 8:
+	return 0;
+    case 16:
+	return flip;
+    case 32:
+	return flip | (flip << 1);
+    }
 }
 
-
-#define R1 forward_order
-#define R2 reverse_word_order
-#define R4 reverse_order
-#define W4 reverse_word_order
-
-static uint8_t const * const bbo_reverse[3][3] =
-        /* 8  16  32*/
-  /*8*/ {{R1, R2, R4},
- /*16*/  {R2, R2, W4},
- /*32*/  {R4, W4, R4}};
-
-static uint8_t const *
-bitmap_conversion_byte_order(xcb_image_t *src, xcb_image_t *dst)
+/* Convert from one byte order to another by flipping the 
+ * low two bits of the byte index along a scanline
+ */
+static uint32_t 
+conversion_byte_swap(xcb_image_t *src, xcb_image_t *dst)
 {
-    uint8_t  srclog = src->unit >> 4;
-    uint8_t  dstlog = dst->unit >> 4;
-    int sbo = src->byte_order;
-    int dbo = dst->byte_order;
-
-    if (srclog == 0)
-	sbo = XCB_IMAGE_ORDER_LSB_FIRST;
-    if (dstlog == 0)
-	dbo = XCB_IMAGE_ORDER_LSB_FIRST;
-    if (dbo == sbo)
-	return forward_order;
-    return bbo_reverse[srclog][dstlog];
+    return byte_order(src) ^ byte_order(dst);
 }
-
 
 xcb_image_t *
 xcb_image_convert (xcb_image_t *  src,
 		   xcb_image_t *  dst)
 {
-  uint32_t            x;
-  uint32_t            y;
-  int                 format_compatible = 0;
-  int                 bitmap = 0;
   xcb_image_format_t  ef = effective_format(src->format, src->bpp);
 
   /* Things will go horribly wrong here if a bad
@@ -932,74 +897,53 @@ xcb_image_convert (xcb_image_t *  src,
      up front just to be nice. */
   assert(image_format_valid(src));
   assert(image_format_valid(dst));
-  if (src->depth != dst->depth ||
-      src->width != dst->width ||
+  
+  /* images must be the same size
+   * (yes, we could copy a sub-set)
+   */
+  if (src->width != dst->width ||
       src->height != dst->height)
       return 0;
-  switch (ef) {
-  case XCB_IMAGE_FORMAT_XY_PIXMAP:
-      bitmap = src->depth == 1;
-      format_compatible = src->format == dst->format || bitmap;
-      /* Case: Formats are identical.  Just copy. */
-      if (format_compatible &&
-	  src->bpp == dst->bpp &&
-	  src->unit == dst->unit &&
-	  src->scanline_pad == dst->scanline_pad &&
-	  src->byte_order == dst->byte_order &&
-	  src->bit_order == dst->bit_order) {
-	  memcpy(dst->data, src->data, src->size);
-	  return dst;
-      }
-      break;
-  case XCB_IMAGE_FORMAT_Z_PIXMAP:
-      format_compatible = src->format == dst->format;
-      /* Case: Formats are identical.  Just copy. */
-      if (format_compatible &&
-	  src->bpp == dst->bpp &&
-	  src->byte_order == dst->byte_order) {
-	  memcpy(dst->data, src->data, src->size);
-	  return dst;
-      }
-      break;
-  default:
-      assert(0);
-  }
-  /* Case: Bitmap scanline units are always compatible.  Copy and convert. */
-  if (bitmap) {
-      uint8_t const * const
-	       byte_order = bitmap_conversion_byte_order(src, dst);
-      int      bitswap = src->bit_order != dst->bit_order;
-      uint8_t  unit = src->unit;
-      
-      if (dst->unit < unit)
-	  unit = dst->unit;
-      swap_image(src->data, src->stride,
-		     dst->data, dst->stride,
-		     byte_order, unit >> 3,
-		     src->height, bitswap, 0);
-      return dst;
-  }
-  /* Case: Pixmap scanline units are identical.  Copy and convert. */
-  if (format_compatible && src->bpp == dst->bpp) {
-      uint8_t const * const
-	   byte_order = conversion_byte_order(src, dst);
-      int  bitswap = src->bit_order != dst->bit_order;
-      int  nibbleswap = src->byte_order != dst->byte_order &&
-                        src->bpp == 4;
-      swap_image(src->data, src->stride,
-		     dst->data, dst->stride,
-		     byte_order, src->unit >> 3,
-		     src->height, bitswap, nibbleswap);
-      return dst;
-  }
 
-  /* General case: Slow pixel copy. Should we optimize
-     Z24<->Z32 copies of either endianness? */
-  for (y = 0; y < src->height; y++) {
-      for (x = 0; x < src->width; x++) {
-	  uint32_t  pixel = xcb_image_get_pixel(src, x, y);
-	  xcb_image_put_pixel(dst, x, y, pixel);
+  if (ef == effective_format(dst->format, dst->bpp) &&
+      src->bpp == dst->bpp)
+  {
+    if (src->unit == dst->unit &&
+	src->scanline_pad == dst->scanline_pad &&
+	src->byte_order == dst->byte_order &&
+	(ef == XCB_IMAGE_FORMAT_Z_PIXMAP ||
+	 src->bit_order == dst->bit_order)) {
+      memcpy(dst->data, src->data, src->size);
+    } else {
+      int	bitswap = 0;
+      int	nibbleswap = 0;
+      uint32_t	byteswap = conversion_byte_swap(src, dst);
+      uint32_t	height = src->height;;
+
+      if (ef == XCB_IMAGE_FORMAT_Z_PIXMAP) {
+	if (src->bpp == 4 && src->byte_order != dst->byte_order)
+	  nibbleswap = 1;
+      } else {
+	if (src->bit_order != dst->bit_order)
+	  bitswap = 1;
+	height *= src->depth;
       }
+      swap_image (src->data, src->stride, dst->data, dst->stride,
+		  height, byteswap, bitswap, nibbleswap);
+    }
+  }
+  else
+  {
+    uint32_t            x;
+    uint32_t            y;
+    /* General case: Slow pixel copy. Should we optimize
+       Z24<->Z32 copies of either endianness? */
+    for (y = 0; y < src->height; y++) {
+	for (x = 0; x < src->width; x++) {
+	    uint32_t  pixel = xcb_image_get_pixel(src, x, y);
+	    xcb_image_put_pixel(dst, x, y, pixel);
+	}
+    }
   }
   return dst;
 }
