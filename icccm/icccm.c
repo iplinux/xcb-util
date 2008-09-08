@@ -660,33 +660,20 @@ xcb_get_wm_hints_reply(xcb_connection_t *c,
 /* WM_PROTOCOLS */
 
 void
-xcb_set_wm_protocols_checked (xcb_connection_t *c,
-                              xcb_window_t      window,
-                              uint32_t          list_len,
-                              xcb_atom_t       *list)
+xcb_set_wm_protocols_checked(xcb_connection_t *c, xcb_atom_t wm_protocols,
+                             xcb_window_t window, uint32_t list_len,
+                             xcb_atom_t *list)
 {
-	intern_atom_fast_cookie_t proto;
-	xcb_atom_t WM_PROTOCOLS;
-
-	proto = intern_atom_fast(c, 0, sizeof("WM_PROTOCOLS") - 1, "WM_PROTOCOLS");
-	WM_PROTOCOLS = intern_atom_fast_reply(c, proto, 0);
-
-	xcb_change_property_checked(c, XCB_PROP_MODE_REPLACE, window, WM_PROTOCOLS, ATOM, 32, list_len, list);
+  xcb_change_property_checked(c, XCB_PROP_MODE_REPLACE, window, wm_protocols,
+                              ATOM, 32, list_len, list);
 }
 
 void
-xcb_set_wm_protocols (xcb_connection_t *c,
-                      xcb_window_t      window,
-                      uint32_t          list_len,
-                      xcb_atom_t       *list)
+xcb_set_wm_protocols(xcb_connection_t *c, xcb_atom_t wm_protocols,
+                     xcb_window_t window, uint32_t list_len, xcb_atom_t *list)
 {
-	intern_atom_fast_cookie_t proto;
-	xcb_atom_t WM_PROTOCOLS;
-
-	proto = intern_atom_fast(c, 0, sizeof("WM_PROTOCOLS") - 1, "WM_PROTOCOLS");
-	WM_PROTOCOLS = intern_atom_fast_reply(c, proto, 0);
-
-	xcb_change_property(c, XCB_PROP_MODE_REPLACE, window, WM_PROTOCOLS, ATOM, 32, list_len, list);
+  xcb_change_property(c, XCB_PROP_MODE_REPLACE, window, wm_protocols, ATOM, 32,
+                      list_len, list);
 }
 
 xcb_get_property_cookie_t

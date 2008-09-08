@@ -599,15 +599,24 @@ uint8_t xcb_get_wm_hints_reply(xcb_connection_t *c,
 
 /* WM_PROTOCOLS */
 
-void xcb_set_wm_protocols_checked (xcb_connection_t *c,
-                                   xcb_window_t      window,
-                                   uint32_t          list_len,
-                                   xcb_atom_t       *list);
+/**
+ * @brief Deliver a SetProperty request to set WM_PROTOCOLS property value.
+ * @param c: The connection to the X server.
+ * @param wm_protocols: The WM_PROTOCOLS atom.
+ * @param window: Window X identifier.
+ * @param list_len: Atom list len.
+ * @param list: Atom list.
+ */
+void xcb_set_wm_protocols_checked(xcb_connection_t *c, xcb_atom_t wm_protocols,
+                                  xcb_window_t window, uint32_t list_len,
+                                  xcb_atom_t *list);
 
-void xcb_set_wm_protocols (xcb_connection_t *c,
-                           xcb_window_t      window,
-                           uint32_t          list_len,
-                           xcb_atom_t       *list);
+/**
+ * @see xcb_set_wm_protocols_checked()
+ */
+void xcb_set_wm_protocols(xcb_connection_t *c, xcb_atom_t wm_protocols,
+                          xcb_window_t window, uint32_t list_len,
+                          xcb_atom_t *list);
 
 /**
  * @brief WM_PROTOCOLS structure.
