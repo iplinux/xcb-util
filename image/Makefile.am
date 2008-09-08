@@ -18,6 +18,14 @@ EXTRA_DIST=xcb-image.pc.in
 
 EXTRA_PROGRAMS = test_xcb_image test_xcb_image_shm test_formats test_bitmap
 
+check_PROGRAMS = test_swap
+
+TESTS=test_swap
+
+test_swap_SOURCES = test_swap.c
+test_swap_CPPFLAGS = $(XCB_CFLAGS) $(XCB_SHM_CFLAGS) $(XCB_AUX_CFLAGS)
+test_swap_LDADD = $(XCB_LIBS) $(XCB_AUX_LIBS) $(XCB_IMAGE_LIBS)
+
 test_xcb_image_SOURCES = test_xcb_image.c
 test_xcb_image_CPPFLAGS = $(XCB_CFLAGS) $(XCB_SHM_CFLAGS) $(XCB_AUX_CFLAGS)
 test_xcb_image_LDADD = $(XCB_LIBS) $(XCB_AUX_LIBS) $(XCB_IMAGE_LIBS)
