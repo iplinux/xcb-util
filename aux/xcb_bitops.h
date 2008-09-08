@@ -51,7 +51,7 @@
 _X_INLINE static uint32_t
 xcb_mask(uint32_t n)
 {
-    return (1 << n) - 1;
+    return n == 32 ? ~0 : (1 << n) - 1;
 }
 
 
