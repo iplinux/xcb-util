@@ -774,37 +774,3 @@ xcb_get_wm_protocols (xcb_connection_t *c,
 	free(rep);
 	return 0;
 }
-
-#if HAS_DISCRIMINATED_NAME
-#include <stdarg.h>
-static char *makename(const char *fmt, ...)
-{
-	char *ret;
-	int n;
-	va_list ap;
-	va_start(ap, fmt);
-	n = vasprintf(&ret, fmt, ap);
-	va_end(ap);
-	if(n < 0)
-		return 0;
-	return ret;
-}
-
-char *discriminated_atom_name_by_screen(const char *base, uint8_t screen)
-{
-	return makename("%s_S%u", base, screen);
-}
-
-char *discriminated_atom_name_by_resource(const char *base, uint32_t resource)
-{
-	return makename("%s_R%08X", base, resource);
-}
-
-char *discriminated_atom_name_unique(const char *base, uint32_t id)
-{
-	if(base)
-		return makename("%s_U%lu", base, id);
-	else
-		return makename("U%lu", id);
-}
-#endif

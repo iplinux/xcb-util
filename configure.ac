@@ -20,6 +20,7 @@ else
     fi
 fi
 AC_SUBST(CWARNFLAGS)
+AC_CHECK_FUNCS_ONCE(vasprintf)
 
 xcbincludedir='${includedir}/xcb'
 AC_SUBST(xcbincludedir)

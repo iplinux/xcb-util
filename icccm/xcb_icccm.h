@@ -295,14 +295,6 @@ int  xcb_get_wm_protocols (xcb_connection_t *c,
                            uint32_t         *list_len,
                            xcb_atom_t      **list);
 
-#define HAS_DISCRIMINATED_NAME 0
-#if HAS_DISCRIMINATED_NAME
-char *discriminated_atom_name_by_screen   (const char *base, uint8_t screen);
-char *discriminated_atom_name_by_resource (const char *base, uint32_t resource);
-char *discriminated_atom_name_unique     (const char *base, uint32_t id);
-#endif
-
-
 #ifdef __cplusplus
 }
 #endif
