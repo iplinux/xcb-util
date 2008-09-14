@@ -357,8 +357,10 @@ xcb_image_get (xcb_connection_t *  conn,
   case XCB_IMAGE_FORMAT_Z_PIXMAP:
       image = xcb_image_create_native(conn, width, height, format,
 				      imrep->depth, imrep, bytes, data);
-      if (!image)
+      if (!image) {
 	  free(imrep);
+	  return 0;
+      }
       break;
   default:
       assert(0);
