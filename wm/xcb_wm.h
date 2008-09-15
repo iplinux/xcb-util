@@ -24,7 +24,7 @@ typedef struct {
 } client_window_t;
 
 typedef struct {
-	enum tag_t tag;
+	enum xcb_atom_fast_tag_t tag;
 	union {
 		xcb_get_window_attributes_cookie_t cookie;
 		uint8_t override_redirect;
