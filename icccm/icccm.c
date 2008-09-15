@@ -625,6 +625,8 @@ xcb_get_wm_hints_reply(xcb_connection_t *c,
   if(length < XCB_NUM_WM_HINTS_ELEMENTS)
     hints->window_group = XCB_NONE;
 
+  free(reply);
+
   return 1;
 }
 
