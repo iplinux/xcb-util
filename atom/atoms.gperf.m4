@@ -42,7 +42,7 @@ define(`DO', `	OFFSET,define(`OFFSET', eval(OFFSET+1+len($1)))')dnl
 include(atomlist.m4)`'dnl
 };
 
-xcb_atom_t intern_atom_predefined(uint16_t name_len, const char *name)
+xcb_atom_t xcb_atom_get_predefined(uint16_t name_len, const char *name)
 {
 	const struct atom_map *value = in_word_set(name, name_len);
 	xcb_atom_t ret = XCB_NONE;
@@ -51,11 +51,11 @@ xcb_atom_t intern_atom_predefined(uint16_t name_len, const char *name)
 	return ret;
 }
 
-intern_atom_fast_cookie_t intern_atom_fast(xcb_connection_t *c, uint8_t only_if_exists, uint16_t name_len, const char *name)
+xcb_atom_fast_cookie_t xcb_atom_get_fast(xcb_connection_t *c, uint8_t only_if_exists, uint16_t name_len, const char *name)
 {
-	intern_atom_fast_cookie_t cookie;
+	xcb_atom_fast_cookie_t cookie;
 
-	if((cookie.u.atom = intern_atom_predefined(name_len, name)) != XCB_NONE)
+	if((cookie.u.atom = xcb_atom_get_predefined(name_len, name)) != XCB_NONE)
 	{
 		cookie.tag = TAG_VALUE;
 		return cookie;
@@ -66,7 +66,7 @@ intern_atom_fast_cookie_t intern_atom_fast(xcb_connection_t *c, uint8_t only_if_
 	return cookie;
 }
 
-xcb_atom_t intern_atom_fast_reply(xcb_connection_t *c, intern_atom_fast_cookie_t cookie, xcb_generic_error_t **e)
+xcb_atom_t xcb_atom_get_fast_reply(xcb_connection_t *c, xcb_atom_fast_cookie_t cookie, xcb_generic_error_t **e)
 {
 	switch(cookie.tag)
 	{
@@ -89,17 +89,17 @@ xcb_atom_t intern_atom_fast_reply(xcb_connection_t *c, intern_atom_fast_cookie_t
 	return cookie.u.atom;
 }
 
-const char *get_atom_name_predefined(xcb_atom_t atom)
+const char *xcb_atom_get_name_predefined(xcb_atom_t atom)
 {
 	if(atom <= 0 || atom > (sizeof(atom_name_offsets) / sizeof(*atom_name_offsets)))
 		return 0;
 	return atom_names + atom_name_offsets[atom - 1];
 }
 
-int get_atom_name(xcb_connection_t *c, xcb_atom_t atom, const char **namep, int *lengthp)
+int xcb_atom_get_name(xcb_connection_t *c, xcb_atom_t atom, const char **namep, int *lengthp)
 {
 	static char buf[100];
-	const char *name = get_atom_name_predefined(atom);
+	const char *name = xcb_atom_get_name_predefined(atom);
 	int namelen;
 	xcb_get_atom_name_cookie_t atomc;
 	xcb_get_atom_name_reply_t *atomr;
