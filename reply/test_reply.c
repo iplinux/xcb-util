@@ -1,4 +1,3 @@
-#include <xcb/xcb.h>
 #include "xcb_reply.h"
 
 #include <string.h>
@@ -36,18 +35,19 @@ int main(int argc, char **argv)
 	int count = 10;
 	char *pattern = "*";
 	xcb_connection_t *c = xcb_connect(NULL, NULL);
-	reply_handlers_t *h = alloc_reply_handlers(c);
+	xcb_reply_handlers_t h;
+        xcb_reply_handlers_init(c, &h);
 
 	if(argc > 1)
 		count = atoi(argv[1]);
 	if(argc > 2)
 		pattern = argv[2];
 	
-	add_reply_handler(h, xcb_list_fonts_with_info(c, count, strlen(pattern), pattern).sequence, fontinfo_handler, 0);
+	xcb_reply_add_handler(&h, xcb_list_fonts_with_info(c, count, strlen(pattern), pattern).sequence, fontinfo_handler, 0);
 	pthread_mutex_lock(&lock);
-	start_reply_thread(h);
+	xcb_reply_start_thread(&h);
 	pthread_cond_wait(&cond, &lock);
-	stop_reply_thread(h);
+	xcb_reply_stop_thread(&h);
 	pthread_mutex_unlock(&lock);
 
 	xcb_disconnect(c);
