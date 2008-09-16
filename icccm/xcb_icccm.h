@@ -576,6 +576,16 @@ xcb_get_property_cookie_t xcb_get_wm_normal_hints_unchecked(xcb_connection_t *c,
 
 /**
  * @brief Fill given structure with the WM_NORMAL_HINTS property of a window.
+ * @param hints: WM_NORMAL_HINTS property value.
+ * @param reply: The get property request reply.
+ * @return Return 1 on success, 0 otherwise.
+ */
+uint8_t
+xcb_get_wm_size_hints_from_reply(xcb_size_hints_t *hints,
+                                 xcb_get_property_reply_t *reply);
+
+/**
+ * @brief Fill given structure with the WM_NORMAL_HINTS property of a window.
  * @param c: The connection to the X server.
  * @param cookie: Request cookie.
  * @param hints: WM_NORMAL_HINTS property value.
@@ -748,6 +758,16 @@ xcb_get_property_cookie_t xcb_get_wm_hints(xcb_connection_t *c,
  */
 xcb_get_property_cookie_t xcb_get_wm_hints_unchecked(xcb_connection_t *c,
                                                      xcb_window_t window);
+
+/**
+ * @brief Fill given structure with the WM_HINTS property of a window.
+ * @param hints: WM_HINTS property value.
+ * @param reply: The get property request reply.
+ * @return Return 1 on success, 0 otherwise.
+ */
+uint8_t
+xcb_get_wm_hints_from_reply(xcb_wm_hints_t *hints,
+                            xcb_get_property_reply_t *reply);
 
 /**
  * @brief Fill given structure with the WM_HINTS property of a window.
