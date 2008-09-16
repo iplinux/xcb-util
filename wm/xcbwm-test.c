@@ -177,7 +177,7 @@ int main(int argc, char **argv)
 {
 	xcb_connection_t *c;
 	xcb_event_handlers_t *evenths;
-	xcb_property_handlers_t *prophs;
+	xcb_property_handlers_t prophs;
 	xcb_window_t root;
 	pthread_t event_thread;
         int screen_nbr;
@@ -199,9 +199,9 @@ int main(int argc, char **argv)
 	set_unmap_notify_event_handler(evenths, handle_unmap_notify_event, 0);
 	set_expose_event_handler(evenths, handleExposeEvent, 0);
 
-	prophs = xcb_alloc_property_handlers(evenths);
-	set_map_notify_event_handler(evenths, handle_map_notify_event, prophs);
-	xcb_watch_wm_name(prophs, 40, handleWMNameChange, 0);
+	xcb_property_handlers_init(&prophs, evenths);
+	set_map_notify_event_handler(evenths, handle_map_notify_event, &prophs);
+	xcb_watch_wm_name(&prophs, 40, handleWMNameChange, 0);
 
 	if(TEST_THREADS)
 	{
@@ -217,7 +217,7 @@ int main(int argc, char **argv)
 	}
 	xcb_flush(c);
 
-	manage_existing_windows(c, prophs, root);
+	manage_existing_windows(c, &prophs, root);
 
 	/* Terminate only when the event loop terminates */
 	if(TEST_THREADS)
