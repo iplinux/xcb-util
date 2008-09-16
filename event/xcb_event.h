@@ -43,6 +43,15 @@
 extern "C" {
 #endif
 
+/**
+ * @brief Bit mask to find event type regardless of event source.
+ *
+ * Each event in the X11 protocol contains an 8-bit type code.
+ * The most-significant bit in this code is set if the event was
+ * generated from a SendEvent request. This mask can be used to
+ * determine the type of event regardless of how the event was
+ * generated. See the X11R6 protocol specification for details.
+ */
 #define XCB_EVENT_RESPONSE_TYPE_MASK (0x7f)
 #define XCB_EVENT_RESPONSE_TYPE(e)   (e->response_type &  XCB_EVENT_RESPONSE_TYPE_MASK)
 #define XCB_EVENT_SENT(e)            (e->response_type & ~XCB_EVENT_RESPONSE_TYPE_MASK)
