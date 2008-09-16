@@ -1,5 +1,7 @@
-#ifndef ATOMS_H
-#define ATOMS_H
+#ifndef __XCB_ATOM_H__
+#define __XCB_ATOM_H__
+
+#include <xcb/xcb.h>
 
 enum xcb_atom_fast_tag_t {
 	TAG_COOKIE,
@@ -27,4 +29,4 @@ char *xcb_atom_name_unique(const char *base, uint32_t id);
 define(`DO', `extern const xcb_atom_t $1;')dnl
 include(atomlist.m4)`'dnl
 
-#endif /* ATOMS_H */
+#endif /* __XCB_ATOM_H__ */
