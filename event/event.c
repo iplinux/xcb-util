@@ -47,7 +47,7 @@ static xcb_event_handler_t *
 get_event_handler(xcb_event_handlers_t *evenths, int event)
 {
     assert(event < 256);
-    event &= 0x7f;
+    event &= XCB_EVENT_RESPONSE_TYPE_MASK;
     assert(event >= 2);
     return &evenths->event[event - 2];
 }

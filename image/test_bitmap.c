@@ -4,6 +4,7 @@
 #include <assert.h>
 #include <xcb/xcb.h>
 #include "../aux/xcb_aux.h"
+#include "../event/xcb_event.h"
 #include "xcb_image.h"
 
 #include "test.xbm"
@@ -49,7 +50,7 @@ void process_events(xcb_connection_t *c,
     xcb_void_cookie_t cookie;
 
     while ((e = xcb_wait_for_event(c))) {
-	uint32_t r = e->response_type & 0x7f;
+	uint32_t r = XCB_EVENT_RESPONSE_TYPE(e);
 	xcb_generic_error_t *err;
 	
 	fprintf(stderr, "event %d\n", r);
