@@ -68,7 +68,7 @@ call_handler(xcb_connection_t *c, uint8_t state, xcb_window_t window, xcb_atom_t
 int
 xcb_property_changed(xcb_property_handlers_t *prophs, uint8_t state, xcb_window_t window, xcb_atom_t atom)
 {
-    xcb_connection_t *c = xcb_get_xcb_connection(xcb_property_get_event_handlers(prophs));
+    xcb_connection_t *c = xcb_event_get_xcb_connection(xcb_property_get_event_handlers(prophs));
     xcb_property_handler_node_t *cur;
 
     for(cur = prophs->head; cur; cur = cur->next)
@@ -97,7 +97,7 @@ xcb_property_handlers_init(xcb_property_handlers_t *prophs, xcb_event_handlers_t
 {
     memset(prophs, 0, sizeof(prophs));
     prophs->evenths = evenths;
-    set_property_notify_event_handler(evenths, handle_property_notify_event, prophs);
+    xcb_event_set_property_notify_handler(evenths, handle_property_notify_event, prophs);
 }
 
 void
