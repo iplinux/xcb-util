@@ -484,7 +484,11 @@ WARN_LOGFILE           =
 # with spaces.
 
 INPUT                  = xcb_util_intro \
-                         image/
+                         event/ \
+                         icccm/ \
+                         image/ \
+                         property/ \
+                         reply/
 
 # This tag can be used to specify the character encoding of the source files that 
 # doxygen parses. Internally doxygen uses the UTF-8 encoding, which is also the default 

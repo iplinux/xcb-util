@@ -26,6 +26,15 @@
  * prior written authorization from the authors.
  */
 
+/**
+ * @defgroup xcb__reply_t XCB Reply Functions
+ *
+ * These functions ease the usage of asynchronous possibility of XCB about
+ * the reply retrieve of sent requests.
+ *
+ * @{
+ */
+
 #ifndef __XCB_REPLY_H__
 #define __XCB_REPLY_H__
 
@@ -105,5 +114,9 @@ void xcb_reply_add_handler(xcb_reply_handlers_t *h, unsigned int request, xcb_ge
 #ifdef __cplusplus
 }
 #endif
+
+/**
+ * @}
+ */
 
 #endif /* __XCB_REPLY_H__ */

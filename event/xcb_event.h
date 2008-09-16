@@ -26,6 +26,14 @@
  * prior written authorization from the authors.
  */
 
+/**
+ * @defgroup xcb__event_t XCB Event Functions
+ *
+ * These functions ease the handling of X events received.
+ *
+ * @{
+ */
+
 #ifndef __XCB_EVENT_H__
 #define __XCB_EVENT_H__
 
@@ -154,5 +162,9 @@ XCB_EVENT_MAKE_EVENT_HANDLER(mapping_notify, MAPPING_NOTIFY)
 #ifdef __cplusplus
 }
 #endif
+
+/**
+ * @}
+ */
 
 #endif /* __XCB_EVENT_H__ */

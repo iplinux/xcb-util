@@ -26,6 +26,14 @@
  * prior written authorization from the authors.
  */
 
+/**
+ * @defgroup xcb__property_t XCB Property Functions
+ *
+ * These functions ease the handling of X propertiess received.
+ *
+ * @{
+ */
+
 #ifndef __XCB_PROPERTY_H__
 #define __XCB_PROPERTY_H__
 
@@ -145,5 +153,9 @@ int xcb_property_changed(xcb_property_handlers_t *prophs, uint8_t state, xcb_win
 #ifdef __cplusplus
 }
 #endif
+
+/**
+ * @}
+ */
 
 #endif /* __XCB_PROPERTY_H__ */
