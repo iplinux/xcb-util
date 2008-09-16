@@ -280,23 +280,27 @@ xcb_get_wm_transient_for_unchecked(xcb_connection_t *c, xcb_window_t window)
 }
 
 uint8_t
+xcb_get_wm_transient_for_from_reply(xcb_window_t *prop,
+                                    xcb_get_property_reply_t *reply)
+{
+  if(!reply || reply->type != WINDOW || reply->format != 32 || !reply->length)
+    return 0;
+
+  *prop = *((xcb_window_t *) xcb_get_property_value(reply));
+
+  return 1;
+}
+
+uint8_t
 xcb_get_wm_transient_for_reply(xcb_connection_t *c,
                                xcb_get_property_cookie_t cookie,
                                xcb_window_t *prop,
                                xcb_generic_error_t **e)
 {
   xcb_get_property_reply_t *reply = xcb_get_property_reply(c, cookie, e);
-
-  if(!reply || reply->type != WINDOW || reply->format != 32 || !reply->length)
-  {
-    free(reply);
-    return 0;
-  }
-
-  *prop = *((xcb_window_t *) xcb_get_property_value(reply));
-
+  uint8_t ret = xcb_get_wm_transient_for_from_reply(prop, reply);
   free(reply);
-  return 1;
+  return ret;
 }
 
 /* WM_SIZE_HINTS */

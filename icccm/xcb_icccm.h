@@ -367,6 +367,15 @@ xcb_get_property_cookie_t xcb_get_wm_transient_for_unchecked(xcb_connection_t *c
                                                              xcb_window_t window);
 
 /**
+ * @brief Fill given window pointer with the WM_TRANSIENT_FOR property of a window.
+ * @param prop WM_TRANSIENT_FOR property value.
+ * @param reply The get property request reply.
+ * @return Return 1 on success, 0 otherwise.
+ */
+uint8_t
+xcb_get_wm_transient_for_from_reply(xcb_window_t *prop,
+                                    xcb_get_property_reply_t *reply);
+/**
  * @brief Fill given structure with the WM_TRANSIENT_FOR property of a window.
  * @param c The connection to the X server.
  * @param cookie Request cookie.
