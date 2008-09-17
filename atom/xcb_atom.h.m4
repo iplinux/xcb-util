@@ -15,6 +15,16 @@ typedef struct {
 	} u;
 } xcb_atom_fast_cookie_t;
 
+/**
+ * @brief Get an atom synchronously.
+ * @param connection The connection to the X server.
+ * @param atom_name The name of the atom that should be returned.
+ * @return The requested atom, or XCB_NONE if there is an error.
+ *
+ * xcb_atom_get() is essentially a synchronous version of xcb_intern_atom(),
+ * use it only on non-performance critical execution paths.
+ */
+xcb_atom_t xcb_atom_get(xcb_connection_t *connection, const char *atom_name);
 xcb_atom_t xcb_atom_get_predefined(uint16_t name_len, const char *name);
 xcb_atom_fast_cookie_t xcb_atom_get_fast(xcb_connection_t *c, uint8_t only_if_exists, uint16_t name_len, const char *name);
 xcb_atom_t xcb_atom_get_fast_reply(xcb_connection_t *c, xcb_atom_fast_cookie_t cookie, xcb_generic_error_t **e);

@@ -42,6 +42,19 @@ define(`DO', `	OFFSET,define(`OFFSET', eval(OFFSET+1+len($1)))')dnl
 include(atomlist.m4)`'dnl
 };
 
+xcb_atom_t xcb_atom_get(xcb_connection_t *connection, const char *atom_name)
+{
+	if(atom_name == NULL)
+		return XCB_NONE;
+	xcb_intern_atom_reply_t *reply = xcb_intern_atom_reply(connection,
+		xcb_intern_atom(connection, 0, strlen(atom_name), atom_name), NULL);
+	if(!reply)
+		return XCB_NONE;
+	xcb_atom_t atom = reply->atom;
+	free(reply);
+	return atom;
+}
+
 xcb_atom_t xcb_atom_get_predefined(uint16_t name_len, const char *name)
 {
 	const struct atom_map *value = in_word_set(name, name_len);
