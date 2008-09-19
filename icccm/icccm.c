@@ -57,6 +57,7 @@ xcb_get_text_property_reply(xcb_connection_t *c,
                             xcb_generic_error_t **e)
 {
   xcb_get_property_reply_t *reply = xcb_get_property_reply(c, cookie, e);
+
   if(!reply)
     return 0;
 
@@ -421,6 +422,8 @@ xcb_get_wm_size_hints_unchecked(xcb_connection_t *c, xcb_window_t window,
 uint8_t
 xcb_get_wm_size_hints_from_reply(xcb_size_hints_t *hints, xcb_get_property_reply_t *reply)
 {
+  uint32_t flags;
+
   if(!reply)
     return 0;
 
@@ -436,20 +439,22 @@ xcb_get_wm_size_hints_from_reply(xcb_size_hints_t *hints, xcb_get_property_reply
   memcpy(hints, (xcb_size_hints_t *) xcb_get_property_value (reply),
          length * reply->format >> 3);
 
-  hints->flags = (XCB_SIZE_HINT_US_POSITION | XCB_SIZE_HINT_US_SIZE |
-                  XCB_SIZE_HINT_P_POSITION | XCB_SIZE_HINT_P_SIZE |
-                  XCB_SIZE_HINT_P_MIN_SIZE | XCB_SIZE_HINT_P_MAX_SIZE |
-                  XCB_SIZE_HINT_P_RESIZE_INC | XCB_SIZE_HINT_P_ASPECT);
+  flags = (XCB_SIZE_HINT_US_POSITION | XCB_SIZE_HINT_US_SIZE |
+           XCB_SIZE_HINT_P_POSITION | XCB_SIZE_HINT_P_SIZE |
+           XCB_SIZE_HINT_P_MIN_SIZE | XCB_SIZE_HINT_P_MAX_SIZE |
+           XCB_SIZE_HINT_P_RESIZE_INC | XCB_SIZE_HINT_P_ASPECT);
 
   /* NumPropSizeElements = 18 (ICCCM version 1) */
   if(length >= 18)
-    hints->flags |= (XCB_SIZE_HINT_BASE_SIZE | XCB_SIZE_HINT_P_WIN_GRAVITY);
+    flags |= (XCB_SIZE_HINT_BASE_SIZE | XCB_SIZE_HINT_P_WIN_GRAVITY);
   else
   {
     hints->base_width = 0;
     hints->base_height = 0;
     hints->win_gravity = 0;
   }
+  /* get rid of unwanted bits */
+  hints->flags &= flags;
 
   return 1;
 }
