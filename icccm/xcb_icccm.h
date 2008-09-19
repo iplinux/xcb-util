@@ -92,6 +92,9 @@ xcb_get_property_cookie_t xcb_get_text_property_unchecked(xcb_connection_t *c,
  * @param e Error if any.
  * @return Return 1 on success, 0 otherwise.
  *
+ * If the function return 0 (failure), the content of prop is unmodified and
+ * therefore the structure must not be wiped.
+ *
  * The parameter e supplied to this function must be NULL if
  * xcb_get_text_property_unchecked() is used.  Otherwise, it stores
  * the error if any.  prop structure members should be freed by
