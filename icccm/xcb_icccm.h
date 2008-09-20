@@ -118,7 +118,7 @@ void xcb_get_text_property_reply_wipe(xcb_get_text_property_reply_t *prop);
  * @brief Deliver a SetProperty request to set WM_NAME property value.
  * @param c The connection to the X server.
  * @param window Window X identifier.
- * @param encoding Encoding used.
+ * @param encoding Encoding used for the data passed in the name parameter, the set property will also have this encoding as its type.
  * @param name_len Length of name value to set.
  * @param name Name value to set.
  */
@@ -180,7 +180,7 @@ void xcb_watch_wm_name(xcb_property_handlers_t *prophs, uint32_t long_len,
  * @brief Deliver a SetProperty request to set WM_ICON_NAME property value.
  * @param c The connection to the X server.
  * @param window Window X identifier.
- * @param encoding Encoding used.
+ * @param encoding Encoding used for the data passed in the name parameter, the set property will also have this encoding as its type.
  * @param name_len Length of name value to set.
  * @param name Name value to set.
  */
@@ -241,7 +241,7 @@ void xcb_watch_wm_icon_name(xcb_property_handlers_t *prophs, uint32_t long_len,
  * @brief Deliver a SetProperty request to set WM_CLIENT_MACHINE property value.
  * @param c The connection to the X server.
  * @param window Window X identifier.
- * @param encoding Encoding used.
+ * @param encoding Encoding used for the data passed in the name parameter, the set property will also have this encoding as its type.
  * @param name_len Length of name value to set.
  * @param name Name value to set.
  */
