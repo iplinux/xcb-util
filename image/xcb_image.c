@@ -532,7 +532,7 @@ static uint32_t
 xy_image_byte (xcb_image_t *image, uint32_t x)
 {
     x >>= 3;
-    if (image->byte_order == XCB_IMAGE_ORDER_LSB_FIRST)
+    if (image->byte_order == image->bit_order)
 	return x;
     switch (image->unit) {
     default:
@@ -868,6 +868,22 @@ byte_order(xcb_image_t *i)
 {
     uint32_t flip = i->byte_order == XCB_IMAGE_ORDER_MSB_FIRST;
 
+    switch (i->bpp) {
+    default:
+    case 8:
+	return 0;
+    case 16:
+	return flip;
+    case 32:
+	return flip | (flip << 1);
+    }
+}
+
+static uint32_t
+bit_order(xcb_image_t *i)
+{
+    uint32_t flip = i->byte_order != i->bit_order;
+
     switch (i->unit) {
     default:
     case 8:
@@ -885,7 +901,15 @@ byte_order(xcb_image_t *i)
 static uint32_t 
 conversion_byte_swap(xcb_image_t *src, xcb_image_t *dst)
 {
-    return byte_order(src) ^ byte_order(dst);
+    xcb_image_format_t ef = effective_format(src->format, src->bpp);
+    
+    /* src_ef == dst_ef in all callers of this function */
+    if (ef == XCB_IMAGE_FORMAT_XY_PIXMAP) {
+	return bit_order(src) ^ bit_order(dst);
+    } else {
+	/* src_bpp == dst_bpp in all callers of this function */
+	return byte_order(src) ^ byte_order(dst);
+    }
 }
 
 xcb_image_t *
