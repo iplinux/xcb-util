@@ -227,7 +227,7 @@ xcb_image_create (uint16_t           width,
   }
   if (!format_valid(depth, bpp, unit, format, xpad))
       return 0;
-  image = (xcb_image_t *)malloc(sizeof(*image));
+  image = malloc(sizeof(*image));
   if (image == 0)
       return 0;
   image->width = width;
