@@ -3,7 +3,10 @@ AC_INIT([xcb-util],0.3.0,[xcb@lists.freedesktop.org])
 AC_CONFIG_SRCDIR([Makefile.am])
 AM_INIT_AUTOMAKE([foreign dist-bzip2])
 
-AC_CHECK_PROGS(M4, m4)
+AC_CHECK_PROGS(M4, m4, [no])
+if test $M4 = "no"; then
+	AC_MSG_ERROR([Can't find m4, please install it and try again])
+fi
 AC_CHECK_PROGS(GPERF, gperf, [no])
 if test $GPERF = "no"; then
 	AC_MSG_ERROR([Can't find gperf, please install it and try again])
