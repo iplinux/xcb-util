@@ -1,6 +1,6 @@
 /*
- * Copyright (C) 2008 Arnaud Fontaine <arnau@debian.org>
- * Copyright (C) 2007-2008 Vincent Torri <vtorri@univ-evry.fr>
+ * Copyright © 2008 Arnaud Fontaine <arnau@debian.org>
+ * Copyright © 2007-2008 Vincent Torri <vtorri@univ-evry.fr>
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
