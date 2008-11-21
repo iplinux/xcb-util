@@ -34,6 +34,7 @@ AC_SUBST(pkgconfigdir)
 PKG_CHECK_MODULES(XCB, xcb >= 1.0)
 PKG_CHECK_MODULES(XCB_SHM, xcb-shm)
 PKG_CHECK_MODULES(XCB_RENDER, xcb-render)
+PKG_CHECK_MODULES(XPROTO, xproto >= 7.0.8)
 
 XCB_AUX_CFLAGS='-I$(top_srcdir)/aux'
 XCB_AUX_LIBS='$(top_builddir)/aux/libxcb-aux.la'
