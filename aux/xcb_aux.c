@@ -44,18 +44,15 @@ xcb_aux_get_depth (xcb_connection_t *c,
 {
   xcb_drawable_t            drawable;
   xcb_get_geometry_reply_t *geom;
-  int                       depth;
+  int                       depth = 0;
 
   drawable = screen->root;
   geom = xcb_get_geometry_reply (c, xcb_get_geometry(c, drawable), 0);
 
-  if (!geom) {
-    perror ("GetGeometry(root) failed");
-    exit (0);
+  if (geom) {
+    depth = geom->depth;
+    free (geom);
   }
-  
-  depth = geom->depth;
-  free (geom);
 
   return depth;
 }
