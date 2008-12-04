@@ -632,7 +632,7 @@ typedef struct {
   int32_t flags;
   /** Does this application rely on the window manager to get keyboard
       input? */
-  uint8_t input;
+  uint32_t input;
   /** See below */
   int32_t initial_state;
   /** Pixmap to be used as icon */
