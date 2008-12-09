@@ -381,7 +381,7 @@ xcb_size_hints_set_base_size(xcb_size_hints_t *hints, int32_t base_width,
 }
 
 void
-xcb_size_hints_set_win_gravity(xcb_size_hints_t *hints, uint8_t win_gravity)
+xcb_size_hints_set_win_gravity(xcb_size_hints_t *hints, uint32_t win_gravity)
 {
   hints->flags |= XCB_SIZE_HINT_P_WIN_GRAVITY;
   hints->win_gravity = win_gravity;

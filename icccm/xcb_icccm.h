@@ -510,7 +510,7 @@ void xcb_size_hints_set_base_size(xcb_size_hints_t *hints, int32_t base_width,
  * @param win_gravity Window gravity value.
  */
 void xcb_size_hints_set_win_gravity(xcb_size_hints_t *hints,
-                                    uint8_t win_gravity);
+                                    uint32_t win_gravity);
 
 /**
  * @brief Deliver a ChangeProperty request to set a value to a given property.
