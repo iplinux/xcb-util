@@ -185,8 +185,8 @@ rule that is satisfied from the following list:
 */
 
 xcb_keysym_t xcb_key_symbols_get_keysym (xcb_key_symbols_t *syms,
-                                         xcb_keycode_t     keycode,
-                                         xcb_key_lookup_t col)
+				  xcb_keycode_t     keycode,
+				  int            col)
 {
   xcb_keysym_t *keysyms;
   xcb_keysym_t  keysym_null = { XCB_NO_SYMBOL };
@@ -266,17 +266,17 @@ xcb_key_symbols_get_keycode (xcb_key_symbols_t *syms,
 }
 
 xcb_keysym_t
-xcb_key_press_lookup_keysym (xcb_key_symbols_t     *syms,
-                             xcb_key_press_event_t *event,
-                             xcb_key_lookup_t col)
+xcb_key_press_lookup_keysym (xcb_key_symbols_t    *syms,
+			 xcb_key_press_event_t *event,
+			 int               col)
 {
   return xcb_key_symbols_get_keysym (syms, event->detail, col);
 }
 
 xcb_keysym_t
-xcb_key_release_lookup_keysym (xcb_key_symbols_t       *syms,
-                               xcb_key_release_event_t *event,
-                               xcb_key_lookup_t col)
+xcb_key_release_lookup_keysym (xcb_key_symbols_t      *syms,
+			   xcb_key_release_event_t *event,
+			   int                 col)
 {
   return xcb_key_symbols_get_keysym (syms, event->detail, col);
 }
