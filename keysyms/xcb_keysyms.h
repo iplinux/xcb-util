@@ -11,14 +11,6 @@ extern "C" {
 
 typedef struct _XCBKeySymbols xcb_key_symbols_t;
 
-/* enumeration for col parameter? */
-enum {
-	xcb_lookup_none_t   = 1,
-	xcb_lookup_chars_t  = 2,
-	xcb_lookup_key_sym_t = 3,
-	xcb_lookup_both_t   = 4
-} xcb_lookup_t;
-
 xcb_key_symbols_t *xcb_key_symbols_alloc        (xcb_connection_t         *c);
 
 void           xcb_key_symbols_free         (xcb_key_symbols_t         *syms);
