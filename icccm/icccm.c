@@ -250,13 +250,13 @@ xcb_get_wm_class_reply(xcb_connection_t *c, xcb_get_property_cookie_t cookie,
   }
 
   prop->_reply = reply;
-  prop->name = (char *) xcb_get_property_value(prop->_reply);
+  prop->instance_name = (char *) xcb_get_property_value(prop->_reply);
 
-  int name_len = strlen(prop->name);
+  int name_len = strlen(prop->instance_name);
   if(name_len == xcb_get_property_value_length(prop->_reply))
     name_len--;
 
-  prop->class = prop->name + name_len + 1;
+  prop->class_name = prop->instance_name + name_len + 1;
 
   return 1;
 }

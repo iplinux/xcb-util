@@ -304,9 +304,9 @@ void xcb_watch_wm_client_machine(xcb_property_handlers_t *prophs,
  */
 typedef struct {
   /** Instance name */
-  char *name;
+  char *instance_name;
   /** Class of application */
-  char *class;
+  char *class_name;
   /** Store reply to avoid memory allocation, should normally not be
       used directly */
   xcb_get_property_reply_t *_reply;
