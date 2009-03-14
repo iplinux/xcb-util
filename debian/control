@@ -1,5 +1,5 @@
 Source: xcb-util
-Section: libdevel
+Section: gui
 Priority: extra
 Maintainer: Mikhail Gusarov <dottedmag@dottedmag.net>
 Build-Depends: cdbs,
@@ -14,15 +14,12 @@ Build-Depends: cdbs,
                autoconf,
                automake,
                libtool
-XCS-Cross-Host-Build-Depends: cdbs, debhelper (>= 5), autotools-dev, gperf, pkg-config, m4, autoconf, automake, libtool
+XCS-Cross-Host-Build-Depends: cdbs, cdbs-embedded, debhelper (>= 5), autotools-dev, gperf, pkg-config, m4, autoconf, automake, libtool
 XCS-Cross-Build-Depends: libxcb-render0-dev, libxcb1-dev, libxcb-shm0-dev
 Standards-Version: 3.8.0
 Homepage: http://xcb.freedesktop.org
-Vcs-Git: git://git.debian.org/git/collab-maint/xcb-util.git
-Vcs-Browser: http://git.debian.org/?p=collab-maint/xcb-util.git
 
 Package: libxcb-atom0
-Section: gui
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: utility libraries for X C Binding -- atom
@@ -37,9 +34,9 @@ Description: utility libraries for X C Binding -- atom
  the X protocol but which have traditionally been provided by Xlib.
 
 Package: libxcb-atom0-dev
+Section: libdevel
 Architecture: any
-Depends: libxcb-atom0 (= ${binary:Version}),
-         libxcb1-dev
+Depends: libxcb-atom0 (= ${binary:Version}), libxcb1-dev
 Description: utility libraries for X C Binding -- atom
  This package contains the header and library files needed to build software
  using libxcb-atom, providing standard core X atom constants and atom caching.
@@ -52,7 +49,6 @@ Description: utility libraries for X C Binding -- atom
  the X protocol but which have traditionally been provided by Xlib.
 
 Package: libxcb-aux0
-Section: gui
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: utility libraries for X C Binding -- aux
@@ -68,9 +64,9 @@ Description: utility libraries for X C Binding -- aux
  the X protocol but which have traditionally been provided by Xlib.
 
 Package: libxcb-aux0-dev
+Section: libdevel
 Architecture: any
-Depends: libxcb-aux0 (= ${binary:Version}),
-         libxcb1-dev
+Depends: libxcb-aux0 (= ${binary:Version}), libxcb1-dev
 Description: utility libraries for X C Binding -- aux
  This package contains the header and library files needed to build software
  using libxcb-aux, providing convenient access to connection setup and some
@@ -84,7 +80,6 @@ Description: utility libraries for X C Binding -- aux
  the X protocol but which have traditionally been provided by Xlib.
 
 Package: libxcb-event0
-Section: gui
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: utility libraries for X C Binding -- event
@@ -99,9 +94,9 @@ Description: utility libraries for X C Binding -- event
  the X protocol but which have traditionally been provided by Xlib.
 
 Package: libxcb-event0-dev
+Section: libdevel
 Architecture: any
-Depends: libxcb-event0 (= ${binary:Version}),
-         libxcb1-dev
+Depends: libxcb-event0 (= ${binary:Version}), libxcb1-dev
 Description: utility libraries for X C Binding -- event
  This package contains the header and library files needed to build software
  using libxcb-event, providing X callback event handling.
@@ -114,7 +109,6 @@ Description: utility libraries for X C Binding -- event
  the X protocol but which have traditionally been provided by Xlib.
 
 Package: libxcb-image0
-Section: gui
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: utility libraries for X C Binding -- image
@@ -129,10 +123,9 @@ Description: utility libraries for X C Binding -- image
  the X protocol but which have traditionally been provided by Xlib.
 
 Package: libxcb-image0-dev
+Section: libdevel
 Architecture: any
-Depends: libxcb-image0 (= ${binary:Version}),
-         libxcb1-dev,
-         libxcb-shm0-dev
+Depends: libxcb-image0 (= ${binary:Version}), libxcb1-dev, libxcb-shm0-dev
 Description: utility libraries for X C Binding -- image
  This package contains the header and library files needed to build software
  using libxcb-image, providing port of Xlib's XImage and XShmImage functions.
@@ -145,7 +138,6 @@ Description: utility libraries for X C Binding -- image
  the X protocol but which have traditionally been provided by Xlib.
 
 Package: libxcb-keysyms0
-Section: gui
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: utility libraries for X C Binding -- keysyms
@@ -161,9 +153,9 @@ Description: utility libraries for X C Binding -- keysyms
  the X protocol but which have traditionally been provided by Xlib.
 
 Package: libxcb-keysyms0-dev
+Section: libdevel
 Architecture: any
-Depends: libxcb-keysyms0 (= ${binary:Version}),
-         libxcb1-dev
+Depends: libxcb-keysyms0 (= ${binary:Version}), libxcb1-dev
 Description: utility libraries for X C Binding -- keysyms
  This package contains the header and library files needed to build software
  using libxcb-keysyms, providing standard X key constants and conversion to/from
@@ -177,7 +169,6 @@ Description: utility libraries for X C Binding -- keysyms
  the X protocol but which have traditionally been provided by Xlib.
 
 Package: libxcb-property0
-Section: gui
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: utility libraries for X C Binding -- property
@@ -192,10 +183,9 @@ Description: utility libraries for X C Binding -- property
  the X protocol but which have traditionally been provided by Xlib.
 
 Package: libxcb-property0-dev
+Section: libdevel
 Architecture: any
-Depends: libxcb-property0 (= ${binary:Version}),
-         libxcb1-dev,
-         libxcb-event0-dev
+Depends: libxcb-property0 (= ${binary:Version}), libxcb1-dev, libxcb-event0-dev
 Description: utility libraries for X C Binding -- property
  This package contains the header and library files needed to build software
  using libxcb-property, providing callback X property-change handling.
@@ -208,7 +198,6 @@ Description: utility libraries for X C Binding -- property
  the X protocol but which have traditionally been provided by Xlib.
 
 Package: libxcb-render-util0
-Section: gui
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: utility libraries for X C Binding -- render-util
@@ -223,10 +212,9 @@ Description: utility libraries for X C Binding -- render-util
  the X protocol but which have traditionally been provided by Xlib.
 
 Package: libxcb-render-util0-dev
+Section: libdevel
 Architecture: any
-Depends: libxcb-render-util0 (= ${binary:Version}),
-         libxcb1-dev,
-         libxcb-render0-dev
+Depends: libxcb-render-util0 (= ${binary:Version}), libxcb1-dev, libxcb-render0-dev
 Description: utility libraries for X C Binding -- render-util
  This package contains the header and library files needed to build software
  using libxcb-render-util, providing convenience functions for the Render
@@ -240,7 +228,6 @@ Description: utility libraries for X C Binding -- render-util
  the X protocol but which have traditionally been provided by Xlib.
 
 Package: libxcb-reply0
-Section: gui
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: utility libraries for X C Binding -- reply
@@ -255,9 +242,9 @@ Description: utility libraries for X C Binding -- reply
  the X protocol but which have traditionally been provided by Xlib.
 
 Package: libxcb-reply0-dev
+Section: libdevel
 Architecture: any
-Depends: libxcb-reply0 (= ${binary:Version}),
-         libxcb1-dev
+Depends: libxcb-reply0 (= ${binary:Version}), libxcb1-dev
 Description: utility libraries for X C Binding -- reply
  This package contains the header and library files needed to build software
  using libxcb-reply.
@@ -270,7 +257,6 @@ Description: utility libraries for X C Binding -- reply
  the X protocol but which have traditionally been provided by Xlib.
 
 Package: libxcb-wm0
-Section: gui
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: utility libraries for X C Binding -- wm
@@ -285,13 +271,10 @@ Description: utility libraries for X C Binding -- wm
  the X protocol but which have traditionally been provided by Xlib.
 
 Package: libxcb-wm0-dev
+Section: libdevel
 Architecture: any
-Depends: libxcb-wm0 (= ${binary:Version}),
-         libxcb1-dev,
-         libxcb-atom0-dev,
-         libxcb-event0-dev,
-         libxcb-property0-dev,
-         libxcb-icccm0-dev
+Depends: libxcb-wm0 (= ${binary:Version}), libxcb1-dev, libxcb-atom0-dev,
+         libxcb-event0-dev, libxcb-property0-dev, libxcb-icccm0-dev
 Description: utility libraries for X C Binding -- wm
  This package contains the header and library files needed to build software
  using libxcb-wm, providing a framework for window manager implementation.
@@ -304,7 +287,6 @@ Description: utility libraries for X C Binding -- wm
  the X protocol but which have traditionally been provided by Xlib.
 
 Package: libxcb-icccm0
-Section: gui
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: utility libraries for X C Binding -- icccm
@@ -319,10 +301,9 @@ Description: utility libraries for X C Binding -- icccm
  the X protocol but which have traditionally been provided by Xlib.
 
 Package: libxcb-icccm0-dev
+Section: libdevel
 Architecture: any
-Depends: libxcb-icccm0 (= ${binary:Version}),
-         libxcb1-dev,
-         libxcb-atom0-dev,
+Depends: libxcb-icccm0 (= ${binary:Version}), libxcb1-dev, libxcb-atom0-dev,
          libxcb-property0-dev
 Description: utility libraries for X C Binding -- icccm
  This package contains the header and library files needed to build software

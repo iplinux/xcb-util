@@ -1,3 +1,9 @@
+xcb-util (0.2.1+git2-1) asimov; urgency=low
+
+  * First build for IPlinux.
+
+ -- Mikhail Gusarov <dottedmag@dottedmag.net>  Sun, 15 Mar 2009 03:33:44 +0600
+
 xcb-util (0.2.1+git2-0.oi1) unstable; urgency=low
 
   * OpenInkpot build:
