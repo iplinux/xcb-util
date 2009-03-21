@@ -1,9 +1,12 @@
 AC_PREREQ(2.57)
-AC_INIT([xcb-util],0.2.1,[xcb@lists.freedesktop.org])
+AC_INIT([xcb-util],0.3.3,[xcb@lists.freedesktop.org])
 AC_CONFIG_SRCDIR([Makefile.am])
 AM_INIT_AUTOMAKE([foreign dist-bzip2])
 
-AC_CHECK_PROGS(M4, m4)
+AC_CHECK_PROGS(M4, m4, [no])
+if test $M4 = "no"; then
+	AC_MSG_ERROR([Can't find m4, please install it and try again])
+fi
 AC_CHECK_PROGS(GPERF, gperf, [no])
 if test $GPERF = "no"; then
 	AC_MSG_ERROR([Can't find gperf, please install it and try again])
@@ -20,6 +23,7 @@ else
     fi
 fi
 AC_SUBST(CWARNFLAGS)
+AC_CHECK_FUNCS_ONCE(vasprintf)
 
 xcbincludedir='${includedir}/xcb'
 AC_SUBST(xcbincludedir)
@@ -30,6 +34,7 @@ AC_SUBST(pkgconfigdir)
 PKG_CHECK_MODULES(XCB, xcb >= 1.0)
 PKG_CHECK_MODULES(XCB_SHM, xcb-shm)
 PKG_CHECK_MODULES(XCB_RENDER, xcb-render)
+PKG_CHECK_MODULES(XPROTO, xproto >= 7.0.8)
 
 XCB_AUX_CFLAGS='-I$(top_srcdir)/aux'
 XCB_AUX_LIBS='$(top_builddir)/aux/libxcb-aux.la'

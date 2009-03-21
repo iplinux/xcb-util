@@ -1,9 +1,39 @@
+/*
+ * Copyright © 2008 Bart Massey <bart@cs.pdx.edu>
+ * Copyright © 2008 Julien Danjou <julien@danjou.info>
+ *
+ * Permission is hereby granted, free of charge, to any person
+ * obtaining a copy of this software and associated documentation
+ * files (the "Software"), to deal in the Software without
+ * restriction, including without limitation the rights to use, copy,
+ * modify, merge, publish, distribute, sublicense, and/or sell copies
+ * of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be
+ * included in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY
+ * CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+ * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+ * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ *
+ * Except as contained in this notice, the names of the authors or
+ * their institutions shall not be used in advertising or otherwise to
+ * promote the sale, use or other dealings in this Software without
+ * prior written authorization from the authors.
+ */
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <assert.h>
 #include <xcb/xcb.h>
 #include "../aux/xcb_aux.h"
+#include "../event/xcb_event.h"
 #include "xcb_image.h"
 
 #include "test.xbm"
@@ -49,7 +79,7 @@ void process_events(xcb_connection_t *c,
     xcb_void_cookie_t cookie;
 
     while ((e = xcb_wait_for_event(c))) {
-	uint32_t r = e->response_type & 0x7f;
+	uint32_t r = XCB_EVENT_RESPONSE_TYPE(e);
 	xcb_generic_error_t *err;
 	
 	fprintf(stderr, "event %d\n", r);

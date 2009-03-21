@@ -1,3 +1,33 @@
+/*
+ * Copyright © 2008 Ian Osgood <iano@quirkster.com>
+ * Copyright © 2008 Jamey Sharp <jamey@minilop.net>
+ * Copyright © 2008 Josh Triplett <josh@freedesktop.org>
+ * Copyright © 2008 Julien Danjou <julien@danjou.info>
+ *
+ * Permission is hereby granted, free of charge, to any person
+ * obtaining a copy of this software and associated documentation
+ * files (the "Software"), to deal in the Software without
+ * restriction, including without limitation the rights to use, copy,
+ * modify, merge, publish, distribute, sublicense, and/or sell copies
+ * of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be
+ * included in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY
+ * CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+ * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+ * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ *
+ * Except as contained in this notice, the names of the authors or
+ * their institutions shall not be used in advertising or otherwise to
+ * promote the sale, use or other dealings in this Software without
+ * prior written authorization from the authors.
+ */
 #include <pthread.h>
 #include <string.h>
 #include <stdlib.h>
@@ -176,8 +206,8 @@ static int handleWMNameChange(void *data, xcb_connection_t *c, uint8_t state, xc
 int main(int argc, char **argv)
 {
 	xcb_connection_t *c;
-	xcb_event_handlers_t *evenths;
-	xcb_property_handlers_t *prophs;
+	xcb_event_handlers_t evenths;
+	xcb_property_handlers_t prophs;
 	xcb_window_t root;
 	pthread_t event_thread;
         int screen_nbr;
@@ -188,24 +218,24 @@ int main(int argc, char **argv)
 
 	c = xcb_connect(NULL, &screen_nbr);
 
-	evenths = xcb_alloc_event_handlers(c);
+	xcb_event_handlers_init(c, &evenths);
 
 	for(i = 2; i < 128; ++i)
-		xcb_set_event_handler(evenths, i, handleEvent, 0);
+		xcb_event_set_handler(&evenths, i, handleEvent, 0);
 	for(i = 0; i < 256; ++i)
-		xcb_set_error_handler(evenths, i, (xcb_generic_error_handler_t) handleEvent, 0);
-	set_button_press_event_handler(evenths, handleButtonPressEvent, 0);
-	set_button_release_event_handler(evenths, handleButtonReleaseEvent, 0);
-	set_unmap_notify_event_handler(evenths, handle_unmap_notify_event, 0);
-	set_expose_event_handler(evenths, handleExposeEvent, 0);
+		xcb_event_set_error_handler(&evenths, i, (xcb_generic_error_handler_t) handleEvent, 0);
+	xcb_event_set_button_press_handler(&evenths, handleButtonPressEvent, 0);
+	xcb_event_set_button_release_handler(&evenths, handleButtonReleaseEvent, 0);
+	xcb_event_set_unmap_notify_handler(&evenths, handle_unmap_notify_event, 0);
+	xcb_event_set_expose_handler(&evenths, handleExposeEvent, 0);
 
-	prophs = xcb_alloc_property_handlers(evenths);
-	set_map_notify_event_handler(evenths, handle_map_notify_event, prophs);
-	xcb_watch_wm_name(prophs, 40, handleWMNameChange, 0);
+	xcb_property_handlers_init(&prophs, &evenths);
+	xcb_event_set_map_notify_handler(&evenths, handle_map_notify_event, &prophs);
+	xcb_watch_wm_name(&prophs, 40, handleWMNameChange, 0);
 
 	if(TEST_THREADS)
 	{
-		pthread_create(&event_thread, 0, (void *(*)(void *))xcb_wait_for_event_loop, evenths);
+		pthread_create(&event_thread, 0, (void *(*)(void *))xcb_event_wait_for_event_loop, &evenths);
 	}
 
 	root = xcb_aux_get_screen(c, screen_nbr)->root;
@@ -217,13 +247,13 @@ int main(int argc, char **argv)
 	}
 	xcb_flush(c);
 
-	manage_existing_windows(c, prophs, root);
+	manage_existing_windows(c, &prophs, root);
 
 	/* Terminate only when the event loop terminates */
 	if(TEST_THREADS)
 		pthread_join(event_thread, 0);
 	else
-		xcb_wait_for_event_loop(evenths);
+		xcb_event_wait_for_event_loop(&evenths);
 
 	exit(0);
 	/*NOTREACHED*/

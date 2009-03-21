@@ -1,810 +1,710 @@
+/*
+ * Copyright © 2008 Arnaud Fontaine <arnau@debian.org>
+ * Copyright © 2007-2008 Vincent Torri <vtorri@univ-evry.fr>
+ *
+ * Permission is hereby granted, free of charge, to any person
+ * obtaining a copy of this software and associated documentation
+ * files (the "Software"), to deal in the Software without
+ * restriction, including without limitation the rights to use, copy,
+ * modify, merge, publish, distribute, sublicense, and/or sell copies
+ * of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be
+ * included in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY
+ * CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+ * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+ * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ *
+ * Except as contained in this notice, the names of the authors or
+ * their institutions shall not be used in advertising or otherwise to
+ * promote the sale, use or other dealings in this Software without
+ * prior written authorization from the authors.
+ */
+
 #include <stdlib.h>
+#include <limits.h>
 #include <string.h>
+
 #include "xcb_icccm.h"
 #include "xcb_atom.h"
 
-
-static int
+xcb_get_property_cookie_t
 xcb_get_text_property(xcb_connection_t *c,
-                      xcb_window_t      window,
-                      xcb_atom_t        property,
-                      uint8_t          *format,
-                      xcb_atom_t       *encoding,
-                      uint32_t         *name_len,
-                      char            **name)
+                      xcb_window_t window,
+                      xcb_atom_t property)
 {
-	xcb_get_property_cookie_t cookie;
-	xcb_get_property_reply_t *reply;
+  return xcb_get_any_property(c, 0, window, property, UINT_MAX);
+}
 
-	cookie = xcb_get_any_property(c, 0, window, property, 128);
-	reply = xcb_get_property_reply(c, cookie, 0);
-	if(!reply)
-		return 0;
-	*format = reply->format;
-	*encoding = reply->type;
-	*name_len = xcb_get_property_value_length(reply) * *format / 8;
-	if(reply->bytes_after)
-	{
-		cookie = xcb_get_property(c, 0, window, property, reply->type, 0, *name_len);
-		free(reply);
-		reply = xcb_get_property_reply(c, cookie, 0);
-		if(!reply)
-			return 0;
-	}
-	memmove(reply, xcb_get_property_value(reply), *name_len);
-	*name = (char *) reply;
-	return 1;
+xcb_get_property_cookie_t
+xcb_get_text_property_unchecked(xcb_connection_t *c,
+                                xcb_window_t window,
+                                xcb_atom_t property)
+{
+  return xcb_get_any_property_unchecked(c, 0, window, property, UINT_MAX);
+}
+
+uint8_t
+xcb_get_text_property_reply(xcb_connection_t *c,
+                            xcb_get_property_cookie_t cookie,
+                            xcb_get_text_property_reply_t *prop,
+                            xcb_generic_error_t **e)
+{
+  xcb_get_property_reply_t *reply = xcb_get_property_reply(c, cookie, e);
+
+  if(!reply)
+    return 0;
+
+  prop->_reply = reply;
+  prop->encoding = prop->_reply->type;
+  prop->format = prop->_reply->format;
+  prop->name_len = xcb_get_property_value_length(prop->_reply) * prop->format >> 3;
+  prop->name = xcb_get_property_value(prop->_reply);
+
+  return 1;
+}
+
+void xcb_get_text_property_reply_wipe(xcb_get_text_property_reply_t *prop)
+{
+  free(prop->_reply);
 }
 
 /* WM_NAME */
 
 void
-xcb_set_wm_name_checked (xcb_connection_t *c,
-                         xcb_window_t      window,
-                         xcb_atom_t        encoding,
-                         uint32_t          name_len,
-                         const char       *name)
+xcb_set_wm_name_checked(xcb_connection_t *c, xcb_window_t window,
+                        xcb_atom_t encoding, uint32_t name_len,
+                        const char *name)
 {
-	xcb_change_property_checked(c, XCB_PROP_MODE_REPLACE, window, WM_NAME, encoding, 8, name_len, name);
+  xcb_change_property_checked(c, XCB_PROP_MODE_REPLACE, window, WM_NAME,
+                              encoding, 8, name_len, name);
 }
 
 void
-xcb_set_wm_name (xcb_connection_t *c,
-                 xcb_window_t      window,
-                 xcb_atom_t        encoding,
-                 uint32_t          name_len,
-                 const char       *name)
+xcb_set_wm_name(xcb_connection_t *c, xcb_window_t window, xcb_atom_t encoding,
+                uint32_t name_len, const char *name)
 {
-	xcb_change_property(c, XCB_PROP_MODE_REPLACE, window, WM_NAME, encoding, 8, name_len, name);
+  xcb_change_property(c, XCB_PROP_MODE_REPLACE, window, WM_NAME, encoding, 8,
+                      name_len, name);
 }
 
-int
-xcb_get_wm_name (xcb_connection_t *c,
-                 xcb_window_t      window,
-                 uint8_t          *format,
-                 xcb_atom_t       *encoding,
-                 uint32_t         *name_len,
-                 char            **name)
+xcb_get_property_cookie_t
+xcb_get_wm_name(xcb_connection_t *c,
+                xcb_window_t window)
 {
-	return xcb_get_text_property(c, window, WM_NAME, format, encoding, name_len, name);
+  return xcb_get_text_property(c, window, WM_NAME);
+}
+
+xcb_get_property_cookie_t
+xcb_get_wm_name_unchecked(xcb_connection_t *c,
+                          xcb_window_t window)
+{
+  return xcb_get_text_property_unchecked(c, window, WM_NAME);
+}
+
+uint8_t
+xcb_get_wm_name_reply(xcb_connection_t *c,
+                      xcb_get_property_cookie_t cookie,
+                      xcb_get_text_property_reply_t *prop,
+                      xcb_generic_error_t **e)
+{
+  return xcb_get_text_property_reply(c, cookie, prop, e);
 }
 
 void
-xcb_watch_wm_name (xcb_property_handlers_t        *prophs,
-                   uint32_t                       long_len,
-                   xcb_generic_property_handler_t handler,
-                   void                          *data)
+xcb_watch_wm_name(xcb_property_handlers_t *prophs, uint32_t long_len,
+                  xcb_generic_property_handler_t handler, void *data)
 {
-	xcb_set_property_handler(prophs, WM_NAME, long_len, handler, data);
+  xcb_property_set_handler(prophs, WM_NAME, long_len, handler, data);
 }
 
 /* WM_ICON_NAME */
 
 void
-xcb_set_wm_icon_name_checked (xcb_connection_t *c,
-                              xcb_window_t      window,
-                              xcb_atom_t        encoding,
-                              uint32_t          name_len,
-                              const char       *name)
+xcb_set_wm_icon_name_checked(xcb_connection_t *c, xcb_window_t window,
+                             xcb_atom_t encoding, uint32_t name_len,
+                             const char *name)
 {
-	xcb_change_property_checked(c, XCB_PROP_MODE_REPLACE, window, WM_ICON_NAME, encoding, 8, name_len, name);
+  xcb_change_property_checked(c, XCB_PROP_MODE_REPLACE, window, WM_ICON_NAME,
+                              encoding, 8, name_len, name);
 }
 
 void
-xcb_set_wm_icon_name (xcb_connection_t *c,
-                      xcb_window_t      window,
-                      xcb_atom_t        encoding,
-                      uint32_t          name_len,
-                      const char       *name)
+xcb_set_wm_icon_name(xcb_connection_t *c, xcb_window_t window,
+                     xcb_atom_t encoding, uint32_t name_len, const char *name)
 {
-	xcb_change_property(c, XCB_PROP_MODE_REPLACE, window, WM_ICON_NAME, encoding, 8, name_len, name);
+  xcb_change_property(c, XCB_PROP_MODE_REPLACE, window, WM_ICON_NAME, encoding,
+                      8, name_len, name);
 }
 
-int
-xcb_get_wm_icon_name (xcb_connection_t *c,
-                      xcb_window_t      window,
-                      uint8_t          *format,
-                      xcb_atom_t       *encoding,
-                      uint32_t         *name_len,
-                      char            **name)
+xcb_get_property_cookie_t
+xcb_get_wm_icon_name(xcb_connection_t *c,
+                     xcb_window_t window)
 {
-	return xcb_get_text_property(c, window, WM_ICON_NAME, format, encoding, name_len, name);
+  return xcb_get_text_property(c, window, WM_ICON_NAME);
+}
+
+xcb_get_property_cookie_t
+xcb_get_wm_icon_name_unchecked(xcb_connection_t *c,
+                               xcb_window_t window)
+{
+  return xcb_get_text_property_unchecked(c, window, WM_ICON_NAME);
+}
+
+uint8_t
+xcb_get_wm_icon_name_reply(xcb_connection_t *c,
+                           xcb_get_property_cookie_t cookie,
+                           xcb_get_text_property_reply_t *prop,
+                           xcb_generic_error_t **e)
+{
+  return xcb_get_text_property_reply(c, cookie, prop, e);
 }
 
 void
-xcb_watch_wm_icon_name (xcb_property_handlers_t        *prophs,
-                        uint32_t                       long_len,
-                        xcb_generic_property_handler_t handler,
-                        void                          *data)
+xcb_watch_wm_icon_name(xcb_property_handlers_t *prophs, uint32_t long_len,
+                       xcb_generic_property_handler_t handler, void *data)
 {
-	xcb_set_property_handler(prophs, WM_ICON_NAME, long_len, handler, data);
+  xcb_property_set_handler(prophs, WM_ICON_NAME, long_len, handler, data);
 }
 
 /* WM_CLIENT_MACHINE */
 
 void
-xcb_set_wm_client_machine_checked (xcb_connection_t *c,
-                                   xcb_window_t      window,
-                                   xcb_atom_t        encoding,
-                                   uint32_t          name_len,
-                                   const char       *name)
+xcb_set_wm_client_machine_checked(xcb_connection_t *c, xcb_window_t window,
+                                  xcb_atom_t encoding, uint32_t name_len,
+                                  const char *name)
 {
-	xcb_change_property_checked(c, XCB_PROP_MODE_REPLACE, window, WM_CLIENT_MACHINE, encoding, 8, name_len, name);
+  xcb_change_property_checked(c, XCB_PROP_MODE_REPLACE, window,
+                              WM_CLIENT_MACHINE, encoding, 8, name_len, name);
 }
 
 void
-xcb_set_wm_client_machine (xcb_connection_t *c,
-                           xcb_window_t      window,
-                           xcb_atom_t        encoding,
-                           uint32_t          name_len,
-                           const char       *name)
+xcb_set_wm_client_machine(xcb_connection_t *c, xcb_window_t window,
+                          xcb_atom_t encoding, uint32_t name_len,
+                          const char *name)
 {
-	xcb_change_property(c, XCB_PROP_MODE_REPLACE, window, WM_CLIENT_MACHINE, encoding, 8, name_len, name);
+  xcb_change_property(c, XCB_PROP_MODE_REPLACE, window, WM_CLIENT_MACHINE,
+                      encoding, 8, name_len, name);
 }
 
-int
-xcb_get_wm_client_machine (xcb_connection_t *c,
-                           xcb_window_t      window,
-                           uint8_t          *format,
-                           xcb_atom_t       *encoding,
-                           uint32_t         *name_len,
-                           char            **name)
+xcb_get_property_cookie_t
+xcb_get_wm_client_machine(xcb_connection_t *c,
+                          xcb_window_t window)
 {
-	return xcb_get_text_property(c, window, WM_CLIENT_MACHINE, format, encoding, name_len, name);
+  return xcb_get_text_property(c, window, WM_CLIENT_MACHINE);
+}
+
+xcb_get_property_cookie_t
+xcb_get_wm_client_machine_unchecked(xcb_connection_t *c,
+                                    xcb_window_t window)
+{
+  return xcb_get_text_property_unchecked(c, window, WM_CLIENT_MACHINE);
+}
+
+uint8_t
+xcb_get_wm_client_machine_reply(xcb_connection_t *c,
+                                xcb_get_property_cookie_t cookie,
+                                xcb_get_text_property_reply_t *prop,
+                                xcb_generic_error_t **e)
+{
+  return xcb_get_text_property_reply(c, cookie, prop, e);
 }
 
 void
-xcb_watch_wm_client_machine (xcb_property_handlers_t        *prophs,
-                             uint32_t                       long_len,
-                             xcb_generic_property_handler_t handler,
-                             void                          *data)
+xcb_watch_wm_client_machine(xcb_property_handlers_t *prophs, uint32_t long_len,
+                            xcb_generic_property_handler_t handler, void *data)
 {
-	xcb_set_property_handler(prophs, WM_CLIENT_MACHINE, long_len, handler, data);
+  xcb_property_set_handler(prophs, WM_CLIENT_MACHINE, long_len, handler, data);
+}
+
+/* WM_CLASS */
+
+xcb_get_property_cookie_t
+xcb_get_wm_class(xcb_connection_t *c, xcb_window_t window)
+{
+  return xcb_get_property(c, 0, window, WM_CLASS, STRING, 0L, 2048L);
+}
+
+xcb_get_property_cookie_t
+xcb_get_wm_class_unchecked(xcb_connection_t *c, xcb_window_t window)
+{
+  return xcb_get_property_unchecked(c, 0, window, WM_CLASS, STRING, 0L, 2048L);
+}
+
+uint8_t
+xcb_get_wm_class_reply(xcb_connection_t *c, xcb_get_property_cookie_t cookie,
+                       xcb_get_wm_class_reply_t *prop, xcb_generic_error_t **e)
+{
+  xcb_get_property_reply_t *reply = xcb_get_property_reply(c, cookie, e);
+
+  if(!reply || reply->type != STRING || reply->format != 8)
+  {
+    free(reply);
+    return 0;
+  }
+
+  prop->_reply = reply;
+  prop->instance_name = (char *) xcb_get_property_value(prop->_reply);
+
+  int name_len = strlen(prop->instance_name);
+  if(name_len == xcb_get_property_value_length(prop->_reply))
+    name_len--;
+
+  prop->class_name = prop->instance_name + name_len + 1;
+
+  return 1;
+}
+
+void xcb_get_wm_class_reply_wipe(xcb_get_wm_class_reply_t *prop)
+{
+  free(prop->_reply);
 }
 
 /* WM_TRANSIENT_FOR */
-int
-xcb_get_wm_transient_for (xcb_connection_t *c,
-                          xcb_window_t      window,
-                          xcb_window_t      *prop_win)
+
+xcb_get_property_cookie_t
+xcb_get_wm_transient_for(xcb_connection_t *c, xcb_window_t window)
 {
-    xcb_get_property_cookie_t prop_q;
-    xcb_get_property_reply_t *prop_r;
+  return xcb_get_property(c, 0, window, WM_TRANSIENT_FOR, WINDOW, 0, 1);
+}
 
-    prop_q = xcb_get_property(c, 0, window, WM_TRANSIENT_FOR, WINDOW, 0, 1);
-    prop_r = xcb_get_property_reply(c, prop_q, NULL);
+xcb_get_property_cookie_t
+xcb_get_wm_transient_for_unchecked(xcb_connection_t *c, xcb_window_t window)
+{
+  return xcb_get_property_unchecked(c, 0, window, WM_TRANSIENT_FOR, WINDOW, 0, 1);
+}
 
-    if(!prop_r)
-        return 0;
+uint8_t
+xcb_get_wm_transient_for_from_reply(xcb_window_t *prop,
+                                    xcb_get_property_reply_t *reply)
+{
+  if(!reply || reply->type != WINDOW || reply->format != 32 || !reply->length)
+    return 0;
 
-    if(prop_r->type != WINDOW || prop_r->format != 32 || !prop_r->length)
-    {
-        *prop_win = XCB_NONE;
-        free(prop_r);
-        return 0;
-    }
+  *prop = *((xcb_window_t *) xcb_get_property_value(reply));
 
-    *prop_win = *((xcb_window_t *) xcb_get_property_value(prop_r));
-    free(prop_r);
+  return 1;
+}
 
-    return 1;
+uint8_t
+xcb_get_wm_transient_for_reply(xcb_connection_t *c,
+                               xcb_get_property_cookie_t cookie,
+                               xcb_window_t *prop,
+                               xcb_generic_error_t **e)
+{
+  xcb_get_property_reply_t *reply = xcb_get_property_reply(c, cookie, e);
+  uint8_t ret = xcb_get_wm_transient_for_from_reply(prop, reply);
+  free(reply);
+  return ret;
 }
 
 /* WM_SIZE_HINTS */
 
-struct xcb_size_hints_t {
-	uint32_t flags;
-	int32_t x, y, width, height;
-	int32_t min_width, min_height;
-	int32_t max_width, max_height;
-	int32_t width_inc, height_inc;
-	int32_t min_aspect_num, min_aspect_den;
-	int32_t max_aspect_num, max_aspect_den;
-	int32_t base_width, base_height;
-	uint32_t win_gravity;
-};
-
-xcb_size_hints_t *
-xcb_alloc_size_hints()
+void
+xcb_size_hints_set_position(xcb_size_hints_t *hints, int user_specified,
+                            int32_t x, int32_t y)
 {
-	return calloc(1, sizeof(xcb_size_hints_t));
+  hints->flags &= ~(XCB_SIZE_HINT_US_POSITION | XCB_SIZE_HINT_P_POSITION);
+  if (user_specified)
+    hints->flags |= XCB_SIZE_HINT_US_POSITION;
+  else
+    hints->flags |= XCB_SIZE_HINT_P_POSITION;
+  hints->x = x;
+  hints->y = y;
 }
 
 void
-xcb_free_size_hints(xcb_size_hints_t *hints)
+xcb_size_hints_set_size(xcb_size_hints_t *hints, int user_specified,
+                         int32_t width, int32_t height)
 {
-	free(hints);
+  hints->flags &= ~(XCB_SIZE_HINT_US_SIZE | XCB_SIZE_HINT_P_SIZE);
+  if (user_specified)
+    hints->flags |= XCB_SIZE_HINT_US_SIZE;
+  else
+    hints->flags |= XCB_SIZE_HINT_P_SIZE;
+  hints->width = width;
+  hints->height = height;
 }
 
 void
-xcb_size_hints_get_position (xcb_size_hints_t *hints,
-                             int32_t          *x,
-                             int32_t          *y)
+xcb_size_hints_set_min_size(xcb_size_hints_t *hints, int32_t min_width,
+                            int32_t min_height)
 {
-        *x = hints->x;
-        *y = hints->y;
+  hints->flags |= XCB_SIZE_HINT_P_MIN_SIZE;
+  hints->min_width = min_width;
+  hints->min_height = min_height;
 }
 
 void
-xcb_size_hints_get_size (xcb_size_hints_t *hints,
-                         int32_t          *width,
-                         int32_t          *height)
+xcb_size_hints_set_max_size(xcb_size_hints_t *hints, int32_t max_width,
+                            int32_t max_height)
 {
-        *width = hints->width;
-        *height = hints->height;
+  hints->flags |= XCB_SIZE_HINT_P_MAX_SIZE;
+  hints->max_width = max_width;
+  hints->max_height = max_height;
 }
 
 void
-xcb_size_hints_get_min_size (xcb_size_hints_t *hints,
-                             int32_t          *min_width,
-                             int32_t          *min_height)
+xcb_size_hints_set_resize_inc(xcb_size_hints_t *hints, int32_t width_inc,
+                              int32_t height_inc)
 {
-        *min_width = hints->min_width;
-        *min_height = hints->min_height;
+  hints->flags |= XCB_SIZE_HINT_P_RESIZE_INC;
+  hints->width_inc = width_inc;
+  hints->height_inc = height_inc;
 }
 
 void
-xcb_size_hints_get_max_size (xcb_size_hints_t *hints,
-                             int32_t          *max_width,
-                             int32_t          *max_height)
+xcb_size_hints_set_aspect(xcb_size_hints_t *hints, int32_t min_aspect_num,
+                          int32_t min_aspect_den, int32_t max_aspect_num,
+                          int32_t max_aspect_den)
 {
-        *max_width = hints->max_width;
-        *max_height = hints->max_height;
+  hints->flags |= XCB_SIZE_HINT_P_ASPECT;
+  hints->min_aspect_num = min_aspect_num;
+  hints->min_aspect_den = min_aspect_den;
+  hints->max_aspect_num = max_aspect_num;
+  hints->max_aspect_den = max_aspect_den;
 }
 
 void
-xcb_size_hints_get_increase (xcb_size_hints_t *hints,
-                             int32_t          *width_inc,
-                             int32_t          *height_inc)
+xcb_size_hints_set_base_size(xcb_size_hints_t *hints, int32_t base_width,
+                             int32_t base_height)
 {
-        *width_inc = hints->width_inc;
-        *height_inc = hints->height_inc;
+  hints->flags |= XCB_SIZE_HINT_BASE_SIZE;
+  hints->base_width = base_width;
+  hints->base_height = base_height;
 }
 
 void
-xcb_size_hints_get_min_aspect (xcb_size_hints_t *hints,
-                               int32_t          *min_aspect_num,
-                               int32_t          *min_aspect_den)
+xcb_size_hints_set_win_gravity(xcb_size_hints_t *hints, uint32_t win_gravity)
 {
-        *min_aspect_num = hints->min_aspect_num;
-        *min_aspect_den = hints->min_aspect_den;
+  hints->flags |= XCB_SIZE_HINT_P_WIN_GRAVITY;
+  hints->win_gravity = win_gravity;
 }
 
 void
-xcb_size_hints_get_max_aspect (xcb_size_hints_t *hints,
-                               int32_t          *max_aspect_num,
-                               int32_t          *max_aspect_den)
+xcb_set_wm_size_hints_checked(xcb_connection_t *c, xcb_window_t window,
+                              xcb_atom_t property, xcb_size_hints_t *hints)
 {
-        *max_aspect_num = hints->max_aspect_num;
-        *max_aspect_den = hints->max_aspect_den;
+  xcb_change_property_checked(c, XCB_PROP_MODE_REPLACE, window, property,
+                              WM_SIZE_HINTS, 32, sizeof(*hints) >> 2, hints);
 }
 
 void
-xcb_size_hints_get_base_size (xcb_size_hints_t *hints,
-                              int32_t          *base_width,
-                              int32_t          *base_height)
+xcb_set_wm_size_hints(xcb_connection_t *c, xcb_window_t window,
+                      xcb_atom_t property, xcb_size_hints_t *hints)
 {
-        *base_width = hints->base_width;
-        *base_height = hints->base_height;
+  xcb_change_property(c, XCB_PROP_MODE_REPLACE, window, property,
+                      WM_SIZE_HINTS, 32, sizeof(*hints) >> 2, hints);
 }
 
-uint32_t
-xcb_size_hints_get_win_gravity (xcb_size_hints_t *hints)
+xcb_get_property_cookie_t
+xcb_get_wm_size_hints(xcb_connection_t *c, xcb_window_t window,
+                      xcb_atom_t property)
 {
-        return hints->win_gravity;
+  /* NumPropSizeElements = 18 (ICCCM version 1). */
+  return xcb_get_property(c, 0, window, property, WM_SIZE_HINTS, 0L, 18);
 }
 
-uint32_t
-xcb_size_hints_get_flags (xcb_size_hints_t *hints)
+xcb_get_property_cookie_t
+xcb_get_wm_size_hints_unchecked(xcb_connection_t *c, xcb_window_t window,
+                                xcb_atom_t property)
 {
-	return hints->flags;
+  return xcb_get_property_unchecked(c, 0, window, property, WM_SIZE_HINTS,
+                                    0L, 18);
 }
 
-void
-xcb_size_hints_set_flags (xcb_size_hints_t *hints,
-                          uint32_t flags)
+uint8_t
+xcb_get_wm_size_hints_from_reply(xcb_size_hints_t *hints, xcb_get_property_reply_t *reply)
 {
-	hints->flags = flags;
+  uint32_t flags;
+
+  if(!reply)
+    return 0;
+
+  int length = xcb_get_property_value_length(reply);
+
+  if (!(reply->type == WM_SIZE_HINTS &&
+        (reply->format == 8  || reply->format == 16 ||
+         reply->format == 32) &&
+        /* OldNumPropSizeElements = 15 (pre-ICCCM) */
+        length >= 15))
+    return 0;
+
+  memcpy(hints, (xcb_size_hints_t *) xcb_get_property_value (reply),
+         length * reply->format >> 3);
+
+  flags = (XCB_SIZE_HINT_US_POSITION | XCB_SIZE_HINT_US_SIZE |
+           XCB_SIZE_HINT_P_POSITION | XCB_SIZE_HINT_P_SIZE |
+           XCB_SIZE_HINT_P_MIN_SIZE | XCB_SIZE_HINT_P_MAX_SIZE |
+           XCB_SIZE_HINT_P_RESIZE_INC | XCB_SIZE_HINT_P_ASPECT);
+
+  /* NumPropSizeElements = 18 (ICCCM version 1) */
+  if(length >= 18)
+    flags |= (XCB_SIZE_HINT_BASE_SIZE | XCB_SIZE_HINT_P_WIN_GRAVITY);
+  else
+  {
+    hints->base_width = 0;
+    hints->base_height = 0;
+    hints->win_gravity = 0;
+  }
+  /* get rid of unwanted bits */
+  hints->flags &= flags;
+
+  return 1;
 }
 
-void
-xcb_size_hints_set_position (xcb_size_hints_t *hints,
-                             int               user_specified,
-                             int32_t           x,
-                             int32_t           y)
+uint8_t
+xcb_get_wm_size_hints_reply(xcb_connection_t *c, xcb_get_property_cookie_t cookie,
+                            xcb_size_hints_t *hints, xcb_generic_error_t **e)
 {
-	hints->flags &= ~(XCB_SIZE_US_POSITION_HINT | XCB_SIZE_P_POSITION_HINT);
-	if (user_specified)
-		hints->flags |= XCB_SIZE_US_POSITION_HINT;
-	else
-		hints->flags |= XCB_SIZE_P_POSITION_HINT;
-	hints->x = x;
-	hints->y = y;
-}
-
-void
-xcb_size_hints_set_size (xcb_size_hints_t *hints,
-                         int               user_specified,
-                         int32_t           width,
-                         int32_t           height)
-{
-	hints->flags &= ~(XCB_SIZE_US_SIZE_HINT | XCB_SIZE_P_SIZE_HINT);
-	if (user_specified)
-		hints->flags |= XCB_SIZE_US_SIZE_HINT;
-	else
-		hints->flags |= XCB_SIZE_P_SIZE_HINT;
-	hints->width = width;
-	hints->height = height;
-}
-
-void
-xcb_size_hints_set_min_size (xcb_size_hints_t *hints,
-                             int32_t           min_width,
-                             int32_t           min_height)
-{
-	hints->flags |= XCB_SIZE_P_MIN_SIZE_HINT;
-	hints->min_width = min_width;
-	hints->min_height = min_height;
-}
-
-void
-xcb_size_hints_set_max_size (xcb_size_hints_t *hints,
-                             int32_t           max_width,
-                             int32_t           max_height)
-{
-	hints->flags |= XCB_SIZE_P_MAX_SIZE_HINT;
-	hints->max_width = max_width;
-	hints->max_height = max_height;
-}
-
-void
-xcb_size_hints_set_resize_inc (xcb_size_hints_t *hints,
-                               int32_t           width_inc,
-                               int32_t           height_inc)
-{
-	hints->flags |= XCB_SIZE_P_RESIZE_INC_HINT;
-	hints->width_inc = width_inc;
-	hints->height_inc = height_inc;
-}
-
-void
-xcb_size_hints_set_aspect (xcb_size_hints_t *hints,
-                           int32_t           min_aspect_num,
-                           int32_t           min_aspect_den,
-                           int32_t           max_aspect_num,
-                           int32_t           max_aspect_den)
-{
-	hints->flags |= XCB_SIZE_P_ASPECT_HINT;
-	hints->min_aspect_num = min_aspect_num;
-	hints->min_aspect_den = min_aspect_den;
-	hints->max_aspect_num = max_aspect_num;
-	hints->max_aspect_den = max_aspect_den;
-}
-
-void
-xcb_size_hints_set_base_size (xcb_size_hints_t *hints,
-                              int32_t           base_width,
-                              int32_t           base_height)
-{
-	hints->flags |= XCB_SIZE_BASE_SIZE_HINT;
-	hints->base_width = base_width;
-	hints->base_height = base_height;
-}
-
-void
-xcb_size_hints_set_win_gravity (xcb_size_hints_t *hints,
-                                uint8_t           win_gravity)
-{
-	hints->flags |= XCB_SIZE_P_WIN_GRAVITY_HINT;
-	hints->win_gravity = win_gravity;
-}
-
-void
-xcb_set_wm_size_hints_checked (xcb_connection_t *c,
-                               xcb_window_t      window,
-                               xcb_atom_t        property,
-                               xcb_size_hints_t *hints)
-{
-	xcb_change_property_checked(c, XCB_PROP_MODE_REPLACE, window, property, WM_SIZE_HINTS, 32, sizeof(*hints) / 4, hints);
-}
-
-void
-xcb_set_wm_size_hints (xcb_connection_t *c,
-                       xcb_window_t      window,
-                       xcb_atom_t        property,
-                       xcb_size_hints_t *hints)
-{
-	xcb_change_property(c, XCB_PROP_MODE_REPLACE, window, property, WM_SIZE_HINTS, 32, sizeof(*hints) / 4, hints);
-}
-
-xcb_size_hints_t *
-xcb_get_wm_size_hints (xcb_connection_t *c,
-                       xcb_window_t      window,
-                       xcb_atom_t        property,
-                       long             *supplied)
-{
-        xcb_get_property_cookie_t cookie;
-	xcb_get_property_reply_t  *rep;
-	xcb_size_hints_t          *hints = NULL;
-	long                      length;
-
-	cookie = xcb_get_property (c, 0, window,
-				 property, WM_SIZE_HINTS,
-				 0L, 18); /* NumPropSizeElements = 18 (ICCCM version 1) */
-	rep = xcb_get_property_reply (c, cookie, 0);
-	if (!rep)
-		return NULL;
-
-	length = xcb_get_property_value_length (rep);
-	if ((rep->type == WM_SIZE_HINTS) &&
-	    ((rep->format == 8)  ||
-	     (rep->format == 16) ||
-	     (rep->format == 32)) &&
-	    (length >= 15)) /* OldNumPropSizeElements = 15 (pre-ICCCM) */
-	{
-		hints = xcb_alloc_size_hints();
-		if (!hints)
-		{
-		    free (rep);
-		    return NULL;
-		}
-
-		memcpy (hints, (xcb_size_hints_t *) xcb_get_property_value (rep),
-			length * rep->format >> 3);
-
-		*supplied = (XCB_SIZE_US_POSITION_HINT | XCB_SIZE_US_SIZE_HINT |
-			     XCB_SIZE_P_POSITION_HINT  | XCB_SIZE_P_SIZE_HINT  |
-			     XCB_SIZE_P_MIN_SIZE_HINT  | XCB_SIZE_P_MAX_SIZE_HINT |
-			     XCB_SIZE_P_RESIZE_INC_HINT | XCB_SIZE_P_ASPECT_HINT);
-		if (length >= 18) /* NumPropSizeElements = 18 (ICCCM version 1) */
-		        *supplied |= (XCB_SIZE_BASE_SIZE_HINT | XCB_SIZE_P_WIN_GRAVITY_HINT);
-		else
-		{
-		        hints->base_width  = 0;
-			hints->base_height = 0;
-			hints->win_gravity = 0;
-		}
-		hints->flags &= (*supplied);	/* get rid of unwanted bits */
-	}
-
-	free (rep);
-
-	return hints;
+  xcb_get_property_reply_t *reply = reply = xcb_get_property_reply(c, cookie, e);
+  uint8_t ret = xcb_get_wm_size_hints_from_reply(hints, reply);
+  free(reply);
+  return ret;
 }
 
 /* WM_NORMAL_HINTS */
 
 void
-xcb_set_wm_normal_hints_checked (xcb_connection_t *c,
-                                 xcb_window_t      window,
-                                 xcb_size_hints_t *hints)
+xcb_set_wm_normal_hints_checked(xcb_connection_t *c, xcb_window_t window,
+                                xcb_size_hints_t *hints)
 {
-	xcb_set_wm_size_hints_checked(c, window, WM_NORMAL_HINTS, hints);
+  xcb_set_wm_size_hints_checked(c, window, WM_NORMAL_HINTS, hints);
 }
 
 void
-xcb_set_wm_normal_hints (xcb_connection_t *c,
-                         xcb_window_t      window,
-                         xcb_size_hints_t *hints)
+xcb_set_wm_normal_hints(xcb_connection_t *c, xcb_window_t window,
+                        xcb_size_hints_t *hints)
 {
-	xcb_set_wm_size_hints(c, window, WM_NORMAL_HINTS, hints);
+  xcb_set_wm_size_hints(c, window, WM_NORMAL_HINTS, hints);
 }
 
-xcb_size_hints_t *
-xcb_get_wm_normal_hints (xcb_connection_t *c,
-                         xcb_window_t      window,
-                         long             *supplied)
+xcb_get_property_cookie_t
+xcb_get_wm_normal_hints(xcb_connection_t *c, xcb_window_t window)
 {
-	return (xcb_get_wm_size_hints (c, window, WM_NORMAL_HINTS, supplied));
+  return xcb_get_wm_size_hints(c, window, WM_NORMAL_HINTS);
+}
+
+xcb_get_property_cookie_t
+xcb_get_wm_normal_hints_unchecked(xcb_connection_t *c, xcb_window_t window)
+{
+  return xcb_get_wm_size_hints_unchecked(c, window, WM_NORMAL_HINTS);
+}
+
+uint8_t
+xcb_get_wm_normal_hints_reply(xcb_connection_t *c,
+                              xcb_get_property_cookie_t cookie,
+                              xcb_size_hints_t *hints,
+                              xcb_generic_error_t **e)
+{
+  return xcb_get_wm_size_hints_reply(c, cookie, hints, e);
 }
 
 /* WM_HINTS */
 
-struct xcb_wm_hints_t {
-	int32_t      flags;           /* marks which fields in this structure are defined */
-	uint8_t      input;           /* does this application rely on the window manager
-					 to get keyboard input? */
-	int32_t      initial_state;   /* see below */
-	xcb_pixmap_t icon_pixmap;     /* pixmap to be used as icon */
-	xcb_window_t icon_window;     /* window to be used as icon */
-	int32_t      icon_x;          /* initial position of icon */
-	int32_t      icon_y;
-	xcb_pixmap_t icon_mask;       /* icon mask bitmap */
-	xcb_window_t window_group;    /* id of related window group */
-	/* this structure may be extended in the future */
-};
-
-xcb_wm_hints_t *
-xcb_alloc_wm_hints()
-{
-	return calloc(1, sizeof(xcb_wm_hints_t));
-}
-
-void
-xcb_free_wm_hints(xcb_wm_hints_t *hints)
-{
-	free(hints);
-}
-
-uint8_t
-xcb_wm_hints_get_input(xcb_wm_hints_t *hints)
-{
-        return hints->input;
-}
-
-xcb_pixmap_t
-xcb_wm_hints_get_icon_pixmap(xcb_wm_hints_t *hints)
-{
-        return hints->icon_pixmap;
-}
-
-xcb_pixmap_t
-xcb_wm_hints_get_icon_mask(xcb_wm_hints_t *hints)
-{
-        return hints->icon_mask;
-}
-
-xcb_window_t
-xcb_wm_hints_get_icon_window(xcb_wm_hints_t *hints)
-{
-        return hints->icon_window;
-}
-
-xcb_window_t
-xcb_wm_hints_get_window_group(xcb_wm_hints_t *hints)
-{
-        return hints->window_group;
-}
-
 uint32_t
 xcb_wm_hints_get_urgency(xcb_wm_hints_t *hints)
 {
-       return (hints->flags & XCB_WM_X_URGENCY_HINT);
-}
-
-uint32_t
-xcb_wm_hints_get_flags(xcb_wm_hints_t *hints)
-{
-        return hints->flags;
-}
-
-void
-xcb_wm_hints_set_flags(xcb_wm_hints_t *hints,
-                       uint32_t flags)
-{
-        hints->flags = flags;
-}
-
-uint32_t
-xcb_wm_hints_get_initial_state(xcb_wm_hints_t *hints)
-{
-        return hints->initial_state;
+  return (hints->flags & XCB_WM_HINT_X_URGENCY);
 }
 
 void
 xcb_wm_hints_set_input(xcb_wm_hints_t *hints, uint8_t input)
 {
-        hints->input = input;
-        hints->flags |= XCB_WM_INPUT_HINT;
+  hints->input = input;
+  hints->flags |= XCB_WM_HINT_INPUT;
 }
 
 void
 xcb_wm_hints_set_iconic(xcb_wm_hints_t *hints)
 {
-        hints->initial_state = XCB_WM_ICONIC_STATE;
-        hints->flags |= XCB_WM_STATE_HINT;
+  hints->initial_state = XCB_WM_STATE_ICONIC;
+  hints->flags |= XCB_WM_HINT_STATE;
 }
 
 void
 xcb_wm_hints_set_normal(xcb_wm_hints_t *hints)
 {
-        hints->initial_state = XCB_WM_NORMAL_STATE;
-        hints->flags |= XCB_WM_STATE_HINT;
+  hints->initial_state = XCB_WM_STATE_NORMAL;
+  hints->flags |= XCB_WM_HINT_STATE;
 }
 
 void
 xcb_wm_hints_set_withdrawn(xcb_wm_hints_t *hints)
 {
-        hints->initial_state = XCB_WM_WITHDRAWN_STATE;
-        hints->flags |= XCB_WM_STATE_HINT;
+  hints->initial_state = XCB_WM_STATE_WITHDRAWN;
+  hints->flags |= XCB_WM_HINT_STATE;
 }
 
 void
 xcb_wm_hints_set_none(xcb_wm_hints_t *hints)
 {
-        hints->flags &= ~XCB_WM_STATE_HINT;
+  hints->flags &= ~XCB_WM_HINT_STATE;
 }
 
 void
 xcb_wm_hints_set_icon_pixmap(xcb_wm_hints_t *hints, xcb_pixmap_t icon_pixmap)
 {
-        hints->icon_pixmap = icon_pixmap;
-        hints->flags |= XCB_WM_ICON_PIXMAP_HINT;
+  hints->icon_pixmap = icon_pixmap;
+  hints->flags |= XCB_WM_HINT_ICON_PIXMAP;
 }
 
 void
 xcb_wm_hints_set_icon_mask(xcb_wm_hints_t *hints, xcb_pixmap_t icon_mask)
 {
-        hints->icon_mask = icon_mask;
-        hints->flags |= XCB_WM_ICON_MASK_HINT;
+  hints->icon_mask = icon_mask;
+  hints->flags |= XCB_WM_HINT_ICON_MASK;
 }
 
 void
 xcb_wm_hints_set_icon_window(xcb_wm_hints_t *hints, xcb_window_t icon_window)
 {
-        hints->icon_window = icon_window;
-        hints->flags |= XCB_WM_ICON_WINDOW_HINT;
+  hints->icon_window = icon_window;
+  hints->flags |= XCB_WM_HINT_ICON_WINDOW;
 }
 
 void
 xcb_wm_hints_set_window_group(xcb_wm_hints_t *hints, xcb_window_t window_group)
 {
-        hints->window_group = window_group;
-        hints->flags |= XCB_WM_WINDOW_GROUP_HINT;
+  hints->window_group = window_group;
+  hints->flags |= XCB_WM_HINT_WINDOW_GROUP;
 }
 
 void
 xcb_wm_hints_set_urgency(xcb_wm_hints_t *hints)
 {
-        hints->flags |= XCB_WM_X_URGENCY_HINT;
+  hints->flags |= XCB_WM_HINT_X_URGENCY;
 }
 
 void
-xcb_set_wm_hints_checked (xcb_connection_t *c,
-                          xcb_window_t      window,
-                          xcb_wm_hints_t   *hints)
+xcb_set_wm_hints_checked(xcb_connection_t *c, xcb_window_t window,
+                         xcb_wm_hints_t *hints)
 {
-	xcb_change_property_checked(c, XCB_PROP_MODE_REPLACE, window, WM_HINTS, WM_HINTS, 32, sizeof(*hints) / 4, hints);
+  xcb_change_property_checked(c, XCB_PROP_MODE_REPLACE, window, WM_HINTS,
+                              WM_HINTS, 32, sizeof(*hints) >> 2, hints);
 }
 
 void
-xcb_set_wm_hints (xcb_connection_t *c,
-                  xcb_window_t      window,
-                  xcb_wm_hints_t   *hints)
+xcb_set_wm_hints(xcb_connection_t *c, xcb_window_t window,
+                 xcb_wm_hints_t *hints)
 {
-	xcb_change_property(c, XCB_PROP_MODE_REPLACE, window, WM_HINTS, WM_HINTS, 32, sizeof(*hints) / 4, hints);
+  xcb_change_property(c, XCB_PROP_MODE_REPLACE, window, WM_HINTS, WM_HINTS, 32,
+                      sizeof(*hints) >> 2, hints);
 }
 
-xcb_wm_hints_t *
-xcb_get_wm_hints (xcb_connection_t *c,
-                  xcb_window_t      window)
+xcb_get_property_cookie_t xcb_get_wm_hints(xcb_connection_t *c,
+                                           xcb_window_t window)
 {
-	xcb_get_property_cookie_t cookie;
-	xcb_get_property_reply_t *rep = NULL;
-	xcb_wm_hints_t           *hints = NULL;
-	long                      length;
+  return xcb_get_property(c, 0, window, WM_HINTS, WM_HINTS, 0L,
+                          XCB_NUM_WM_HINTS_ELEMENTS);
+}
 
-	cookie = xcb_get_property (c, 0, window,
-			WM_HINTS, WM_HINTS,
-			0L, XCB_NUM_WM_HINTS_ELEMENTS);
-	rep = xcb_get_property_reply (c, cookie, 0);
-	if (!rep)
-		return NULL;
+xcb_get_property_cookie_t xcb_get_wm_hints_unchecked(xcb_connection_t *c,
+                                                     xcb_window_t window)
+{
+  return xcb_get_property_unchecked(c, 0, window, WM_HINTS, WM_HINTS, 0L,
+                                    XCB_NUM_WM_HINTS_ELEMENTS);
+}
 
-	length = xcb_get_property_value_length (rep);
-	if ((rep->type != WM_HINTS) ||
-	    (length < (XCB_NUM_WM_HINTS_ELEMENTS - 1)) ||
-	    (rep->format != 32))
-            goto bailout;
+uint8_t
+xcb_get_wm_hints_from_reply(xcb_wm_hints_t *hints,
+                            xcb_get_property_reply_t *reply)
+{
+  if(!reply)
+    return 0;
 
-	hints = xcb_alloc_wm_hints();
-	if (!hints)
-            goto bailout;
+  int length = xcb_get_property_value_length(reply);
 
-	memcpy(hints, (xcb_size_hints_t *) xcb_get_property_value (rep),
-	       length * rep->format >> 3);
-	if (length < XCB_NUM_WM_HINTS_ELEMENTS)
-		hints->window_group = XCB_NONE;
+  if ((reply->type != WM_HINTS) ||
+      (length < (XCB_NUM_WM_HINTS_ELEMENTS - 1)) ||
+      (reply->format != 32))
+    return 0;
 
-    bailout:
-        free(rep);
-	return hints;
+  memcpy(hints, (xcb_size_hints_t *) xcb_get_property_value(reply),
+         length * reply->format >> 3);
+
+  if(length < XCB_NUM_WM_HINTS_ELEMENTS)
+    hints->window_group = XCB_NONE;
+
+  return 1;
+}
+
+uint8_t
+xcb_get_wm_hints_reply(xcb_connection_t *c,
+                       xcb_get_property_cookie_t cookie,
+                       xcb_wm_hints_t *hints,
+                       xcb_generic_error_t **e)
+{
+  xcb_get_property_reply_t *reply = xcb_get_property_reply(c, cookie, e);
+  int ret = xcb_get_wm_hints_from_reply(hints, reply);
+  free(reply);
+  return ret;
 }
 
 /* WM_PROTOCOLS */
 
 void
-xcb_set_wm_protocols_checked (xcb_connection_t *c,
-                              xcb_window_t      window,
-                              uint32_t          list_len,
-                              xcb_atom_t       *list)
+xcb_set_wm_protocols_checked(xcb_connection_t *c, xcb_atom_t wm_protocols,
+                             xcb_window_t window, uint32_t list_len,
+                             xcb_atom_t *list)
 {
-	intern_atom_fast_cookie_t proto;
-	xcb_atom_t WM_PROTOCOLS;
-
-	proto = intern_atom_fast(c, 0, sizeof("WM_PROTOCOLS") - 1, "WM_PROTOCOLS");
-	WM_PROTOCOLS = intern_atom_fast_reply(c, proto, 0);
-
-	xcb_change_property_checked(c, XCB_PROP_MODE_REPLACE, window, WM_PROTOCOLS, ATOM, 32, list_len, list);
+  xcb_change_property_checked(c, XCB_PROP_MODE_REPLACE, window, wm_protocols,
+                              ATOM, 32, list_len, list);
 }
 
 void
-xcb_set_wm_protocols (xcb_connection_t *c,
-                      xcb_window_t      window,
-                      uint32_t          list_len,
-                      xcb_atom_t       *list)
+xcb_set_wm_protocols(xcb_connection_t *c, xcb_atom_t wm_protocols,
+                     xcb_window_t window, uint32_t list_len, xcb_atom_t *list)
 {
-	intern_atom_fast_cookie_t proto;
-	xcb_atom_t WM_PROTOCOLS;
-
-	proto = intern_atom_fast(c, 0, sizeof("WM_PROTOCOLS") - 1, "WM_PROTOCOLS");
-	WM_PROTOCOLS = intern_atom_fast_reply(c, proto, 0);
-
-	xcb_change_property(c, XCB_PROP_MODE_REPLACE, window, WM_PROTOCOLS, ATOM, 32, list_len, list);
+  xcb_change_property(c, XCB_PROP_MODE_REPLACE, window, wm_protocols, ATOM, 32,
+                      list_len, list);
 }
 
-int
-xcb_get_wm_protocols (xcb_connection_t *c,
-                      xcb_window_t      window,
-                      uint32_t         *list_len,
-                      xcb_atom_t      **list)
+xcb_get_property_cookie_t
+xcb_get_wm_protocols(xcb_connection_t *c, xcb_window_t window,
+                     xcb_atom_t wm_protocol_atom)
 {
-        xcb_get_property_cookie_t cookie;
-	xcb_get_property_reply_t   *rep;
-	xcb_atom_t              property;
-
-	property = intern_atom_fast_reply(c,
-                                          intern_atom_fast(c,
-                                                           0,
-                                                           strlen("WM_PROTOCOLS"),
-                                                           "WM_PROTOCOLS"),
-                                          NULL);
-	cookie = xcb_get_property(c, 0, window,
-				property, ATOM, 0, 1000000L);
-	rep = xcb_get_property_reply(c, cookie, 0);
-	if (!rep)
-	        return 0;
-	if ((rep->type == ATOM) ||
-	    (rep->format == 32))
-	{
-	        int length;
-
-		length = xcb_get_property_value_length(rep);
-		*list_len = length;
-		*list = (xcb_atom_t *)malloc(sizeof(xcb_atom_t) * length);
-		if (!(*list))
-		{
-		        free(rep);
-			return 0;
-		}
-		memcpy(*list, xcb_get_property_value(rep), length * rep->format >> 3);
-		free(rep);
-		return 1;
-	}
-	free(rep);
-	return 0;
+  return xcb_get_property(c, 0, window, wm_protocol_atom, ATOM, 0, UINT_MAX);
 }
 
-#if HAS_DISCRIMINATED_NAME
-#include <stdarg.h>
-static char *makename(const char *fmt, ...)
+xcb_get_property_cookie_t
+xcb_get_wm_protocols_unchecked(xcb_connection_t *c,
+                               xcb_window_t window,
+                               xcb_atom_t wm_protocol_atom)
 {
-	char *ret;
-	int n;
-	va_list ap;
-	va_start(ap, fmt);
-	n = vasprintf(&ret, fmt, ap);
-	va_end(ap);
-	if(n < 0)
-		return 0;
-	return ret;
+  return xcb_get_property_unchecked(c, 0, window, wm_protocol_atom, ATOM, 0,
+                                    UINT_MAX);
 }
 
-char *discriminated_atom_name_by_screen(const char *base, uint8_t screen)
+uint8_t
+xcb_get_wm_protocols_reply(xcb_connection_t *c,
+                           xcb_get_property_cookie_t cookie,
+                           xcb_get_wm_protocols_reply_t *protocols,
+                           xcb_generic_error_t **e)
 {
-	return makename("%s_S%u", base, screen);
+  xcb_get_property_reply_t *reply = xcb_get_property_reply(c, cookie, e);
+
+  if(!reply || reply->type != ATOM || reply->format != 32)
+  {
+    free(reply);
+    return 0;
+  }
+
+  protocols->_reply = reply;
+  protocols->atoms_len = xcb_get_property_value_length(protocols->_reply);
+  protocols->atoms = (xcb_atom_t *) xcb_get_property_value(protocols->_reply);
+
+  return 1;
 }
 
-char *discriminated_atom_name_by_resource(const char *base, uint32_t resource)
+void
+xcb_get_wm_protocols_reply_wipe(xcb_get_wm_protocols_reply_t *protocols)
 {
-	return makename("%s_R%08X", base, resource);
+  free(protocols->_reply);
 }
-
-char *discriminated_atom_name_unique(const char *base, uint32_t id)
-{
-	if(base)
-		return makename("%s_U%lu", base, id);
-	else
-		return makename("U%lu", id);
-}
-#endif

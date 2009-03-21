@@ -12,6 +12,7 @@ XCB_REPLY_LIBS = libxcb-reply.la
 libxcb_reply_la_SOURCES = reply.c
 libxcb_reply_la_CPPFLAGS = $(XCB_CFLAGS)
 libxcb_reply_la_LIBADD = $(XCB_LIBS) -lpthread
+libxcb_reply_la_LDFLAGS = -version-info 1:0:0
 
 pkgconfig_DATA = xcb-reply.pc
 

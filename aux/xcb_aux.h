@@ -26,18 +26,26 @@ xcb_aux_find_visual_by_id (xcb_screen_t *screen,
 
 xcb_visualtype_t *
 xcb_aux_find_visual_by_attrs (xcb_screen_t *screen,
-			      int8_t class,
+			      int8_t class_,
 			      int8_t depth);
 
 void           xcb_aux_sync              (xcb_connection_t *c);
 
-/* less error prone to use structs instead of value lists */
+/* internal helper macro for XCB_AUX_ADD_PARAM
+It gives the offset of the field 'param' in the structure pointed to by
+'paramsp' in multiples of an uint32_t's size. */
+#define XCB_AUX_INTERNAL_OFFSETOF(paramsp, param) \
+    ((uint32_t const*)(&((paramsp)->param))-(uint32_t const*)(paramsp))
 
-#define _XCB_AUX_OFFSETOF(paramsp, param) \
-    ((void*)(&((paramsp)->param))-(void*)(paramsp))
-    
+/* add an optional parameter to an xcb_params_* structure
+parameters:
+    maskp: pointer to bitmask whos bits mark used parameters
+    paramsp: pointer to structure with parameters
+    param: parameter to set
+    value: value to set the parameter to
+*/
 #define XCB_AUX_ADD_PARAM(maskp, paramsp, param, value) \
-    ((*(maskp)|=1<<(_XCB_AUX_OFFSETOF((paramsp),param)/sizeof(uint32_t))), \
+    ((*(maskp)|=1<<XCB_AUX_INTERNAL_OFFSETOF((paramsp),param)), \
      ((paramsp)->param=(value)))
 
 typedef struct {
@@ -68,7 +76,7 @@ xcb_aux_create_window (xcb_connection_t      *c,
                        uint16_t               width,
                        uint16_t               height,
                        uint16_t               border_width,
-                       uint16_t               _class,
+                       uint16_t               class_,
                        xcb_visualid_t         visual,
                        uint32_t               mask,
                        const xcb_params_cw_t *params);
@@ -83,7 +91,7 @@ xcb_aux_create_window_checked (xcb_connection_t       *c,
 			       uint16_t               width,
 			       uint16_t               height,
 			       uint16_t               border_width,
-			       uint16_t               _class,
+			       uint16_t               class_,
 			       xcb_visualid_t         visual,
 			       uint32_t               mask,
 			       const xcb_params_cw_t *params);

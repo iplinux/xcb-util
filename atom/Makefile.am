@@ -10,6 +10,7 @@ AM_CFLAGS = $(CWARNFLAGS)
 libxcb_atom_la_SOURCES = atoms.c atomlist.m4 atoms.gperf.m4 xcb_atom.h.m4
 libxcb_atom_la_CPPFLAGS = $(XCB_CFLAGS)
 libxcb_atom_la_LIBADD = $(XCB_LIBS)
+libxcb_atom_la_LDFLAGS = -version-info 1:0:0
 
 pkgconfig_DATA = xcb-atom.pc
 
