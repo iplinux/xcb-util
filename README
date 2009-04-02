@@ -18,7 +18,6 @@ icccm: Both client and window-manager helpers for ICCCM.
 keysyms: Standard X key constants and conversion to/from keycodes.
 event: Callback X event handling.
 image: Port of Xlib's XImage and XShmImage functions.
-wm: Framework for window manager implementation.
 
 If you find any of these libraries useful, please let us know what
 you're using and why you aren't in a mental hospital yet. We'd welcome

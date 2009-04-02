@@ -66,7 +66,6 @@ AC_OUTPUT([Makefile
 	keysyms/Makefile keysyms/xcb-keysyms.pc
 	property/Makefile property/xcb-property.pc
 	icccm/Makefile icccm/xcb-icccm.pc
-	wm/Makefile wm/xcb-wm.pc
 	renderutil/Makefile renderutil/xcb-renderutil.pc
 	xcb_util_intro
 	])
