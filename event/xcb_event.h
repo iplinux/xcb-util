@@ -168,6 +168,29 @@ XCB_EVENT_MAKE_EVENT_HANDLER(colormap_notify, COLORMAP_NOTIFY)
 XCB_EVENT_MAKE_EVENT_HANDLER(client_message, CLIENT_MESSAGE)
 XCB_EVENT_MAKE_EVENT_HANDLER(mapping_notify, MAPPING_NOTIFY)
 
+/**
+ * @brief Convert an event reponse type to a label.
+ * @param e The event.
+ * @return A string with the event name, or NULL if unknown.
+ */
+const char * xcb_event_get_label(const xcb_generic_event_t *e);
+
+/**
+ * @brief Convert an event error type to a label.
+ * @param e The event.
+ * @return A string with the event name, or NULL if unknown or if the event is
+ * not an error.
+ */
+const char * xcb_event_get_error_label(const xcb_generic_event_t *e);
+
+/**
+ * @brief Convert an event request type to a label.
+ * @param e The event.
+ * @return A string with the event name, or NULL if unknown or if the event is
+ * not an error.
+ */
+const char * xcb_event_get_request_label(const xcb_generic_event_t *e);
+
 #ifdef __cplusplus
 }
 #endif
