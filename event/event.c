@@ -311,35 +311,25 @@ static const char *labelEvent[] =
 };
 
 const char *
-xcb_event_get_label(const xcb_generic_event_t *e)
+xcb_event_get_label(uint8_t type)
 {
-    uint32_t type = XCB_EVENT_RESPONSE_TYPE(e);
     if(type < countof(labelEvent))
         return labelEvent[type];
     return NULL;
 }
 
 const char *
-xcb_event_get_error_label(const xcb_generic_event_t *e)
+xcb_event_get_error_label(uint8_t type)
 {
-    /* Check that it's an error */
-    if(e->response_type == 0)
-    {
-        uint32_t type = XCB_EVENT_RESPONSE_TYPE(e) + 1;
-        if(type < countof(labelError))
-            return labelError[type];
-    }
+    if(type < countof(labelError))
+        return labelError[type];
     return NULL;
 }
 
 const char *
-xcb_event_get_request_label(const xcb_generic_event_t *e)
+xcb_event_get_request_label(uint8_t type)
 {
-    if(e->response_type == 0)
-    {
-        uint32_t type = XCB_EVENT_RESPONSE_TYPE(e) + 10;
-        if(type < countof(labelRequest))
-            return labelRequest[type];
-    }
+    if(type < countof(labelRequest))
+        return labelRequest[type];
     return NULL;
 }
