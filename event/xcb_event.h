@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008 Julien Danjou <julien@danjou.info>
+ * Copyright (C) 2008-2009 Julien Danjou <julien@danjou.info>
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -55,6 +55,8 @@ extern "C" {
 #define XCB_EVENT_RESPONSE_TYPE_MASK (0x7f)
 #define XCB_EVENT_RESPONSE_TYPE(e)   (e->response_type &  XCB_EVENT_RESPONSE_TYPE_MASK)
 #define XCB_EVENT_SENT(e)            (e->response_type & ~XCB_EVENT_RESPONSE_TYPE_MASK)
+#define XCB_EVENT_ERROR_TYPE(e) (*((uint8_t *) e + 1))
+#define XCB_EVENT_REQUEST_TYPE(e) (*((uint8_t *) e + 10))
 
 typedef int (*xcb_generic_event_handler_t)(void *data, xcb_connection_t *c, xcb_generic_event_t *event);
 typedef int (*xcb_generic_error_handler_t)(void *data, xcb_connection_t *c, xcb_generic_error_t *error);
