@@ -139,7 +139,7 @@ Description: utility libraries for X C Binding -- image
  libraries also provide client-side code which is not strictly part of
  the X protocol but which have traditionally been provided by Xlib.
 
-Package: libxcb-keysyms0
+Package: libxcb-keysyms1
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: utility libraries for X C Binding -- keysyms
@@ -154,10 +154,11 @@ Description: utility libraries for X C Binding -- keysyms
  libraries also provide client-side code which is not strictly part of
  the X protocol but which have traditionally been provided by Xlib.
 
-Package: libxcb-keysyms0-dev
+Package: libxcb-keysyms1-dev
 Section: libdevel
 Architecture: any
-Depends: libxcb-keysyms0 (= ${binary:Version}), libxcb1-dev
+Depends: libxcb-keysyms1 (= ${binary:Version}), libxcb1-dev
+Conflicts: libxcb-keysyms0-dev
 Description: utility libraries for X C Binding -- keysyms
  This package contains the header and library files needed to build software
  using libxcb-keysyms, providing standard X key constants and conversion to/from
@@ -230,7 +231,7 @@ Description: utility libraries for X C Binding -- render-util
  libraries also provide client-side code which is not strictly part of
  the X protocol but which have traditionally been provided by Xlib.
 
-Package: libxcb-reply0
+Package: libxcb-reply1
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: utility libraries for X C Binding -- reply
@@ -244,10 +245,11 @@ Description: utility libraries for X C Binding -- reply
  libraries also provide client-side code which is not strictly part of
  the X protocol but which have traditionally been provided by Xlib.
 
-Package: libxcb-reply0-dev
+Package: libxcb-reply1-dev
 Section: libdevel
 Architecture: any
-Depends: libxcb-reply0 (= ${binary:Version}), libxcb1-dev
+Depends: libxcb-reply1 (= ${binary:Version}), libxcb1-dev
+Conflicts: libxcb-reply0-dev
 Description: utility libraries for X C Binding -- reply
  This package contains the header and library files needed to build software
  using libxcb-reply.
