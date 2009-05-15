@@ -1,3 +1,10 @@
+xcb-util (0.3.4-2) asimov; urgency=low
+
+  * Package name bump for libxcb-reply and libxcb-keysyms to follow SONAME
+    bump.
+
+ -- Mikhail Gusarov <dottedmag@dottedmag.net>  Sat, 16 May 2009 02:47:56 +0700
+
 xcb-util (0.3.4-1) asimov; urgency=low
 
   * New upstream release.
