@@ -238,16 +238,11 @@ xcb_get_wm_class_unchecked(xcb_connection_t *c, xcb_window_t window)
 }
 
 uint8_t
-xcb_get_wm_class_reply(xcb_connection_t *c, xcb_get_property_cookie_t cookie,
-                       xcb_get_wm_class_reply_t *prop, xcb_generic_error_t **e)
+xcb_get_wm_class_from_reply(xcb_get_wm_class_reply_t *prop,
+                            xcb_get_property_reply_t *reply)
 {
-  xcb_get_property_reply_t *reply = xcb_get_property_reply(c, cookie, e);
-
   if(!reply || reply->type != STRING || reply->format != 8)
-  {
-    free(reply);
     return 0;
-  }
 
   prop->_reply = reply;
   prop->instance_name = (char *) xcb_get_property_value(prop->_reply);
@@ -259,6 +254,18 @@ xcb_get_wm_class_reply(xcb_connection_t *c, xcb_get_property_cookie_t cookie,
   prop->class_name = prop->instance_name + name_len + 1;
 
   return 1;
+}
+
+uint8_t
+xcb_get_wm_class_reply(xcb_connection_t *c, xcb_get_property_cookie_t cookie,
+                       xcb_get_wm_class_reply_t *prop, xcb_generic_error_t **e)
+{
+  xcb_get_property_reply_t *reply = xcb_get_property_reply(c, cookie, e);
+  uint8_t ret = xcb_get_wm_class_from_reply(prop, reply);
+  /* if reply parsing failed, free the reply to avoid mem leak */
+  if(!ret)
+      free(reply);
+  return ret;
 }
 
 void xcb_get_wm_class_reply_wipe(xcb_get_wm_class_reply_t *prop)

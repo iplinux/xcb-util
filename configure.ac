@@ -1,5 +1,5 @@
 AC_PREREQ(2.57)
-AC_INIT([xcb-util],0.3.3,[xcb@lists.freedesktop.org])
+AC_INIT([xcb-util],0.3.4,[xcb@lists.freedesktop.org])
 AC_CONFIG_SRCDIR([Makefile.am])
 AM_INIT_AUTOMAKE([foreign dist-bzip2])
 
@@ -66,7 +66,6 @@ AC_OUTPUT([Makefile
 	keysyms/Makefile keysyms/xcb-keysyms.pc
 	property/Makefile property/xcb-property.pc
 	icccm/Makefile icccm/xcb-icccm.pc
-	wm/Makefile wm/xcb-wm.pc
 	renderutil/Makefile renderutil/xcb-renderutil.pc
 	xcb_util_intro
 	])

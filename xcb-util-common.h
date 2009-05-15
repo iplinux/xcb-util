@@ -1,7 +1,7 @@
 /*
- * Copyright © 2008 Ian Osgood <iano@quirkster.com>
- * Copyright © 2008 Josh Triplett <josh@freedesktop.org>
- * Copyright © 2008 Thomas Hunger <hto@arco.de>
+ * Common useful header for xcb-util
+ *
+ * Copyright © 2009 Julien Danjou <julien@danjou.info>
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -26,64 +26,8 @@
  * their institutions shall not be used in advertising or otherwise to
  * promote the sale, use or other dealings in this Software without
  * prior written authorization from the authors.
+ *
  */
 
-#include <stdlib.h>
-#include "xcb_wm.h"
-
-typedef struct node node;
-struct node {
-	node *next;
-	uint32_t key;
-	void *value;
-};
-
-struct table_t {
-	node *head;
-};
-
-table_t *alloc_table()
-{
-	return calloc(1, sizeof(table_t));
-}
-
-void free_table(table_t *table)
-{
-	free(table);
-}
-
-int table_put(table_t *table, uint32_t key, void *value)
-{
-	node *record = malloc(sizeof(node));
-	if(!record)
-		return 0;
-	record->next = table->head;
-	record->key = key;
-	record->value = value;
-	table->head = record;
-	return 1;
-}
-
-void *table_get(table_t *table, uint32_t key)
-{
-	node *cur;
-	for(cur = table->head; cur; cur = cur->next)
-		if(cur->key == key)
-			return cur->value;
-	return 0;
-}
-
-void *table_remove(table_t *table, uint32_t key)
-{
-	node **cur;
-	for(cur = &table->head; *cur; cur = &(*cur)->next)
-		if((*cur)->key == key)
-		{
-			node *tmp = *cur;
-			void *ret = tmp->value;
-			*cur = (*cur)->next;
-			free(tmp);
-			return ret;
-		}
-	return 0;
-}
+#define ssizeof(foo)            (ssize_t)sizeof(foo)
+#define countof(foo)            (ssizeof(foo) / ssizeof(foo[0]))

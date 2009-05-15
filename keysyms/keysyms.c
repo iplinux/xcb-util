@@ -235,34 +235,35 @@ xcb_keysym_t xcb_key_symbols_get_keysym (xcb_key_symbols_t *syms,
   return keysyms[col];
 }
 
-
-xcb_keycode_t
-xcb_key_symbols_get_keycode (xcb_key_symbols_t *syms,
-			 xcb_keysym_t      keysym)
+xcb_keycode_t *
+xcb_key_symbols_get_keycode(xcb_key_symbols_t *syms,
+                            xcb_keysym_t      keysym)
 {
-  xcb_keysym_t    ks;
-  xcb_keycode_t   keycode_null = { XCB_NO_SYMBOL };
-  int          i, j;
+  xcb_keysym_t ks;
+  int j, nresult = 0;
+  xcb_keycode_t i, min, max, *result = NULL;
 
-  if (!syms)
-    return keycode_null;
-  
-  xcb_key_symbols_get_reply (syms, NULL);
+  if(syms)
+  {
+      xcb_key_symbols_get_reply (syms, NULL);
+      min = xcb_get_setup(syms->c)->min_keycode;
+      max = xcb_get_setup(syms->c)->max_keycode;
 
-  for (j = 0; j < syms->u.reply->keysyms_per_keycode; j++)
-    {
-      for (i = xcb_get_setup (syms->c)->min_keycode; i <= xcb_get_setup (syms->c)->max_keycode; i++)
-	{
-	  xcb_keycode_t keycode;
-	  
-	  keycode = i;
-	  ks = xcb_key_symbols_get_keysym (syms, keycode, j);
-	  if (ks == keysym)
-	    return keycode;
-	}
-    }
+      for(j = 0; j < syms->u.reply->keysyms_per_keycode; j++)
+          for(i = min; i && i <= max; i++)
+          {
+              ks = xcb_key_symbols_get_keysym(syms, i, j);
+              if(ks == keysym)
+              {
+                  nresult++;
+                  result = realloc(result, sizeof(xcb_keycode_t) * (nresult + 1));
+                  result[nresult - 1] = i;
+                  result[nresult] = XCB_NO_SYMBOL;
+              }
+          }
+  }
   
-  return keycode_null;
+  return result;
 }
 
 xcb_keysym_t
