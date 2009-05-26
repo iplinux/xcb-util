@@ -1,3 +1,9 @@
+xcb-util (0.3.4-2+b1) asimov; urgency=low
+
+  * Rebuild to fix libgcc1 dependency.
+
+ -- Mikhail Gusarov <dottedmag@dottedmag.net>  Tue, 26 May 2009 23:36:03 +0700
+
 xcb-util (0.3.4-2) asimov; urgency=low
 
   * Package name bump for libxcb-reply and libxcb-keysyms to follow SONAME
