@@ -20,3 +20,15 @@ cleanbuilddir::
 
 get-orig-source:
 	git archive upstream | gzip -9 > ../xcb-util_$(ORIG_MAJOR)+git$(ORIG_GIT).orig.tar.gz
+
+clean::
+	[ ! -f Makefile ] || make distclean
+	[ ! -f debian/control.orig ] || mv -f debian/control.orig debian/control
+
+binary-install/libxcb-icccm1-dev::
+	[ -f debian/control.orig ] || cp debian/control debian/control.orig
+ifeq (,$(findstring target,$(DEB_BUILD_OPTIONS)))
+	sed -ie 's,Section: .*,Section: host/tools,g' $(CURDIR)/debian/control
+else
+	sed -ie 's,Section: host/tools,Section: gui,g' $(CURDIR)/debian/control
+endif

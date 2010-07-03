@@ -16,6 +16,7 @@ Build-Depends: cdbs,
                libtool
 XCS-Cross-Host-Build-Depends: cdbs, cdbs-embedded, debhelper (>= 5), autotools-dev, gperf, pkg-config, m4, autoconf, automake, libtool
 XCS-Cross-Build-Depends: libxcb-render0-dev, libxcb1-dev, libxcb-shm0-dev
+XCS-Cross-Mode: both
 Standards-Version: 3.8.0
 Homepage: http://xcb.freedesktop.org
 
