@@ -1,3 +1,9 @@
+xcb-util (0.3.4-4) zelazny; urgency=low
+
+  * Fix package section name
+
+ -- Alexander Kerner <lunohod@openinkpot.org>  Sat, 03 Jul 2010 21:14:00 +0200
+
 xcb-util (0.3.4-3) zelazny; urgency=low
 
   * Make xcb-util build as host/tools package
