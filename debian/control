@@ -1,5 +1,5 @@
 Source: xcb-util
-Section: gui
+Section: host/tools
 Priority: extra
 Maintainer: Mikhail Gusarov <dottedmag@dottedmag.net>
 Build-Depends: cdbs,
