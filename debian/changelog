@@ -1,3 +1,9 @@
+xcb-util (0.3.4-3) zelazny; urgency=low
+
+  * Make xcb-util build as host/tools package
+
+ -- Alexander Kerner <lunohod@openinkpot.org>  Sat, 03 Jul 2010 20:56:06 +0200
+
 xcb-util (0.3.4-2+b1) asimov; urgency=low
 
   * Rebuild to fix libgcc1 dependency.
